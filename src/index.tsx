@@ -1,5 +1,5 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { createRoot, Root } from 'react-dom/client';
 import WalletConnect from '@walletconnect/client';
 import { payloadId } from '@walletconnect/utils';
 import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
@@ -12,7 +12,7 @@ import { ConnectionMethodSelectionDialog } from './connection-method-selection-d
 import './style.css';
 import { IWalletConnectOptions } from '@walletconnect/types';
 
-const WRAPPER_ID = 'likecoin-wallet-connector';
+const CONTAINER_ID = 'likecoin-wallet-connector';
 
 export interface LikeCoinWalletConnectorOptions {
   chainId: string;
@@ -49,6 +49,8 @@ export class LikeCoinWalletConnector {
   public bech32PrefixConsAddr: string;
   public bech32PrefixConsPub: string;
 
+  private _renderingRoot: Root;
+
   private _onInit?: (result: { accounts: any; offlineSigner: any }) => void;
 
   private _isConnectionMethodSelectDialogOpen = false;
@@ -72,30 +74,28 @@ export class LikeCoinWalletConnector {
     if (options.onInit) {
       this._onInit = options.onInit;
     }
+
+    const container = document.createElement('div');
+    container.setAttribute('id', CONTAINER_ID);
+    document.body.appendChild(container);
+    this._renderingRoot = createRoot(container);
   }
 
   openConnectWalletModal() {
     if (this._isConnectionMethodSelectDialogOpen) return;
-    const wrapper = document.createElement('div');
-    wrapper.setAttribute('id', WRAPPER_ID);
-    document.body.appendChild(wrapper);
 
-    ReactDOM.render(
+    this._renderingRoot.render(
       <ConnectionMethodSelectionDialog
         onClose={this.closeConnectWalletModal}
         onSelectConnectionMethod={this.selectMethod}
-      />,
-      wrapper
+      />
     );
 
     this._isConnectionMethodSelectDialogOpen = true;
   }
 
   closeConnectWalletModal = () => {
-    const wrapper = document.getElementById(WRAPPER_ID);
-    if (wrapper) {
-      document.body.removeChild(wrapper);
-    }
+    this._renderingRoot.render(null);
     const modalWrappers = document.getElementsByClassName('ReactModalPortal');
     if (modalWrappers && modalWrappers.length > 0) {
       document.body.removeChild(modalWrappers[0]);
