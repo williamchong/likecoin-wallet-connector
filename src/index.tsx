@@ -31,6 +31,9 @@ export interface LikeCoinWalletConnectorOptions {
   bech32PrefixValPub: string;
   bech32PrefixConsAddr: string;
   bech32PrefixConsPub: string;
+  gasPriceStepLow: number;
+  gasPriceStepAverage: number;
+  gasPriceStepHigh: number;
 
   onInit?: (result: { accounts: any; offlineSigner: any }) => void;
 }
@@ -50,6 +53,9 @@ export class LikeCoinWalletConnector {
   public bech32PrefixValPub: string;
   public bech32PrefixConsAddr: string;
   public bech32PrefixConsPub: string;
+  public gasPriceStepLow: number;
+  public gasPriceStepAverage: number;
+  public gasPriceStepHigh: number;
 
   private _renderingRoot: Root;
 
@@ -72,6 +78,9 @@ export class LikeCoinWalletConnector {
     this.bech32PrefixValPub = options.bech32PrefixValPub;
     this.bech32PrefixConsAddr = options.bech32PrefixConsAddr;
     this.bech32PrefixConsPub = options.bech32PrefixConsPub;
+    this.gasPriceStepLow = options.gasPriceStepLow || 1;
+    this.gasPriceStepAverage = options.gasPriceStepAverage || 10;
+    this.gasPriceStepHigh = options.gasPriceStepHigh || 1000;
 
     if (options.onInit) {
       this._onInit = options.onInit;
@@ -197,9 +206,9 @@ export class LikeCoinWalletConnector {
         ],
         coinType: this.coinType,
         gasPriceStep: {
-          low: 0.01,
-          average: 0.025,
-          high: 0.04,
+          low: this.gasPriceStepLow,
+          average: this.gasPriceStepAverage,
+          high: this.gasPriceStepHigh,
         },
         features: ['ibc-go', 'ibc-transfer', 'no-legacy-stdTx', 'stargate'],
       });
@@ -248,9 +257,9 @@ export class LikeCoinWalletConnector {
           coinType: this.coinType.toString(),
           decimals: this.coinDecimals,
           gasRate: {
-            tiny: '1',
-            low: '10',
-            average: '1000',
+            tiny: `${this.gasPriceStepLow}`,
+            low: `${this.gasPriceStepAverage}`,
+            average: `${this.gasPriceStepHigh}`,
           },
           sendGas: '350000',
         },
