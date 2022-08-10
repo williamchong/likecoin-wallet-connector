@@ -73,7 +73,6 @@
   },
   "dependencies": {
     "@cosmjs/proto-signing": "^0.28.10",
-    "@keplr-wallet/wc-qrcode-modal": "^0.10.9",
     "@walletconnect/client": "^1.7.8",
     "@walletconnect/types": "^1.7.8",
     "@walletconnect/utils": "^1.7.8",
