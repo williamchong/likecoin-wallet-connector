@@ -1,18 +1,18 @@
 import * as React from 'react';
 import { createRoot, Root } from 'react-dom/client';
+import { OfflineAminoSigner } from '@cosmjs/amino';
+import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
+import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
 import WalletConnect from '@walletconnect/client';
 import { payloadId } from '@walletconnect/utils';
-import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
+import { IWalletConnectOptions } from '@walletconnect/types';
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
-import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
 
 import { CosmostationDirectSigner } from './utils/cosmostation';
 
 import { ConnectionMethodSelectionDialog } from './connection-method-selection-dialog';
 
 import './style.css';
-import { IWalletConnectOptions } from '@walletconnect/types';
-import { OfflineAminoSigner } from '@cosmjs/amino';
 
 const CONTAINER_ID = 'likecoin-wallet-connector';
 const SESSION_METHOD_KEY = 'likecoin_wallet_connector_session_method';
