@@ -57,16 +57,26 @@
               :type="error ? 'error' : 'success'"
               elevation="2"
               max-width="480"
+              prominent
               dismissible
             >
               <pre v-if="error">{{ error }}</pre>
-              <a
+              <v-row
                 v-else
-                :href="txURL"
-                target="_blank"
-                rel="noreferrer noopener"
-                >{{ txURL }}</a
+                align="center"
               >
+                <v-col class="grow">The transaction is broadcasted.</v-col>
+                <v-col class="shrink">
+                  <v-btn
+                    :href="txURL"
+                    color="white"
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    small
+                    outlined
+                  >Details</v-btn>
+                </v-col>
+              </v-row>
             </v-alert>
           </v-col>
         </v-row>
@@ -94,7 +104,7 @@ export default {
       toAddress: 'like145at6ratky0leykf43zqx8q33ramxhjclh0t9u',
       amount: 1,
       isSending: false,
-      isShowAlert: true,
+      isShowAlert: false,
       txHash: '',
       error: '',
     };
