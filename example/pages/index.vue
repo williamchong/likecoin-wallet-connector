@@ -94,7 +94,7 @@ import {
   SigningStargateClient,
 } from '@cosmjs/stargate';
 
-import { LikeCoinWalletConnector } from '../../dist';
+import { LikeCoinWalletConnector, LikeCoinWalletConnectorMethod } from '../../dist';
 
 export default {
   data() {
@@ -137,6 +137,12 @@ export default {
       bech32PrefixValPub: 'likevaloperpub',
       bech32PrefixConsAddr: 'likevalcons',
       bech32PrefixConsPub: 'likevalconspub',
+      availableMethods: [
+        LikeCoinWalletConnectorMethod.Keplr,
+        LikeCoinWalletConnectorMethod.KeplrMobile,
+        LikeCoinWalletConnectorMethod.LikerId,
+        LikeCoinWalletConnectorMethod.Cosmostation,
+      ],
       onInit: ({ accounts: [account], offlineSigner }) => {
         this.offlineSigner = offlineSigner;
         this.walletAddress = account.bech32Address || account.address;

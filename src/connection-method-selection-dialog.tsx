@@ -2,6 +2,7 @@ import React, { FC, HTMLAttributes } from 'react';
 import Modal from 'react-modal';
 
 import { ConnectionMethodButton } from './components/connection-method-button';
+import { LikeCoinWalletConnectorMethod } from './types';
 
 const modalStyle = {
   overlay: {
@@ -21,44 +22,54 @@ const modalStyle = {
     boxShadow: '2px 4px 8px rgba(0, 0, 0, 0.25)',
   },
 };
-
-const connectionMethods = [
-  {
-    type: 'keplr',
+const connectionMethodMap = {
+  [LikeCoinWalletConnectorMethod.Keplr]: {
     name: 'Keplr',
     description: 'Using Keplr browser extension',
   },
-  {
-    type: 'keplr-mobile',
+  [LikeCoinWalletConnectorMethod.KeplrMobile]: {
     name: 'Keplr Mobile',
     description: 'Using Keplr Mobile app',
   },
-  {
-    type: 'liker-id',
+  [LikeCoinWalletConnectorMethod.LikerId]: {
     name: 'Liker ID',
     description: 'Using Liker Land app',
   },
-  {
-    type: 'cosmostation',
+  [LikeCoinWalletConnectorMethod.Cosmostation]: {
     name: 'Cosmostation',
     description: 'Using Cosmostation browser extension',
   },
-];
+};
 export interface Props extends HTMLAttributes<HTMLDivElement> {
+  methods: LikeCoinWalletConnectorMethod[];
   onClose?: () => void;
-  onSelectConnectionMethod?: (method: string) => void;
+  onSelectConnectionMethod?: (method: LikeCoinWalletConnectorMethod) => void;
 }
 
 /**
  * Connect wallet dialog
  */
 export const ConnectionMethodSelectionDialog: FC<Props> = ({
+  methods,
   onClose,
   onSelectConnectionMethod,
 }) => {
   const [isModalOpen, setModalOpen] = React.useState(true);
 
-  function handleConnectionMethodSelection(method: string) {
+  const connectionMethods = React.useMemo(
+    () =>
+      methods
+        .filter(type => !!connectionMethodMap[type])
+        .map(type => ({
+          type,
+          ...connectionMethodMap[type],
+        })),
+    [methods]
+  );
+
+  function handleConnectionMethodSelection(
+    method: LikeCoinWalletConnectorMethod
+  ) {
     if (onSelectConnectionMethod) onSelectConnectionMethod(method);
   }
 

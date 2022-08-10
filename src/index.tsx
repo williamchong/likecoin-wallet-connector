@@ -11,8 +11,11 @@ import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 import { CosmostationDirectSigner } from './utils/cosmostation';
 
 import { ConnectionMethodSelectionDialog } from './connection-method-selection-dialog';
+import { LikeCoinWalletConnectorMethod } from './types';
 
 import './style.css';
+
+export * from './types';
 
 const CONTAINER_ID = 'likecoin-wallet-connector';
 const SESSION_METHOD_KEY = 'likecoin_wallet_connector_session_method';
@@ -37,6 +40,7 @@ export interface LikeCoinWalletConnectorOptions {
   gasPriceStepHigh: number;
 
   initAttemptCount: number;
+  availableMethods?: LikeCoinWalletConnectorMethod[];
 
   onInit?: (result: { accounts: any; offlineSigner: any }) => void;
 }
@@ -61,6 +65,7 @@ export class LikeCoinWalletConnector {
   public gasPriceStepHigh: number;
 
   public initAttemptCount: number;
+  public availableMethods: LikeCoinWalletConnectorMethod[];
 
   private _renderingRoot: Root;
 
@@ -87,6 +92,12 @@ export class LikeCoinWalletConnector {
     this.gasPriceStepAverage = options.gasPriceStepAverage || 10;
     this.gasPriceStepHigh = options.gasPriceStepHigh || 1000;
     this.initAttemptCount = options.initAttemptCount || 3;
+    this.availableMethods = options.availableMethods || [
+      LikeCoinWalletConnectorMethod.Keplr,
+      LikeCoinWalletConnectorMethod.KeplrMobile,
+      LikeCoinWalletConnectorMethod.LikerId,
+      LikeCoinWalletConnectorMethod.Cosmostation,
+    ];
 
     if (options.onInit) {
       this._onInit = options.onInit;
@@ -103,6 +114,7 @@ export class LikeCoinWalletConnector {
 
     this._renderingRoot.render(
       <ConnectionMethodSelectionDialog
+        methods={this.availableMethods}
         onClose={this.closeConnectWalletModal}
         onSelectConnectionMethod={this.selectMethod}
       />
@@ -120,7 +132,7 @@ export class LikeCoinWalletConnector {
     this._isConnectionMethodSelectDialogOpen = false;
   };
 
-  selectMethod = async (method: string) => {
+  selectMethod = async (method: LikeCoinWalletConnectorMethod) => {
     this.closeConnectWalletModal();
 
     await this.init(method);
@@ -130,7 +142,7 @@ export class LikeCoinWalletConnector {
     window.localStorage.removeItem(SESSION_METHOD_KEY);
   };
 
-  init = async (method: string) => {
+  init = async (method: LikeCoinWalletConnectorMethod) => {
     let initiator: Promise<
       | {
           accounts: any;
@@ -139,19 +151,19 @@ export class LikeCoinWalletConnector {
       | undefined
     >;
     switch (method) {
-      case 'keplr':
+      case LikeCoinWalletConnectorMethod.Keplr:
         initiator = this.initKeplr();
         break;
 
-      case 'keplr-mobile':
+      case LikeCoinWalletConnectorMethod.KeplrMobile:
         initiator = this.initKeplrMobile();
         break;
 
-      case 'cosmostation':
+      case LikeCoinWalletConnectorMethod.Cosmostation:
         initiator = this.initCosmostation();
         break;
 
-      case 'liker-id':
+      case LikeCoinWalletConnectorMethod.LikerId:
         initiator = this.initLikerID();
         break;
 
@@ -174,7 +186,7 @@ export class LikeCoinWalletConnector {
   initIfNecessary = () => {
     const method = window.localStorage.getItem(SESSION_METHOD_KEY);
     if (method) {
-      return this.init(method);
+      return this.init(method as LikeCoinWalletConnectorMethod);
     }
     return undefined;
   };
