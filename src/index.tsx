@@ -4,6 +4,7 @@ import WalletConnect from '@walletconnect/client';
 import { payloadId } from '@walletconnect/utils';
 import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
+import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
 
 import { CosmostationDirectSigner } from './utils/cosmostation';
 
@@ -11,6 +12,7 @@ import { ConnectionMethodSelectionDialog } from './connection-method-selection-d
 
 import './style.css';
 import { IWalletConnectOptions } from '@walletconnect/types';
+import { OfflineAminoSigner } from '@cosmjs/amino';
 
 const CONTAINER_ID = 'likecoin-wallet-connector';
 
@@ -116,6 +118,10 @@ export class LikeCoinWalletConnector {
     switch (method) {
       case 'keplr':
         initiator = this.initKeplr();
+        break;
+
+      case 'keplr-mobile':
+        initiator = this.initKeplrMobile();
         break;
 
       case 'cosmostation':
@@ -262,6 +268,79 @@ export class LikeCoinWalletConnector {
     }
 
     const offlineSigner = new CosmostationDirectSigner(this.chainName);
+
+    return {
+      accounts: [account],
+      offlineSigner,
+    };
+  };
+
+  initKeplrMobile = async () => {
+    const wcConnectOptions: IWalletConnectOptions = {
+      bridge: 'https://bridge.walletconnect.org',
+      qrcodeModal: new KeplrQRCodeModalV1(),
+      qrcodeModalOptions: {
+        desktopLinks: [],
+        mobileLinks: [],
+      },
+      signingMethods: [
+        'keplr_enable_wallet_connect_v1',
+        'keplr_get_key_wallet_connect_v1',
+        'keplr_sign_amino_wallet_connect_v1',
+      ],
+    };
+    let wcConnector = new WalletConnect(wcConnectOptions);
+    if (wcConnector?.connected) {
+      await wcConnector.killSession();
+      wcConnector = new WalletConnect(wcConnectOptions);
+    }
+
+    if (!wcConnector.connected) {
+      await wcConnector.connect();
+    }
+
+    await wcConnector.sendCustomRequest({
+      id: payloadId(),
+      jsonrpc: '2.0',
+      method: 'keplr_enable_wallet_connect_v1',
+      params: [this.chainId],
+    });
+
+    const [account] = await wcConnector.sendCustomRequest({
+      id: payloadId(),
+      jsonrpc: '2.0',
+      method: 'keplr_get_key_wallet_connect_v1',
+      params: [this.chainId],
+    });
+
+    if (!account) {
+      throw new Error('WALLETCONNECT_ACCOUNT_NOT_FOUND');
+    }
+
+    const { bech32Address, algo, pubKey: pubKeyInHex } = account;
+    if (!bech32Address || !algo || !pubKeyInHex) {
+      throw new Error('WALLETCONNECT_ACCOUNT_FORMAT_INVALID');
+    }
+    const pubkey = new Uint8Array(Buffer.from(pubKeyInHex, 'hex'));
+    const accounts: readonly AccountData[] = [
+      {
+        address: bech32Address,
+        algo,
+        pubkey,
+      },
+    ];
+    const offlineSigner: OfflineAminoSigner = {
+      getAccounts: () => Promise.resolve(accounts),
+      signAmino: async (signerBech32Address, signDoc) => {
+        const [result] = await wcConnector.sendCustomRequest({
+          id: payloadId(),
+          jsonrpc: '2.0',
+          method: 'keplr_sign_amino_wallet_connect_v1',
+          params: [this.chainId, signerBech32Address, signDoc],
+        });
+        return result;
+      },
+    };
 
     return {
       accounts: [account],

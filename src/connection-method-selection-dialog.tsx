@@ -29,6 +29,11 @@ const connectionMethods = [
     description: 'Using Keplr browser extension',
   },
   {
+    type: 'keplr-mobile',
+    name: 'Keplr Mobile',
+    description: 'Using Keplr Mobile app',
+  },
+  {
     type: 'liker-id',
     name: 'Liker ID',
     description: 'Using Liker Land app',

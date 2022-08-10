@@ -20,7 +20,7 @@ export const ConnectionMethodButton: FC<Props> = ({
 }) => {
   return (
     <button
-      className="lk-block lk-w-full hover:lk-bg-[#d7ecec] lk-border-[4px] lk-border-[#ebebeb] hover:lk-border-[#50e3c2] lk-rounded-[16px] lk-p-[24px] lk-transition-colors lk-cursor-pointer lk-group"
+      className="lk-block lk-w-full hover:lk-bg-[#d7ecec] lk-border-[4px] lk-border-solid lk-border-[#ebebeb] hover:lk-border-[#50e3c2] lk-rounded-[16px] lk-p-[24px] lk-transition-colors lk-cursor-pointer lk-group"
       onClick={onPress}
     >
       <div className="lk-flex lk-items-center group-hover:lk-text-[#28646e]">
