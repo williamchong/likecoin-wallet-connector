@@ -36,6 +36,8 @@ export interface LikeCoinWalletConnectorOptions {
   gasPriceStepAverage: number;
   gasPriceStepHigh: number;
 
+  initAttemptCount: number;
+
   onInit?: (result: { accounts: any; offlineSigner: any }) => void;
 }
 
@@ -57,6 +59,8 @@ export class LikeCoinWalletConnector {
   public gasPriceStepLow: number;
   public gasPriceStepAverage: number;
   public gasPriceStepHigh: number;
+
+  public initAttemptCount: number;
 
   private _renderingRoot: Root;
 
@@ -82,6 +86,7 @@ export class LikeCoinWalletConnector {
     this.gasPriceStepLow = options.gasPriceStepLow || 1;
     this.gasPriceStepAverage = options.gasPriceStepAverage || 10;
     this.gasPriceStepHigh = options.gasPriceStepHigh || 1000;
+    this.initAttemptCount = options.initAttemptCount || 3;
 
     if (options.onInit) {
       this._onInit = options.onInit;
@@ -178,7 +183,7 @@ export class LikeCoinWalletConnector {
     const w = window as any;
 
     if (!w.keplr) {
-      if (trys < 3) {
+      if (trys < this.initAttemptCount) {
         await new Promise(resolve => setTimeout(resolve, 1000));
         this.initKeplr(trys + 1);
         return;
@@ -252,7 +257,7 @@ export class LikeCoinWalletConnector {
     const w = window as any;
 
     if (!w.cosmostation) {
-      if (trys < 3) {
+      if (trys < this.initAttemptCount) {
         await new Promise(resolve => setTimeout(resolve, 1000));
         this.initCosmostation(trys + 1);
         return;
