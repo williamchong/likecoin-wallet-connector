@@ -15,6 +15,7 @@ import { IWalletConnectOptions } from '@walletconnect/types';
 import { OfflineAminoSigner } from '@cosmjs/amino';
 
 const CONTAINER_ID = 'likecoin-wallet-connector';
+const SESSION_METHOD_KEY = 'likecoin_wallet_connector_session_method';
 
 export interface LikeCoinWalletConnectorOptions {
   chainId: string;
@@ -114,9 +115,17 @@ export class LikeCoinWalletConnector {
     this._isConnectionMethodSelectDialogOpen = false;
   };
 
-  selectMethod = async (method?: string) => {
+  selectMethod = async (method: string) => {
     this.closeConnectWalletModal();
 
+    await this.init(method);
+  };
+
+  disconnect = () => {
+    window.localStorage.removeItem(SESSION_METHOD_KEY);
+  };
+
+  init = async (method: string) => {
     let initiator: Promise<
       | {
           accounts: any;
@@ -148,8 +157,21 @@ export class LikeCoinWalletConnector {
     const result = await initiator;
     if (!result) throw new Error('ACCOUNT_INIT_FAILED');
 
-    if (!this._onInit) return;
-    this._onInit(result);
+    window.localStorage.setItem(SESSION_METHOD_KEY, method);
+
+    if (this._onInit) {
+      this._onInit(result);
+    }
+
+    return result;
+  };
+
+  initIfNecessary = () => {
+    const method = window.localStorage.getItem(SESSION_METHOD_KEY);
+    if (method) {
+      return this.init(method);
+    }
+    return undefined;
   };
 
   initKeplr = async (trys = 0) => {

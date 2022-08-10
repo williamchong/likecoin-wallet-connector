@@ -142,6 +142,7 @@ export default {
         this.walletAddress = account.bech32Address || account.address;
       },
     });
+    this.connector.initIfNecessary();
   },
   watch: {
     error(error) {
@@ -155,6 +156,7 @@ export default {
       this.connector.openConnectWalletModal();
     },
     logout() {
+      this.connector.disconnect();
       this.walletAddress = '';
     },
 
