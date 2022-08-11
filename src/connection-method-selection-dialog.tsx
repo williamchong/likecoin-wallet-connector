@@ -2,6 +2,7 @@ import React, { FC, HTMLAttributes } from 'react';
 import Modal from 'react-modal';
 
 import { ConnectionMethodButton } from './components/connection-method-button';
+import AlertIcon from './components/icons/alert';
 import { LikeCoinWalletConnectorMethod } from './types';
 
 const modalStyle = {
@@ -119,6 +120,12 @@ export const ConnectionMethodSelectionDialog: FC<Props> = ({
             </li>
           ))}
         </ul>
+        <div className="lk-flex lk-items-center lk-gap-x-[16px] lk-mt-[16px] lk-text-[#9b9b9b] lk-px-[16px">
+          <AlertIcon className="lk-w-[24px]" />
+          <span className="lk-grow lk-text-[14px] lk-leading-[1.25]">
+            Ledger is not yet supported.
+          </span>
+        </div>
       </div>
     </Modal>
   );
