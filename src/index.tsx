@@ -3,6 +3,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { OfflineAminoSigner } from '@cosmjs/amino';
 import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
+import QRCodeModal from "@walletconnect/qrcode-modal";
 import { payloadId } from '@walletconnect/utils';
 import { IWalletConnectOptions } from '@walletconnect/types';
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
@@ -325,6 +326,7 @@ export class LikeCoinWalletConnector {
   initKeplrMobile = async () => {
     const wcConnectOptions: IWalletConnectOptions = {
       bridge: 'https://bridge.walletconnect.org',
+      qrcodeModal: QRCodeModal,
       qrcodeModalOptions: {
         desktopLinks: [],
         mobileLinks: [],
@@ -397,14 +399,7 @@ export class LikeCoinWalletConnector {
   initLikerID = async () => {
     const wcConnectOptions: IWalletConnectOptions = {
       bridge: 'https://bridge.walletconnect.org',
-      qrcodeModal: {
-        open(uri) {
-          console.log(uri);
-        },
-        close() {
-          // TODO
-        },
-      },
+      qrcodeModal: QRCodeModal,
       qrcodeModalOptions: {
         desktopLinks: [],
         mobileLinks: [],

@@ -74,11 +74,12 @@
   "dependencies": {
     "@cosmjs/proto-signing": "^0.28.10",
     "@walletconnect/client": "^1.7.8",
+    "@walletconnect/qrcode-modal": "^1.8.0",
     "@walletconnect/types": "^1.7.8",
     "@walletconnect/utils": "^1.7.8",
     "cosmjs-types": "^0.5.0",
-    "react-modal": "^3.15.1",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-modal": "^3.15.1"
   }
 }
