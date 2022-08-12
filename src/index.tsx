@@ -3,7 +3,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { OfflineAminoSigner } from '@cosmjs/amino';
 import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
-import QRCodeModal from "@walletconnect/qrcode-modal";
+import QRCodeModal from '@walletconnect/qrcode-modal';
 import { payloadId } from '@walletconnect/utils';
 import { IWalletConnectOptions } from '@walletconnect/types';
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
@@ -18,7 +18,7 @@ import './style.css';
 export * from './types';
 
 const CONTAINER_ID = 'likecoin-wallet-connector';
-const SESSION_METHOD_KEY = 'likecoin_wallet_connector_session_method';
+const SESSION_KEY = 'likecoin_wallet_connector_session';
 
 export interface LikeCoinWalletConnectorOptions {
   chainId: string;
@@ -139,7 +139,7 @@ export class LikeCoinWalletConnector {
   };
 
   disconnect = () => {
-    window.localStorage.removeItem(SESSION_METHOD_KEY);
+    this.deleteSession();
   };
 
   init = async (method: LikeCoinWalletConnectorMethod) => {
@@ -174,7 +174,10 @@ export class LikeCoinWalletConnector {
     const result = await initiator;
     if (!result) throw new Error('ACCOUNT_INIT_FAILED');
 
-    window.localStorage.setItem(SESSION_METHOD_KEY, method);
+    this.saveSession({
+      method,
+      accounts: result.accounts,
+    });
 
     if (this._onInit) {
       this._onInit(result);
@@ -184,11 +187,44 @@ export class LikeCoinWalletConnector {
   };
 
   initIfNecessary = () => {
-    const method = window.localStorage.getItem(SESSION_METHOD_KEY);
-    if (method) {
-      return this.init(method as LikeCoinWalletConnectorMethod);
+    const session = this.restoreSession();
+    if (session?.method) {
+      return this.init(session.method as LikeCoinWalletConnectorMethod);
     }
     return undefined;
+  };
+
+  saveSession = ({
+    method,
+    accounts,
+  }: {
+    method: LikeCoinWalletConnectorMethod;
+    accounts: any[];
+  }) => {
+    window.localStorage.setItem(
+      SESSION_KEY,
+      JSON.stringify({
+        method,
+        accounts,
+      })
+    );
+  };
+
+  restoreSession = () => {
+    let session;
+    try {
+      const serializedSession = window.localStorage.getItem(SESSION_KEY);
+      if (serializedSession) {
+        session = JSON.parse(serializedSession);
+      }
+    } catch {
+      // Unable to decode session
+    }
+    return session;
+  };
+
+  deleteSession = () => {
+    window.localStorage.removeItem(SESSION_KEY);
   };
 
   initKeplr = async (trys = 0) => {

@@ -148,7 +148,11 @@ export default {
         this.walletAddress = account.bech32Address || account.address;
       },
     });
-    this.connector.initIfNecessary();
+    const session = this.connector.restoreSession();
+    if (session?.accounts) {
+      const { accounts: [account] } = session;
+      this.walletAddress = account.bech32Address || account.address;
+    }
   },
   watch: {
     error(error) {
@@ -167,6 +171,7 @@ export default {
     },
 
     async send() {
+      await this.connector.initIfNecessary();
       this.error = false;
       this.txHash = '';
       this.isSending = true;
