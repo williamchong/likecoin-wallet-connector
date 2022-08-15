@@ -312,12 +312,18 @@ export class LikeCoinWalletConnector {
       throw new Error('COSMOSTATION_NOT_INSTALLED');
     }
 
-    const supportedChains = await w.cosmostation.tendermint.request({
+    const supportedChains: {
+      official: string[];
+      unofficial: string[];
+    } = await w.cosmostation.tendermint.request({
       method: 'ten_supportedChainNames',
     });
     if (
-      !supportedChains.official.includes(this.chainName) &&
-      !supportedChains.unofficial.includes(this.chainName)
+      !Object.values(supportedChains).find(list =>
+        list.find(
+          chainName => chainName.toLowerCase() === this.chainName.toLowerCase()
+        )
+      )
     ) {
       await w.cosmostation.tendermint.request({
         method: 'ten_addChain',
