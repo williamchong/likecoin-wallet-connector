@@ -143,10 +143,6 @@ export default {
         LikeCoinWalletConnectorMethod.LikerId,
         LikeCoinWalletConnectorMethod.Cosmostation,
       ],
-      onInit: ({ accounts: [account], offlineSigner }) => {
-        this.offlineSigner = offlineSigner;
-        this.walletAddress = account.bech32Address || account.address;
-      },
     });
     const session = this.connector.restoreSession();
     if (session?.accounts) {
@@ -162,8 +158,12 @@ export default {
     },
   },
   methods: {
-    connect() {
-      this.connector.openConnectWalletModal();
+    async connect() {
+      const wallet = await this.connector.openConnectWalletModal();
+      if (!wallet) return;
+      const { accounts: [account], offlineSigner } = wallet;
+      this.offlineSigner = offlineSigner;
+      this.walletAddress = account.bech32Address || account.address;
     },
     logout() {
       this.connector.disconnect();
@@ -171,7 +171,11 @@ export default {
     },
 
     async send() {
-      await this.connector.initIfNecessary();
+      const wallet = await this.connector.initIfNecessary();
+      if (!wallet) return;
+      const { accounts: [account], offlineSigner } = wallet;
+      this.offlineSigner = offlineSigner;
+      this.walletAddress = account.bech32Address || account.address;
       this.error = false;
       this.txHash = '';
       this.isSending = true;

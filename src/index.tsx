@@ -41,8 +41,6 @@ export interface LikeCoinWalletConnectorOptions {
 
   initAttemptCount: number;
   availableMethods?: LikeCoinWalletConnectorMethod[];
-
-  onInit?: (result: { accounts: any; offlineSigner: any }) => void;
 }
 
 export class LikeCoinWalletConnector {
@@ -68,8 +66,6 @@ export class LikeCoinWalletConnector {
   public availableMethods: LikeCoinWalletConnectorMethod[];
 
   private _renderingRoot: Root;
-
-  private _onInit?: (result: { accounts: any; offlineSigner: any }) => void;
 
   private _isConnectionMethodSelectDialogOpen = false;
 
@@ -99,10 +95,6 @@ export class LikeCoinWalletConnector {
       LikeCoinWalletConnectorMethod.Cosmostation,
     ];
 
-    if (options.onInit) {
-      this._onInit = options.onInit;
-    }
-
     const container = document.createElement('div');
     container.setAttribute('id', CONTAINER_ID);
     document.body.appendChild(container);
@@ -110,17 +102,28 @@ export class LikeCoinWalletConnector {
   }
 
   openConnectWalletModal() {
-    if (this._isConnectionMethodSelectDialogOpen) return;
+    if (this._isConnectionMethodSelectDialogOpen)
+      return Promise.resolve(undefined);
 
-    this._renderingRoot.render(
-      <ConnectionMethodSelectionDialog
-        methods={this.availableMethods}
-        onClose={this.closeConnectWalletModal}
-        onSelectConnectionMethod={this.selectMethod}
-      />
+    return new Promise<{ accounts: any; offlineSigner: any } | undefined>(
+      resolve => {
+        this._renderingRoot.render(
+          <ConnectionMethodSelectionDialog
+            methods={this.availableMethods}
+            onClose={() => {
+              this.closeConnectWalletModal();
+              resolve(undefined);
+            }}
+            onSelectConnectionMethod={async method => {
+              const result = await this.selectMethod(method);
+              resolve(result);
+            }}
+          />
+        );
+
+        this._isConnectionMethodSelectDialogOpen = true;
+      }
     );
-
-    this._isConnectionMethodSelectDialogOpen = true;
   }
 
   closeConnectWalletModal = () => {
@@ -135,7 +138,7 @@ export class LikeCoinWalletConnector {
   selectMethod = async (method: LikeCoinWalletConnectorMethod) => {
     this.closeConnectWalletModal();
 
-    await this.init(method);
+    return this.init(method);
   };
 
   disconnect = () => {
@@ -178,10 +181,6 @@ export class LikeCoinWalletConnector {
       method,
       accounts: result.accounts,
     });
-
-    if (this._onInit) {
-      this._onInit(result);
-    }
 
     return result;
   };
