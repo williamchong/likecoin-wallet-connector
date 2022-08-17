@@ -1,18 +1,39 @@
 # LikeCoin Wallet Connector
 
-This is a useful frontend library for integrating various wallet extensions, including Keplr, Cosmostation and WalletConnect (with [Liker Land App](https://github.com/likecoin/likecoin-app)).
+This is a useful frontend library for integrating various wallet connections, including:
+- [Keplr Extension](https://www.keplr.app/#starters)
+- [Keplr Mobile](https://www.keplr.app/app)
+- [Cosmostation Web Extension](https://www.cosmostation.io/wallet/#extension)
+- [Liker Land App](https://github.com/likecoin/likecoin-app)
+
+## Usage
+
+Please refer to the [example](example/) for integration in Nuxt.js.
+
+> NOTE: `@likecoin/wallet-connector/dist/style.css` must be imported for styling.
+
 
 ## Commands
 
 The recommended workflow is to run TSDX in one terminal:
 
 ```bash
-npm start # or yarn start
+yarn start
 ```
 
 This builds to `/dist` and runs the project in watch mode so any edits you save inside `src` causes a rebuild to `/dist`.
 
-Then run either Storybook or the example playground:
+Then run either the example or Storybook playground:
+
+### Example
+
+Run the example inside another terminal:
+
+```bash
+cd example
+yarn # To install dependencies
+yarn dev
+```
 
 ### Storybook
 
@@ -25,20 +46,6 @@ yarn storybook
 This loads the stories from `./stories`.
 
 > NOTE: Stories should reference the components as if using the library, similar to the example playground. This means importing from the root project directory. This has been aliased in the tsconfig and the storybook webpack config as a helper.
-
-### Example
-
-Run the example inside another:
-
-```bash
-cd example
-npm i # or yarn to install dependencies
-npm start # or yarn start
-```
-
-To do a one-off build, use `npm run build` or `yarn build`.
-
-To run tests, use `npm test` or `yarn test`.
 
 ## Configuration
 
