@@ -3,6 +3,8 @@ import { Dialog } from '@headlessui/react';
 
 import { ConnectionMethodButton } from './components/connection-method-button';
 import AlertIcon from './components/icons/alert';
+import SignInIcon from './components/icons/sign-in';
+
 import { LikeCoinWalletConnectorMethod } from './types';
 
 const connectionMethodMap = {
@@ -94,8 +96,9 @@ export const ConnectionMethodSelectionDialog: FC<Props> = ({
               </button>
             </div>
             <div className="lk-py-[32px] lk-px-[24px] lk-rounded-[24px] lk-bg-[#fff] lk-mt-[8px]">
-              <h1 className="lk-text-[#28646e] lk-font-bold">
-                Please choose your connection method
+              <h1 className="lk-flex lk-items-center lk-gap-x-[12px] lk-text-[#28646e] lk-font-bold">
+                <SignInIcon className="lk-w-[20px] lk-h-[20px] lk-shrink-0" />
+                <span>Connect Wallet</span>
               </h1>
               <ul className="lk-grid lk-grid-flow-row lk-gap-[12px] lk-mt-[24px]">
                 {connectionMethods.map(method => (
