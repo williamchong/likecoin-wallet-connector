@@ -1,31 +1,52 @@
 import React, { FC, HTMLAttributes } from 'react';
 import { Dialog } from '@headlessui/react';
 
-import { ConnectionMethodButton } from './components/connection-method-button';
 import AlertIcon from './components/icons/alert';
 import SignInIcon from './components/icons/sign-in';
 
-import { LikeCoinWalletConnectorMethodType } from './types';
+import {
+  LikeCoinWalletConnectorMethod,
+  LikeCoinWalletConnectorMethodType,
+} from './types';
+import { ConnectionMethodList } from './components/connection-method-list';
 
-const connectionMethodMap = {
-  [LikeCoinWalletConnectorMethodType.Keplr]: {
+const connectionMethodMap = [
+  {
+    type: LikeCoinWalletConnectorMethodType.Keplr,
     name: 'Keplr',
+    tier: 1,
     description: 'Using Keplr browser extension',
   },
-  [LikeCoinWalletConnectorMethodType.KeplrMobile]: {
+  {
+    type: LikeCoinWalletConnectorMethodType.KeplrMobile,
     name: 'Keplr Mobile',
+    tier: 2,
     description: 'Using Keplr Mobile app',
   },
-  [LikeCoinWalletConnectorMethodType.LikerId]: {
+  {
+    type: LikeCoinWalletConnectorMethodType.LikerId,
     name: 'Liker ID',
+    tier: 2,
     description: 'Using Liker Land app',
   },
-  [LikeCoinWalletConnectorMethodType.Cosmostation]: {
+  {
+    type: LikeCoinWalletConnectorMethodType.Cosmostation,
     name: 'Cosmostation',
+    tier: 2,
     description: 'Using Cosmostation browser extension',
   },
-};
-export interface Props extends HTMLAttributes<HTMLDivElement> {
+].reduce(
+  (map, method) => {
+    map[method.type] = method;
+    return map;
+  },
+  {} as {
+    [type in LikeCoinWalletConnectorMethodType]: LikeCoinWalletConnectorMethod;
+  }
+);
+
+export interface ConnectionMethodSelectionDialogProps
+  extends HTMLAttributes<HTMLDivElement> {
   methods: LikeCoinWalletConnectorMethodType[];
   onClose?: () => void;
   onSelectConnectionMethod?: (
@@ -36,29 +57,30 @@ export interface Props extends HTMLAttributes<HTMLDivElement> {
 /**
  * Connect wallet dialog
  */
-export const ConnectionMethodSelectionDialog: FC<Props> = ({
+export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialogProps> = ({
   methods,
   onClose,
   onSelectConnectionMethod,
 }) => {
   const [isModalOpen, setModalOpen] = React.useState(true);
 
-  const connectionMethods = React.useMemo(
-    () =>
-      methods
-        .filter(type => !!connectionMethodMap[type])
-        .map(type => ({
-          type,
-          ...connectionMethodMap[type],
-        })),
-    [methods]
-  );
-
-  function handleConnectionMethodSelection(
-    method: LikeCoinWalletConnectorMethodType
-  ) {
-    if (onSelectConnectionMethod) onSelectConnectionMethod(method);
-  }
+  const tieredConnectionMethods = React.useMemo(() => {
+    const tieredMethods = methods
+      .filter(type => !!connectionMethodMap[type])
+      .map(type => connectionMethodMap[type])
+      .reduce((tieredMethods, method) => {
+        if (!tieredMethods[method.tier]) {
+          tieredMethods[method.tier] = new Array<
+            LikeCoinWalletConnectorMethod
+          >();
+        }
+        tieredMethods[method.tier].push(method);
+        return tieredMethods;
+      }, {} as { [tier: string]: LikeCoinWalletConnectorMethod[] });
+    return Object.keys(tieredMethods)
+      .sort()
+      .map(key => tieredMethods[key]);
+  }, [methods]);
 
   function closeModal() {
     setModalOpen(false);
@@ -78,7 +100,7 @@ export const ConnectionMethodSelectionDialog: FC<Props> = ({
         {/* Container to center the panel */}
         <div className="lk-flex lk-items-center lk-justify-center lk-min-h-screen lk-px-[12px] sm:lk-px-[24px] lk-py-[24px] ">
           {/* The actual dialog panel  */}
-          <Dialog.Panel className="lk-mx-auto lk-max-w-sm lk-drop-shadow-xl">
+          <Dialog.Panel className="lk-mx-auto lk-max-w-[400px] lk-w-full lk-drop-shadow-xl">
             <div>
               <button
                 className="lk-text-[#28646e] lk-bg-[#ebebeb] hover:lk-bg-[#e6e6e6] active:lk-bg-[#9b9b9b] lk-transition-colors lk-rounded-full lk-flex lk-justify-center lk-items-center p-[14px] lk-w-[48px] lk-h-[48px]"
@@ -102,20 +124,16 @@ export const ConnectionMethodSelectionDialog: FC<Props> = ({
                 <SignInIcon className="lk-w-[20px] lk-h-[20px] lk-shrink-0" />
                 <span>Connect Wallet</span>
               </h1>
-              <ul className="lk-grid lk-grid-flow-row lk-gap-[12px] lk-mt-[24px]">
-                {connectionMethods.map(method => (
-                  <li key={method.type}>
-                    <ConnectionMethodButton
-                      type={method.type}
-                      name={method.name}
-                      description={method.description}
-                      onPress={() =>
-                        handleConnectionMethodSelection(method.type)
-                      }
-                    />
-                  </li>
-                ))}
-              </ul>
+              {tieredConnectionMethods.map((methods, index) => (
+                <ConnectionMethodList
+                  className="lk-mt-[24px]"
+                  key={`group-${index}`}
+                  methods={methods}
+                  isCollapsible={index !== 0}
+                  collapsibleToggleButtonTitle="Other connection methods"
+                  onSelectMethod={onSelectConnectionMethod}
+                />
+              ))}
               <div className="lk-flex lk-items-center lk-gap-x-[16px] lk-mt-[16px] lk-text-[#9b9b9b] lk-px-[16px">
                 <AlertIcon className="lk-w-[24px]" />
                 <span className="lk-grow lk-text-[14px] lk-leading-[1.25]">
