@@ -70,9 +70,9 @@ export const ConnectionMethodSelectionDialog: FC<Props> = ({
       {/* Backdrop */}
       <div className="lk-fixed lk-inset-0 lk-bg-black/30" aria-hidden="true" />
       {/* Full-screen scrollable container */}
-      <div className="lk-fixed lk-inset-0 lk-flex lk-items-center lk-justify-center lk-overflow-y-auto lk-p-[24px]">
+      <div className="lk-fixed lk-inset-0 lk-overflow-y-auto">
         {/* Container to center the panel */}
-        <div className="lk-flex lk-items-center lk-justify-center lk-min-h-screen">
+        <div className="lk-flex lk-items-center lk-justify-center lk-min-h-screen lk-px-[12px] sm:lk-px-[24px] lk-py-[24px] ">
           {/* The actual dialog panel  */}
           <Dialog.Panel className="lk-mx-auto lk-max-w-sm lk-drop-shadow-xl">
             <div>
