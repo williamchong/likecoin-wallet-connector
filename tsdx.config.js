@@ -4,11 +4,10 @@ const autoprefixer = require('autoprefixer');
 const tailwindcss = require('tailwindcss');
 
 module.exports = {
-  rollup(config) {
+  rollup(config, options) {
     config.plugins.push(
       postcss({
         plugins: [
-          autoprefixer(),
           tailwindcss({
             content: ['./src/**/*.{ts,tsx}'],
             theme: {
@@ -17,7 +16,9 @@ module.exports = {
             plugins: [],
             prefix: 'lk-',
           }),
+          autoprefixer(),
         ],
+        minimize: !!options.minify || options.env === 'production',
         inject: false,
         extract: path.resolve('dist/style.css'),
       })
