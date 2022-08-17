@@ -1,4 +1,4 @@
-export enum LikeCoinWalletConnectorMethod {
+export enum LikeCoinWalletConnectorMethodType {
   Keplr = 'keplr',
   KeplrMobile = 'keplr-mobile',
   Cosmostation = 'cosmostation',

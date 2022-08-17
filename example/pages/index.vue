@@ -94,7 +94,7 @@ import {
   SigningStargateClient,
 } from '@cosmjs/stargate';
 
-import { LikeCoinWalletConnector, LikeCoinWalletConnectorMethod } from '../../dist';
+import { LikeCoinWalletConnector, LikeCoinWalletConnectorMethodType } from '../../dist';
 
 export default {
   data() {
@@ -138,10 +138,10 @@ export default {
       bech32PrefixConsAddr: 'likevalcons',
       bech32PrefixConsPub: 'likevalconspub',
       availableMethods: [
-        LikeCoinWalletConnectorMethod.Keplr,
-        LikeCoinWalletConnectorMethod.KeplrMobile,
-        LikeCoinWalletConnectorMethod.LikerId,
-        LikeCoinWalletConnectorMethod.Cosmostation,
+        LikeCoinWalletConnectorMethodType.Keplr,
+        LikeCoinWalletConnectorMethodType.KeplrMobile,
+        LikeCoinWalletConnectorMethodType.LikerId,
+        LikeCoinWalletConnectorMethodType.Cosmostation,
       ],
     });
     const session = this.connector.restoreSession();

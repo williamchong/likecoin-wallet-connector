@@ -5,30 +5,32 @@ import { ConnectionMethodButton } from './components/connection-method-button';
 import AlertIcon from './components/icons/alert';
 import SignInIcon from './components/icons/sign-in';
 
-import { LikeCoinWalletConnectorMethod } from './types';
+import { LikeCoinWalletConnectorMethodType } from './types';
 
 const connectionMethodMap = {
-  [LikeCoinWalletConnectorMethod.Keplr]: {
+  [LikeCoinWalletConnectorMethodType.Keplr]: {
     name: 'Keplr',
     description: 'Using Keplr browser extension',
   },
-  [LikeCoinWalletConnectorMethod.KeplrMobile]: {
+  [LikeCoinWalletConnectorMethodType.KeplrMobile]: {
     name: 'Keplr Mobile',
     description: 'Using Keplr Mobile app',
   },
-  [LikeCoinWalletConnectorMethod.LikerId]: {
+  [LikeCoinWalletConnectorMethodType.LikerId]: {
     name: 'Liker ID',
     description: 'Using Liker Land app',
   },
-  [LikeCoinWalletConnectorMethod.Cosmostation]: {
+  [LikeCoinWalletConnectorMethodType.Cosmostation]: {
     name: 'Cosmostation',
     description: 'Using Cosmostation browser extension',
   },
 };
 export interface Props extends HTMLAttributes<HTMLDivElement> {
-  methods: LikeCoinWalletConnectorMethod[];
+  methods: LikeCoinWalletConnectorMethodType[];
   onClose?: () => void;
-  onSelectConnectionMethod?: (method: LikeCoinWalletConnectorMethod) => void;
+  onSelectConnectionMethod?: (
+    method: LikeCoinWalletConnectorMethodType
+  ) => void;
 }
 
 /**
@@ -53,7 +55,7 @@ export const ConnectionMethodSelectionDialog: FC<Props> = ({
   );
 
   function handleConnectionMethodSelection(
-    method: LikeCoinWalletConnectorMethod
+    method: LikeCoinWalletConnectorMethodType
   ) {
     if (onSelectConnectionMethod) onSelectConnectionMethod(method);
   }
