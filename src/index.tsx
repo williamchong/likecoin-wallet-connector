@@ -292,7 +292,7 @@ export class LikeCoinWalletConnector {
 
     await w.keplr.enable(this.chainId);
 
-    const offlineSigner = w.getOfflineSigner(this.chainId);
+    const offlineSigner = await w.getOfflineSignerAuto(this.chainId);
     const accounts = await offlineSigner.getAccounts();
     return {
       accounts,
