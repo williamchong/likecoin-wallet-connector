@@ -300,6 +300,29 @@ export class LikeCoinWalletConnector {
     };
   };
 
+  addChainToCosmostation = async () => {
+    const w = window as any;
+    await w.cosmostation.tendermint.request({
+      method: 'ten_addChain',
+      params: {
+        chainId: this.chainId,
+        chainName: this.chainName,
+        addressPrefix: this.bech32PrefixAccAddr,
+        baseDenom: this.coinMinimalDenom,
+        displayDenom: this.coinDenom,
+        restURL: this.restURL,
+        coinType: this.coinType.toString(),
+        decimals: this.coinDecimals,
+        gasRate: {
+          tiny: `${this.gasPriceStepLow}`,
+          low: `${this.gasPriceStepAverage}`,
+          average: `${this.gasPriceStepHigh}`,
+        },
+        sendGas: '350000',
+      },
+    })
+  }
+
   initCosmostation = async (trys = 0) => {
     const w = window as any;
 
@@ -325,30 +348,27 @@ export class LikeCoinWalletConnector {
         )
       )
     ) {
-      await w.cosmostation.tendermint.request({
-        method: 'ten_addChain',
-        params: {
-          chainId: this.chainId,
-          chainName: this.chainName,
-          addressPrefix: this.bech32PrefixAccAddr,
-          baseDenom: this.coinMinimalDenom,
-          displayDenom: this.coinDenom,
-          restURL: this.restURL,
-          coinType: this.coinType.toString(),
-          decimals: this.coinDecimals,
-          gasRate: {
-            tiny: `${this.gasPriceStepLow}`,
-            low: `${this.gasPriceStepAverage}`,
-            average: `${this.gasPriceStepHigh}`,
-          },
-          sendGas: '350000',
-        },
-      });
+      await this.addChainToCosmostation();
     }
-    let account = await w.cosmostation.tendermint.request({
-      method: 'ten_account',
-      params: { chainName: this.chainName },
-    });
+    let account;
+    try {
+      account = await w.cosmostation.tendermint.request({
+        method: 'ten_account',
+        params: { chainName: this.chainName },
+      });
+    } catch (error) {
+      switch ((error as any).code) {
+        case 4001:
+          return undefined;
+      
+        case 4100:
+          await this.addChainToCosmostation();
+          break;
+
+        default:
+          throw error;
+      }
+    }
     if (!account) {
       account = await w.cosmostation.tendermint.request({
         method: 'ten_requestAccount',
