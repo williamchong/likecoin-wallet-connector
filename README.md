@@ -8,7 +8,11 @@ This is a useful frontend library for integrating various wallet connections, in
 
 ## Usage
 
-Please refer to the [example](example/) for integration in Nuxt.js.
+```bash
+npm i react react-dom @likecoin/wallet-connector
+```
+
+Please refer to the [example](example/) for detailed integration in Nuxt.js.
 
 > NOTE: `@likecoin/wallet-connector/dist/style.css` must be imported for styling.
 
