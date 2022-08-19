@@ -211,10 +211,11 @@ export default {
       this.isSending = false;
 
       if (result.code === 0) {
-        this.txHash = result.code;
+        this.txHash = result.transactionHash;
       } else {
         this.error = result.rawLog;
       }
+      this.isShowAlert = true;
     },
   },
 };
