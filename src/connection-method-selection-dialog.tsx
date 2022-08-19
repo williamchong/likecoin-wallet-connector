@@ -1,6 +1,7 @@
 import React, { FC, HTMLAttributes } from 'react';
 import { Dialog } from '@headlessui/react';
 
+import AlertIcon from './components/icons/alert';
 import SignInIcon from './components/icons/sign-in';
 
 import {
@@ -133,6 +134,12 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
                   onSelectMethod={onSelectConnectionMethod}
                 />
               ))}
+              <div className="lk-flex lk-items-center lk-gap-x-[16px] lk-mt-[16px] lk-text-[#9b9b9b] lk-px-[16px">
+                <AlertIcon className="lk-w-[16px]" />
+                <span className="lk-grow lk-text-[14px] lk-leading-[1.25]">
+                  Ledger is not yet supported.
+                </span>
+              </div>
             </div>
           </Dialog.Panel>
         </div>
