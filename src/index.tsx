@@ -1,14 +1,18 @@
 import * as React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { OfflineAminoSigner } from '@cosmjs/amino';
-import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
+import {
+  AccountData,
+  OfflineDirectSigner,
+  OfflineSigner,
+} from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
 import QRCodeModal from '@walletconnect/qrcode-modal';
 import { payloadId } from '@walletconnect/utils';
 import { IWalletConnectOptions } from '@walletconnect/types';
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 
-import { CosmostationDirectSigner } from './utils/cosmostation';
+import { getCosmostationExtensionOfflineSigner } from './utils/cosmostation';
 
 import { ConnectionMethodSelectionDialog } from './connection-method-selection-dialog';
 import { LikeCoinWalletConnectorMethodType } from './types';
@@ -226,24 +230,29 @@ export class LikeCoinWalletConnector {
     window.localStorage.removeItem(SESSION_KEY);
   };
 
-  initKeplr = async (trys = 0) => {
-    const w = window as any;
-
-    if (!w.keplr) {
+  initKeplr: (
+    trys?: number
+  ) => Promise<
+    | {
+        accounts: readonly AccountData[];
+        offlineSigner: OfflineSigner;
+      }
+    | undefined
+  > = async (trys = 0) => {
+    if (!window.keplr || !window.getOfflineSignerAuto) {
       if (trys < this.initAttemptCount) {
         await new Promise(resolve => setTimeout(resolve, 1000));
-        this.initKeplr(trys + 1);
-        return;
+        return this.initKeplr(trys + 1);
       }
       throw new Error('KEPLR_NOT_INSTALLED');
     }
 
-    if (!w.keplr.experimentalSuggestChain) {
+    if (!window.keplr.experimentalSuggestChain) {
       throw new Error('KEPLR_VERSION_OUTDATED');
     }
 
     try {
-      await w.keplr.experimentalSuggestChain({
+      await window.keplr.experimentalSuggestChain({
         chainId: this.chainId,
         chainName: this.chainName,
         rpc: this.rpcURL,
@@ -290,9 +299,9 @@ export class LikeCoinWalletConnector {
       throw new Error('KEPLR_INIT_FAILED');
     }
 
-    await w.keplr.enable(this.chainId);
+    await window.keplr.enable(this.chainId);
 
-    const offlineSigner = await w.getOfflineSignerAuto(this.chainId);
+    const offlineSigner = await window.getOfflineSignerAuto(this.chainId);
     const accounts = await offlineSigner.getAccounts();
     return {
       accounts,
@@ -301,9 +310,8 @@ export class LikeCoinWalletConnector {
   };
 
   addChainToCosmostation = async () => {
-    const w = window as any;
-    await w.cosmostation.tendermint.request({
-      method: 'ten_addChain',
+    await window.cosmostation.cosmos.request({
+      method: 'cos_addChain',
       params: {
         chainId: this.chainId,
         chainName: this.chainName,
@@ -320,17 +328,22 @@ export class LikeCoinWalletConnector {
         },
         sendGas: '350000',
       },
-    })
-  }
+    });
+  };
 
-  initCosmostation = async (trys = 0) => {
-    const w = window as any;
-
-    if (!w.cosmostation) {
+  initCosmostation: (
+    trys?: number
+  ) => Promise<
+    | {
+        accounts: readonly AccountData[];
+        offlineSigner: OfflineSigner;
+      }
+    | undefined
+  > = async (trys = 0) => {
+    if (!window.cosmostation) {
       if (trys < this.initAttemptCount) {
         await new Promise(resolve => setTimeout(resolve, 1000));
-        this.initCosmostation(trys + 1);
-        return;
+        return this.initCosmostation(trys + 1);
       }
       throw new Error('COSMOSTATION_NOT_INSTALLED');
     }
@@ -338,8 +351,8 @@ export class LikeCoinWalletConnector {
     const supportedChains: {
       official: string[];
       unofficial: string[];
-    } = await w.cosmostation.tendermint.request({
-      method: 'ten_supportedChainNames',
+    } = await window.cosmostation.cosmos.request({
+      method: 'cos_supportedChainNames',
     });
     if (
       !Object.values(supportedChains).find(list =>
@@ -350,17 +363,17 @@ export class LikeCoinWalletConnector {
     ) {
       await this.addChainToCosmostation();
     }
-    let account;
+    let account: AccountData | undefined;
     try {
-      account = await w.cosmostation.tendermint.request({
-        method: 'ten_account',
+      account = await window.cosmostation.cosmos.request({
+        method: 'cos_account',
         params: { chainName: this.chainName },
       });
     } catch (error) {
       switch ((error as any).code) {
         case 4001:
           return undefined;
-      
+
         case 4100:
           await this.addChainToCosmostation();
           break;
@@ -370,16 +383,19 @@ export class LikeCoinWalletConnector {
       }
     }
     if (!account) {
-      account = await w.cosmostation.tendermint.request({
-        method: 'ten_requestAccount',
+      account = await window.cosmostation.cosmos.request({
+        method: 'cos_requestAccount',
         params: { chainName: this.chainName },
       });
     }
+    if (!account) {
+      return undefined;
+    }
 
-    const offlineSigner = new CosmostationDirectSigner(this.chainName);
+    const offlineSigner = getCosmostationExtensionOfflineSigner(this.chainName);
 
     return {
-      accounts: [account],
+      accounts: [account] as readonly AccountData[],
       offlineSigner,
     };
   };
@@ -452,7 +468,7 @@ export class LikeCoinWalletConnector {
     };
 
     return {
-      accounts: [account],
+      accounts,
       offlineSigner,
     };
   };
@@ -495,7 +511,7 @@ export class LikeCoinWalletConnector {
     const accounts: readonly AccountData[] = [
       { address: bech32Address, pubkey, algo },
     ];
-    const offlineSigner: OfflineSigner = {
+    const offlineSigner: OfflineDirectSigner = {
       getAccounts: () => Promise.resolve(accounts),
       signDirect: async (signerBech32Address, signDoc) => {
         const signDocInJSON = SignDoc.toJSON(signDoc);
@@ -514,7 +530,7 @@ export class LikeCoinWalletConnector {
     };
 
     return {
-      accounts: [account],
+      accounts,
       offlineSigner,
     };
   };
