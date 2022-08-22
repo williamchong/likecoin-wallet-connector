@@ -11,12 +11,14 @@ import { ConnectionMethodButton } from './connection-method-button';
 export interface ConnectionMethodListBaseProps
   extends React.HTMLAttributes<HTMLUListElement> {
   methods: LikeCoinWalletConnectorMethod[];
+  isMobile: boolean;
   onSelectMethod?: (method: LikeCoinWalletConnectorMethodType) => void;
 }
 
 export const ConnectionMethodListBase: React.FC<ConnectionMethodListBaseProps> = ({
   className,
   methods,
+  isMobile,
   onSelectMethod,
   ...props
 }) => {
@@ -38,6 +40,8 @@ export const ConnectionMethodListBase: React.FC<ConnectionMethodListBaseProps> =
             type={method.type}
             name={method.name}
             description={method.description}
+            url={method.url}
+            isMobile={isMobile}
             onPress={() => handleMethodSelection(method.type)}
           />
         </li>

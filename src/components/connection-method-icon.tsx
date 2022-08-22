@@ -1,10 +1,12 @@
 import React, { FC, HTMLAttributes } from 'react';
 
+import { LikeCoinWalletConnectorMethodType } from '../types';
+
 export interface Props extends HTMLAttributes<HTMLOrSVGElement> {
-  type?: string;
+  type?: LikeCoinWalletConnectorMethodType;
 }
 
-function getIconPath(type?: string) {
+function getIconPath(type?: LikeCoinWalletConnectorMethodType) {
   switch (type) {
     case 'keplr':
     case 'keplr-mobile':

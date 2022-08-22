@@ -2,7 +2,12 @@ import * as React from 'react';
 import { SVGProps } from 'react';
 
 const SignInIcon = (props: SVGProps<SVGSVGElement>) => (
-  <svg fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
+  <svg
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 24 24"
+    {...props}
+  >
     <path
       fillRule="evenodd"
       clipRule="evenodd"

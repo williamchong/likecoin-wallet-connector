@@ -1,11 +1,16 @@
 import React, { FC } from 'react';
 
+import { LikeCoinWalletConnectorMethodType } from '../types';
+
 import { ConnectionMethodIcon } from './connection-method-icon';
+import { OpenInNewIcon } from './icons/open-in-new';
 
 export interface Props {
-  type?: string;
+  type?: LikeCoinWalletConnectorMethodType;
   name?: string;
   description?: string;
+  url?: string;
+  isMobile?: boolean;
   onPress?: () => void;
 }
 
@@ -16,20 +21,55 @@ export const ConnectionMethodButton: FC<Props> = ({
   type,
   name,
   description,
+  url,
+  isMobile = false,
   onPress,
 }) => {
+  const isUninstalled = React.useMemo(() => {
+    switch (type) {
+      case LikeCoinWalletConnectorMethodType.Keplr:
+        return !isMobile && !window.keplr;
+      case LikeCoinWalletConnectorMethodType.Cosmostation:
+        return !isMobile && !window.cosmostation;
+      default:
+        return false;
+    }
+  }, [type, isMobile]);
+
+  const Tag = isUninstalled ? 'a' : 'button';
+
+  const props = isUninstalled
+    ? {
+        href: url,
+        target: '_blank',
+        rel: 'noreferrer noopener',
+      }
+    : {
+        onClick: onPress,
+      };
   return (
-    <button
+    <Tag
       className="lk-block lk-w-full lk-border-[4px] lk-border-solid lk-border-[#ebebeb] hover:lk-border-[#aaf1e7] active:lk-bg-[#d7ecec] lk-rounded-[16px] lk-p-[24px] lk-transition-colors lk-cursor-pointer lk-group"
-      onClick={onPress}
+      {...props}
     >
       <div className="lk-flex lk-items-center group-hover:lk-text-[#28646e] lk-transition-colors">
         <ConnectionMethodIcon type={type} />
-        <div className="lk-ml-[12px] lk-font-bold lk-text-[20px]">{name}</div>
+        <div className="lk-ml-[12px] lk-text-[16px] sm:lk-text-[20px]">
+          {!!isUninstalled && <span>Install </span>}
+          <span className="lk-font-bold">{name}</span>
+        </div>
+        {!!isUninstalled && (
+          <OpenInNewIcon className="lk-ml-[8px] lk-w-[12px] lk-h-[12px]" />
+        )}
       </div>
-      <div className="lk-mt-[16px] lk-text-[16px] lk-text-left">
+      <div className="lk-mt-[16px] lk-text-[14px] sm:lk-text-[16px] lk-text-left lk-shrink-1">
         {description}
       </div>
-    </button>
+      {!!isUninstalled && (
+        <div className="lk-mt-[4px] lk-text-[#9b9b9b] lk-text-[12px] lk-text-left lk-underline lk-font-bold">
+          {url}
+        </div>
+      )}
+    </Tag>
   );
 };

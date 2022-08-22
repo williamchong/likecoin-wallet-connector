@@ -11,6 +11,8 @@ export interface LikeCoinWalletConnectorMethod {
   name: string;
   type: LikeCoinWalletConnectorMethodType;
   tier: number;
+  isMobileOk: boolean;
+  url: string;
   description: string;
 }
 
