@@ -1,14 +1,16 @@
 <template>
   <v-app>
-    <v-app-bar class="d-md-flex justify-between" app>
+    <v-app-bar app>
       <template v-if="walletAddress">
-        <span>Connection method: {{ method }}</span>
+        <v-chip label>{{ method }}</v-chip>
+        <v-toolbar-title class="ml-4">{{ formattedWalletAddress }}</v-toolbar-title>
+        <v-spacer />
         <v-btn
           class="text-truncate"
           outlined
           style="max-width: 150px"
           @click="logout"
-        >{{ formattedWalletAddress }}</v-btn>
+        >Logout</v-btn>
       </template>
     </v-app-bar>
 
@@ -35,6 +37,11 @@
             >
               <v-form class="pa-4">
                 <v-text-field
+                  :value="walletAddress"
+                  label="From address"
+                  readonly
+                />
+                <v-text-field
                   v-model="toAddress"
                   label="To address"
                   :disabled="isSending"
@@ -44,6 +51,7 @@
                   v-model="amount"
                   label="Amount"
                   :disabled="isSending"
+                  suffix="LIKE"
                   required
                 />
                 <div class="d-flex justify-end">
@@ -118,9 +126,9 @@ export default {
   },
   computed: {
     formattedWalletAddress() {
-      return (
-        this.walletAddress.split(`1`)[0] + `…` + this.walletAddress.slice(-4)
-      );
+      const address = this.walletAddress;
+      const length = address.length;
+      return `${address.substring(0, 8)}...${address.substring(length - 3, length)}`;
     },
     txURL() {
       return this.connector
