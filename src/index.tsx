@@ -11,7 +11,7 @@ import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
 
 import { getCosmostationExtensionOfflineSigner } from './utils/cosmostation';
 
-import { ConnectionMethodSelectionDialog } from './connection-method-selection-dialog';
+import { ConnectionMethodDialog } from './components/connection-method-dialog';
 import {
   LikeCoinWalletConnectorConnectionResponse,
   LikeCoinWalletConnectorConnectionResult,
@@ -114,13 +114,13 @@ export class LikeCoinWalletConnector {
 
     return new Promise<LikeCoinWalletConnectorConnectionResponse>(resolve => {
       this._renderingRoot.render(
-        <ConnectionMethodSelectionDialog
+        <ConnectionMethodDialog
           methods={this.availableMethods}
           onClose={() => {
             this.closeConnectWalletModal();
             resolve(undefined);
           }}
-          onSelectConnectionMethod={async method => {
+          onConnect={async method => {
             const result = await this.selectMethod(method);
             resolve(result);
           }}
