@@ -11,6 +11,7 @@ import QRCodeModal from '@walletconnect/qrcode-modal';
 import { payloadId } from '@walletconnect/utils';
 import { IWalletConnectOptions } from '@walletconnect/types';
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
+import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
 
 import { getCosmostationExtensionOfflineSigner } from './utils/cosmostation';
 
@@ -403,7 +404,7 @@ export class LikeCoinWalletConnector {
   initKeplrMobile = async () => {
     const wcConnectOptions: IWalletConnectOptions = {
       bridge: 'https://bridge.walletconnect.org',
-      qrcodeModal: QRCodeModal,
+      qrcodeModal: new KeplrQRCodeModalV1(),
       qrcodeModalOptions: {
         desktopLinks: [],
         mobileLinks: [],
