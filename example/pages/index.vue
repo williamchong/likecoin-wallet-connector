@@ -15,7 +15,11 @@
       <v-container v-if="!walletAddress" fill-height>
         <v-row>
           <v-col class="d-flex justify-center">
-            <v-btn elevation="2" @click="connect">Connect</v-btn>
+            <v-btn
+              :loading="isLoading"
+              elevation="2"
+              @click="connect"
+            >Connect</v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -24,11 +28,11 @@
           <v-col>
             <v-card
               :loading="isSending"
-              class="mx-auto my-12 pa-4"
+              class="mx-auto my-12"
               max-width="480"
               outlined
             >
-              <v-form>
+              <v-form class="pa-4">
                 <v-text-field
                   v-model="toAddress"
                   label="To address"
@@ -99,6 +103,7 @@ import { LikeCoinWalletConnector, LikeCoinWalletConnectorMethodType } from '../.
 export default {
   data() {
     return {
+      isLoading: true,
       offlineSigner: undefined,
       walletAddress: '',
       toAddress: 'like145at6ratky0leykf43zqx8q33ramxhjclh0t9u',
@@ -147,8 +152,9 @@ export default {
     const session = this.connector.restoreSession();
     if (session?.accounts) {
       const { accounts: [account] } = session;
-      this.walletAddress = account.bech32Address || account.address;
+      this.walletAddress = account.address;
     }
+    this.isLoading = false;
   },
   watch: {
     error(error) {
@@ -158,64 +164,78 @@ export default {
     },
   },
   methods: {
+    reset() {
+      this.txHash = '';
+      this.error = '';
+      this.offlineSigner = undefined;
+      this.walletAddress = '';
+      this.isSending = false;
+      this.isShowAlert = false;
+    },
     async connect() {
       const wallet = await this.connector.openConnectWalletModal();
       if (!wallet) return;
       const { accounts: [account], offlineSigner } = wallet;
       this.offlineSigner = offlineSigner;
-      this.walletAddress = account.bech32Address || account.address;
+      this.walletAddress = account.address;
     },
     logout() {
       this.connector.disconnect();
-      this.walletAddress = '';
+      this.reset();
     },
 
     async send() {
-      const wallet = await this.connector.initIfNecessary();
-      if (!wallet) return;
-      const { accounts: [account], offlineSigner } = wallet;
-      this.offlineSigner = offlineSigner;
-      this.walletAddress = account.bech32Address || account.address;
-      this.error = false;
-      this.txHash = '';
-      this.isSending = true;
-      const client = await SigningStargateClient.connectWithSigner(
-        this.connector.rpcURL,
-        this.offlineSigner
-      );
+      try {
+        this.error = '';
+        this.txHash = '';
+        const wallet = await this.connector.initIfNecessary();
+        if (!wallet) return;
+        const { accounts: [account], offlineSigner } = wallet;
+        this.offlineSigner = offlineSigner;
+        this.walletAddress = account.address;
+        this.isSending = true;
+        const client = await SigningStargateClient.connectWithSigner(
+          this.connector.rpcURL,
+          this.offlineSigner
+        );
 
-      const denom = this.connector.coinMinimalDenom;
-      const amount = [
-        {
-          amount: `${this.amount * Math.pow(10, this.connector.coinDecimals)}`,
-          denom,
-        },
-      ];
-      const fee = {
-        amount: [
+        const denom = this.connector.coinMinimalDenom;
+        const amount = [
           {
-            amount: '5000',
+            amount: `${this.amount * Math.pow(10, this.connector.coinDecimals)}`,
             denom,
           },
-        ],
-        gas: '200000',
-      };
-      const result = await client.sendTokens(
-        this.walletAddress,
-        this.toAddress,
-        amount,
-        fee,
-        ''
-      );
-      assertIsDeliverTxSuccess(result);
-      this.isSending = false;
+        ];
+        const fee = {
+          amount: [
+            {
+              amount: '5000',
+              denom,
+            },
+          ],
+          gas: '200000',
+        };
+        const result = await client.sendTokens(
+          this.walletAddress,
+          this.toAddress,
+          amount,
+          fee,
+          ''
+        );
+        assertIsDeliverTxSuccess(result);
 
-      if (result.code === 0) {
-        this.txHash = result.transactionHash;
-      } else {
-        this.error = result.rawLog;
+        if (result.code === 0) {
+          this.txHash = result.transactionHash;
+          this.isShowAlert = true;
+        } else {
+          this.error = result.rawLog;
+        }
+      } catch (error) {
+        this.error = `${error}`;
+        console.error();
+      } finally {
+        this.isSending = false;
       }
-      this.isShowAlert = true;
     },
   },
 };
