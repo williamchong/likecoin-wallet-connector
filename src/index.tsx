@@ -1,11 +1,7 @@
 import * as React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { OfflineAminoSigner } from '@cosmjs/amino';
-import {
-  AccountData,
-  OfflineDirectSigner,
-  OfflineSigner,
-} from '@cosmjs/proto-signing';
+import { AccountData, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
 import QRCodeModal from '@walletconnect/qrcode-modal';
 import { payloadId } from '@walletconnect/utils';
@@ -16,7 +12,13 @@ import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
 import { getCosmostationExtensionOfflineSigner } from './utils/cosmostation';
 
 import { ConnectionMethodSelectionDialog } from './connection-method-selection-dialog';
-import { LikeCoinWalletConnectorMethodType } from './types';
+import {
+  LikeCoinWalletConnectorConnectionResponse,
+  LikeCoinWalletConnectorConnectionResult,
+  LikeCoinWalletConnectorInitResponse,
+  LikeCoinWalletConnectorMethodType,
+  LikeCoinWalletConnectorSession,
+} from './types';
 
 import './style.css';
 
@@ -110,25 +112,23 @@ export class LikeCoinWalletConnector {
     if (this._isConnectionMethodSelectDialogOpen)
       return Promise.resolve(undefined);
 
-    return new Promise<{ accounts: any; offlineSigner: any } | undefined>(
-      resolve => {
-        this._renderingRoot.render(
-          <ConnectionMethodSelectionDialog
-            methods={this.availableMethods}
-            onClose={() => {
-              this.closeConnectWalletModal();
-              resolve(undefined);
-            }}
-            onSelectConnectionMethod={async method => {
-              const result = await this.selectMethod(method);
-              resolve(result);
-            }}
-          />
-        );
+    return new Promise<LikeCoinWalletConnectorConnectionResponse>(resolve => {
+      this._renderingRoot.render(
+        <ConnectionMethodSelectionDialog
+          methods={this.availableMethods}
+          onClose={() => {
+            this.closeConnectWalletModal();
+            resolve(undefined);
+          }}
+          onSelectConnectionMethod={async method => {
+            const result = await this.selectMethod(method);
+            resolve(result);
+          }}
+        />
+      );
 
-        this._isConnectionMethodSelectDialogOpen = true;
-      }
-    );
+      this._isConnectionMethodSelectDialogOpen = true;
+    });
   }
 
   closeConnectWalletModal = () => {
@@ -140,7 +140,7 @@ export class LikeCoinWalletConnector {
     this._isConnectionMethodSelectDialogOpen = false;
   };
 
-  selectMethod = async (method: LikeCoinWalletConnectorMethodType) => {
+  private selectMethod = async (method: LikeCoinWalletConnectorMethodType) => {
     this.closeConnectWalletModal();
 
     return this.init(method);
@@ -151,13 +151,7 @@ export class LikeCoinWalletConnector {
   };
 
   init = async (method: LikeCoinWalletConnectorMethodType) => {
-    let initiator: Promise<
-      | {
-          accounts: any;
-          offlineSigner: any;
-        }
-      | undefined
-    >;
+    let initiator: Promise<LikeCoinWalletConnectorInitResponse>;
     switch (method) {
       case LikeCoinWalletConnectorMethodType.Keplr:
         initiator = this.initKeplr();
@@ -187,24 +181,20 @@ export class LikeCoinWalletConnector {
       accounts: result.accounts,
     });
 
-    return result;
+    return {
+      method,
+      ...result,
+    } as LikeCoinWalletConnectorConnectionResult;
   };
 
-  initIfNecessary = () => {
+  initIfNecessary: () => Promise<
+    LikeCoinWalletConnectorConnectionResponse
+  > = async () => {
     const session = this.restoreSession();
-    if (session?.method) {
-      return this.init(session.method as LikeCoinWalletConnectorMethodType);
-    }
-    return undefined;
+    return session?.method ? this.init(session.method) : undefined;
   };
 
-  saveSession = ({
-    method,
-    accounts,
-  }: {
-    method: LikeCoinWalletConnectorMethodType;
-    accounts: any[];
-  }) => {
+  saveSession = ({ method, accounts }: LikeCoinWalletConnectorSession) => {
     window.localStorage.setItem(
       SESSION_KEY,
       JSON.stringify({
@@ -215,31 +205,33 @@ export class LikeCoinWalletConnector {
   };
 
   restoreSession = () => {
-    let session;
     try {
       const serializedSession = window.localStorage.getItem(SESSION_KEY);
       if (serializedSession) {
-        session = JSON.parse(serializedSession);
+        const { method, accounts } = JSON.parse(serializedSession);
+        if (
+          Object.values(LikeCoinWalletConnectorMethodType).includes(method) &&
+          Array.isArray(accounts)
+        ) {
+          return {
+            method,
+            accounts,
+          } as LikeCoinWalletConnectorSession;
+        }
       }
     } catch {
       // Unable to decode session
     }
-    return session;
+    return undefined;
   };
 
   deleteSession = () => {
     window.localStorage.removeItem(SESSION_KEY);
   };
 
-  initKeplr: (
+  private initKeplr: (
     trys?: number
-  ) => Promise<
-    | {
-        accounts: readonly AccountData[];
-        offlineSigner: OfflineSigner;
-      }
-    | undefined
-  > = async (trys = 0) => {
+  ) => Promise<LikeCoinWalletConnectorInitResponse> = async (trys = 0) => {
     if (!window.keplr || !window.getOfflineSignerAuto) {
       if (trys < this.initAttemptCount) {
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -310,7 +302,7 @@ export class LikeCoinWalletConnector {
     };
   };
 
-  addChainToCosmostation = async () => {
+  private addChainToCosmostation = async () => {
     await window.cosmostation.cosmos.request({
       method: 'cos_addChain',
       params: {
@@ -332,15 +324,9 @@ export class LikeCoinWalletConnector {
     });
   };
 
-  initCosmostation: (
+  private initCosmostation: (
     trys?: number
-  ) => Promise<
-    | {
-        accounts: readonly AccountData[];
-        offlineSigner: OfflineSigner;
-      }
-    | undefined
-  > = async (trys = 0) => {
+  ) => Promise<LikeCoinWalletConnectorInitResponse> = async (trys = 0) => {
     if (!window.cosmostation) {
       if (trys < this.initAttemptCount) {
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -401,7 +387,9 @@ export class LikeCoinWalletConnector {
     };
   };
 
-  initKeplrMobile = async () => {
+  private initKeplrMobile: () => Promise<
+    LikeCoinWalletConnectorInitResponse
+  > = async () => {
     const wcConnectOptions: IWalletConnectOptions = {
       bridge: 'https://bridge.walletconnect.org',
       qrcodeModal: new KeplrQRCodeModalV1(),
@@ -474,7 +462,9 @@ export class LikeCoinWalletConnector {
     };
   };
 
-  initLikerID = async () => {
+  private initLikerID: () => Promise<
+    LikeCoinWalletConnectorInitResponse
+  > = async () => {
     const wcConnectOptions: IWalletConnectOptions = {
       bridge: 'https://bridge.walletconnect.org',
       qrcodeModal: QRCodeModal,

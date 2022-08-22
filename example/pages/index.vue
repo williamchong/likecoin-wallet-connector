@@ -1,14 +1,15 @@
 <template>
   <v-app>
-    <v-app-bar class="d-md-flex justify-end" app>
-      <v-btn
-        v-if="walletAddress"
-        class="text-truncate"
-        outlined
-        style="max-width: 150px"
-        @click="logout"
-        >{{ formattedWalletAddress }}</v-btn
-      >
+    <v-app-bar class="d-md-flex justify-between" app>
+      <template v-if="walletAddress">
+        <span>Connection method: {{ method }}</span>
+        <v-btn
+          class="text-truncate"
+          outlined
+          style="max-width: 150px"
+          @click="logout"
+        >{{ formattedWalletAddress }}</v-btn>
+      </template>
     </v-app-bar>
 
     <v-main>
@@ -104,6 +105,7 @@ export default {
   data() {
     return {
       isLoading: true,
+      method: undefined,
       offlineSigner: undefined,
       walletAddress: '',
       toAddress: 'like145at6ratky0leykf43zqx8q33ramxhjclh0t9u',
@@ -150,8 +152,9 @@ export default {
       ],
     });
     const session = this.connector.restoreSession();
-    if (session?.accounts) {
-      const { accounts: [account] } = session;
+    if (session) {
+      const { method, accounts: [account] } = session;
+      this.method = method;
       this.walletAddress = account.address;
     }
     this.isLoading = false;
@@ -173,11 +176,12 @@ export default {
       this.isShowAlert = false;
     },
     async connect() {
-      const wallet = await this.connector.openConnectWalletModal();
-      if (!wallet) return;
-      const { accounts: [account], offlineSigner } = wallet;
-      this.offlineSigner = offlineSigner;
+      const connection = await this.connector.openConnectWalletModal();
+      if (!connection) return;
+      const { method, accounts: [account], offlineSigner } = connection;
+      this.method = method;
       this.walletAddress = account.address;
+      this.offlineSigner = offlineSigner;
     },
     logout() {
       this.connector.disconnect();
@@ -188,11 +192,14 @@ export default {
       try {
         this.error = '';
         this.txHash = '';
-        const wallet = await this.connector.initIfNecessary();
-        if (!wallet) return;
-        const { accounts: [account], offlineSigner } = wallet;
-        this.offlineSigner = offlineSigner;
+
+        const connection = await this.connector.initIfNecessary();
+        if (!connection) return;
+        const { method, accounts: [account], offlineSigner } = connection;
+        this.method = method;
         this.walletAddress = account.address;
+        this.offlineSigner = offlineSigner;
+
         this.isSending = true;
         const client = await SigningStargateClient.connectWithSigner(
           this.connector.rpcURL,
