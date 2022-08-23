@@ -18,7 +18,10 @@ export const Dialog: FC<DialogProps> = ({
       className="lk-relative lk-z-[9999]"
       onClose={onClose}
     >
-      <div className="lk-fixed lk-inset-0 lk-bg-black/30" aria-hidden="true" />
+      <div
+        className="lk-fixed lk-inset-0 lk-bg-[black]/30"
+        aria-hidden="true"
+      />
       <div className="lk-fixed lk-inset-0 lk-overflow-y-auto">
         <div className="lk-flex lk-items-center lk-justify-center lk-min-h-screen lk-px-[12px] sm:lk-px-[24px] lk-py-[24px] ">
           <DialogBase.Panel className="lk-mx-auto lk-max-w-[400px] lk-w-full lk-drop-shadow-xl">

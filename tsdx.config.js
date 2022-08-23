@@ -11,6 +11,25 @@ module.exports = {
           tailwindcss({
             content: ['./src/**/*.{ts,tsx}'],
             theme: {
+              colors: {
+                'like-green': {
+                  DEFAULT: '#28646e',
+                },
+                'like-cyan': {
+                  lightest: '#d7ecec',
+                  light: '#aaf1e7',
+                  DEFAULT: '#50e3c2',
+                },
+                black: '#000',
+                gray: {
+                  dark: '#4a4a4a',
+                  DEFAULT: '#9b9b9b',
+                  light: '#ebebeb',
+                  lightest: '#f7f7f7',
+                },
+                white: '#fff',
+                red: '#e35050',
+              },
               extend: {},
             },
             plugins: [],
