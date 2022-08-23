@@ -37,14 +37,14 @@
   },
   "name": "@likecoin/wallet-connector",
   "author": "Ng Wing Tat, David",
-  "module": "dist/likecoin-wallet-connector.esm.js",
+  "module": "dist/wallet-connector.esm.js",
   "size-limit": [
     {
-      "path": "dist/likecoin-wallet-connector.cjs.production.min.js",
+      "path": "dist/wallet-connector.cjs.production.min.js",
       "limit": "10 KB"
     },
     {
-      "path": "dist/likecoin-wallet-connector.esm.js",
+      "path": "dist/wallet-connector.esm.js",
       "limit": "10 KB"
     }
   ],
