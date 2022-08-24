@@ -463,7 +463,7 @@ export class LikeCoinWalletConnector {
       qrcodeModal: {
         open: uri => {
           this.openWalletConnectQRCodeDialog(
-            LikeCoinWalletConnectorMethodType.Keplr,
+            LikeCoinWalletConnectorMethodType.KeplrMobile,
             uri
           );
         },
