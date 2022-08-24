@@ -1,13 +1,17 @@
 import * as React from 'react';
 import { createRoot, Root } from 'react-dom/client';
-import { OfflineAminoSigner } from '@cosmjs/amino';
-import { AccountData, OfflineDirectSigner } from '@cosmjs/proto-signing';
+import { AminoSignResponse, OfflineAminoSigner } from '@cosmjs/amino';
+import { AccountData } from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
 import { payloadId } from '@walletconnect/utils';
 import { IWalletConnectOptions } from '@walletconnect/types';
-import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 
 import { getCosmostationExtensionOfflineSigner } from './utils/cosmostation';
+import {
+  convertWalletConnectAccountResponse,
+  deserializePublicKey,
+  serializePublicKey,
+} from './utils/wallet';
 
 import { ConnectionMethodDialog } from './components/connection-method-dialog';
 import { WalletConnectQRCodeDialog } from './components/walletconnect-dialog';
@@ -72,6 +76,9 @@ export class LikeCoinWalletConnector {
   public initAttemptCount: number;
   public availableMethods: LikeCoinWalletConnectorMethodType[];
 
+  public sessionAccounts: AccountData[];
+  public sessionMethod?: LikeCoinWalletConnectorMethodType;
+
   private _renderingRoot: Root;
 
   private _isConnectionMethodSelectDialogOpen = false;
@@ -102,6 +109,7 @@ export class LikeCoinWalletConnector {
       LikeCoinWalletConnectorMethodType.LikerId,
       LikeCoinWalletConnectorMethodType.Cosmostation,
     ];
+    this.sessionAccounts = [];
 
     const container = document.createElement('div');
     container.setAttribute('id', CONTAINER_ID);
@@ -144,7 +152,26 @@ export class LikeCoinWalletConnector {
     return this.init(method);
   };
 
-  disconnect = () => {
+  disconnect = async () => {
+    const session = this.loadSession();
+    if (session) {
+      let wcConnector: WalletConnect | undefined;
+      switch (session.method) {
+        case LikeCoinWalletConnectorMethodType.KeplrMobile:
+          wcConnector = this.getKeplrMobileWCConnector();
+          break;
+
+        case LikeCoinWalletConnectorMethodType.LikerId:
+          wcConnector = this.getLikerIdWCConnector();
+          break;
+
+        default:
+          break;
+      }
+      if (wcConnector) {
+        await wcConnector.killSession();
+      }
+    }
     this.deleteSession();
   };
 
@@ -176,7 +203,7 @@ export class LikeCoinWalletConnector {
 
     this.saveSession({
       method,
-      accounts: result.accounts,
+      accounts: [...result.accounts],
     });
 
     return {
@@ -192,28 +219,39 @@ export class LikeCoinWalletConnector {
     return session?.method ? this.init(session.method) : undefined;
   };
 
-  saveSession = ({ method, accounts }: LikeCoinWalletConnectorSession) => {
+  private saveSession = ({
+    method,
+    accounts,
+  }: LikeCoinWalletConnectorSession) => {
+    this.sessionAccounts = accounts;
+    this.sessionMethod = method;
     window.localStorage.setItem(
       SESSION_KEY,
       JSON.stringify({
         method,
-        accounts,
+        accounts: accounts.map(account => ({
+          ...account,
+          pubkey: serializePublicKey(account.pubkey),
+        })),
       })
     );
   };
 
-  restoreSession = () => {
+  private loadSession = () => {
     try {
       const serializedSession = window.localStorage.getItem(SESSION_KEY);
       if (serializedSession) {
-        const { method, accounts } = JSON.parse(serializedSession);
+        const { method, accounts = [] } = JSON.parse(serializedSession);
         if (
           Object.values(LikeCoinWalletConnectorMethodType).includes(method) &&
           Array.isArray(accounts)
         ) {
           return {
             method,
-            accounts,
+            accounts: accounts.map(account => ({
+              ...account,
+              pubkey: deserializePublicKey(account.pubkey),
+            })),
           } as LikeCoinWalletConnectorSession;
         }
       }
@@ -223,7 +261,18 @@ export class LikeCoinWalletConnector {
     return undefined;
   };
 
-  deleteSession = () => {
+  restoreSession = () => {
+    const session = this.loadSession();
+    if (session) {
+      this.sessionAccounts = session.accounts;
+      this.sessionMethod = session.method;
+    }
+    return session;
+  };
+
+  private deleteSession = () => {
+    this.sessionAccounts = [];
+    this.sessionMethod = undefined;
     window.localStorage.removeItem(SESSION_KEY);
   };
 
@@ -295,7 +344,7 @@ export class LikeCoinWalletConnector {
     const offlineSigner = await window.getOfflineSignerAuto(this.chainId);
     const accounts = await offlineSigner.getAccounts();
     return {
-      accounts,
+      accounts: [...accounts],
       offlineSigner,
     };
   };
@@ -380,7 +429,7 @@ export class LikeCoinWalletConnector {
     const offlineSigner = getCosmostationExtensionOfflineSigner(this.chainName);
 
     return {
-      accounts: [account] as readonly AccountData[],
+      accounts: [account] as AccountData[],
       offlineSigner,
     };
   };
@@ -408,9 +457,7 @@ export class LikeCoinWalletConnector {
     });
   };
 
-  private initKeplrMobile: () => Promise<
-    LikeCoinWalletConnectorInitResponse
-  > = async () => {
+  private getKeplrMobileWCConnector = () => {
     const wcConnectOptions: IWalletConnectOptions = {
       bridge: 'https://bridge.walletconnect.org',
       qrcodeModal: {
@@ -424,51 +471,49 @@ export class LikeCoinWalletConnector {
           this.closeModal();
         },
       },
-      qrcodeModalOptions: {
-        desktopLinks: [],
-        mobileLinks: [],
-      },
       signingMethods: [
         'keplr_enable_wallet_connect_v1',
         'keplr_get_key_wallet_connect_v1',
         'keplr_sign_amino_wallet_connect_v1',
       ],
     };
-    let wcConnector = new WalletConnect(wcConnectOptions);
-    if (!wcConnector.connected) {
+    return new WalletConnect(wcConnectOptions);
+  };
+
+  private initKeplrMobile: () => Promise<
+    LikeCoinWalletConnectorInitResponse
+  > = async () => {
+    const wcConnector = this.getKeplrMobileWCConnector();
+    let accounts: AccountData[] = [];
+    if (
+      wcConnector.connected &&
+      this.sessionMethod === LikeCoinWalletConnectorMethodType.LikerId &&
+      this.sessionAccounts.length > 0
+    ) {
+      accounts = this.sessionAccounts;
+    } else {
+      if (wcConnector.connected) {
+        await wcConnector.killSession();
+      }
       await wcConnector.connect();
+      await wcConnector.sendCustomRequest({
+        id: payloadId(),
+        jsonrpc: '2.0',
+        method: 'keplr_enable_wallet_connect_v1',
+        params: [this.chainId],
+      });
+      const [account] = await wcConnector.sendCustomRequest({
+        id: payloadId(),
+        jsonrpc: '2.0',
+        method: 'keplr_get_key_wallet_connect_v1',
+        params: [this.chainId],
+      });
+      accounts = [convertWalletConnectAccountResponse(account)];
     }
-
-    await wcConnector.sendCustomRequest({
-      id: payloadId(),
-      jsonrpc: '2.0',
-      method: 'keplr_enable_wallet_connect_v1',
-      params: [this.chainId],
-    });
-
-    const [account] = await wcConnector.sendCustomRequest({
-      id: payloadId(),
-      jsonrpc: '2.0',
-      method: 'keplr_get_key_wallet_connect_v1',
-      params: [this.chainId],
-    });
-
-    if (!account) {
+    if (!accounts.length) {
       throw new Error('WALLETCONNECT_ACCOUNT_NOT_FOUND');
     }
 
-    const { bech32Address, algo, pubKey: pubKeyInHex } = account;
-    if (!bech32Address || !algo || !pubKeyInHex) {
-      throw new Error('WALLETCONNECT_ACCOUNT_FORMAT_INVALID');
-    }
-    const pubkey = new Uint8Array(Buffer.from(pubKeyInHex, 'hex'));
-    const accounts: readonly AccountData[] = [
-      {
-        address: bech32Address,
-        algo,
-        pubkey,
-      },
-    ];
     const offlineSigner: OfflineAminoSigner = {
       getAccounts: () => Promise.resolve(accounts),
       signAmino: async (signerBech32Address, signDoc) => {
@@ -488,9 +533,7 @@ export class LikeCoinWalletConnector {
     };
   };
 
-  private initLikerID: () => Promise<
-    LikeCoinWalletConnectorInitResponse
-  > = async () => {
+  private getLikerIdWCConnector = () => {
     const wcConnectOptions: IWalletConnectOptions = {
       bridge: 'https://bridge.walletconnect.org',
       qrcodeModal: {
@@ -504,55 +547,51 @@ export class LikeCoinWalletConnector {
           this.closeModal();
         },
       },
-      qrcodeModalOptions: {
-        desktopLinks: [],
-        mobileLinks: [],
-      },
+      signingMethods: ['cosmos_getAccounts', 'cosmos_signAmino'],
     };
-    let wcConnector = new WalletConnect(wcConnectOptions);
-    if (wcConnector?.connected) {
-      await wcConnector.killSession();
-      wcConnector = new WalletConnect(wcConnectOptions);
-    }
+    return new WalletConnect(wcConnectOptions);
+  };
 
-    let account: any;
-    if (!wcConnector.connected) {
+  private initLikerID: () => Promise<
+    LikeCoinWalletConnectorInitResponse
+  > = async () => {
+    const wcConnector = this.getLikerIdWCConnector();
+    let accounts: AccountData[] = [];
+    if (
+      wcConnector.connected &&
+      this.sessionMethod === LikeCoinWalletConnectorMethodType.LikerId &&
+      this.sessionAccounts.length > 0
+    ) {
+      accounts = this.sessionAccounts;
+    } else {
+      if (wcConnector.connected) {
+        await wcConnector.killSession();
+      }
       await wcConnector.connect();
-      [account] = await wcConnector.sendCustomRequest({
+      const [account] = await wcConnector.sendCustomRequest({
         id: payloadId(),
         jsonrpc: '2.0',
         method: 'cosmos_getAccounts',
         params: [this.chainId],
       });
+      accounts = [convertWalletConnectAccountResponse(account)];
     }
-
-    if (!account) {
+    if (!accounts.length) {
       throw new Error('WALLETCONNECT_ACCOUNT_NOT_FOUND');
     }
 
-    const { bech32Address, algo, pubKey: pubKeyInHex } = account;
-    if (!bech32Address || !algo || !pubKeyInHex) {
-      throw new Error('WALLETCONNECT_ACCOUNT_FORMAT_INVALID');
-    }
-    const pubkey = new Uint8Array(Buffer.from(pubKeyInHex, 'hex'));
-    const accounts: readonly AccountData[] = [
-      { address: bech32Address, pubkey, algo },
-    ];
-    const offlineSigner: OfflineDirectSigner = {
+    const offlineSigner: OfflineAminoSigner = {
       getAccounts: () => Promise.resolve(accounts),
-      signDirect: async (signerBech32Address, signDoc) => {
-        const signDocInJSON = SignDoc.toJSON(signDoc);
-        const resInJSON = await wcConnector.sendCustomRequest({
-          id: payloadId(),
-          jsonrpc: '2.0',
-          method: 'cosmos_signDirect',
-          params: [signerBech32Address, signDocInJSON],
-        });
-
-        return {
-          signed: SignDoc.fromJSON(resInJSON.signed),
-          signature: resInJSON.signature,
-        };
+      signAmino: async (signerBech32Address, signDoc) => {
+        const signedTx: AminoSignResponse[] = await wcConnector.sendCustomRequest(
+          {
+            id: payloadId(),
+            jsonrpc: '2.0',
+            method: 'cosmos_signAmino',
+            params: [this.chainId, signerBech32Address, signDoc],
+          }
+        );
+        return signedTx[0];
       },
     };
 

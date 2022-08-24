@@ -18,7 +18,7 @@ export interface LikeCoinWalletConnectorMethod {
 
 export interface LikeCoinWalletConnectorSession {
   method: LikeCoinWalletConnectorMethodType;
-  accounts: readonly AccountData[];
+  accounts: AccountData[];
 }
 
 export interface LikeCoinWalletConnectorConnectionResult
@@ -31,10 +31,19 @@ export type LikeCoinWalletConnectorConnectionResponse =
   | undefined;
 
 export interface LikeCoinWalletConnectorInitResult {
-  accounts: readonly AccountData[];
+  accounts: AccountData[];
   offlineSigner: OfflineSigner;
 }
 
 export type LikeCoinWalletConnectorInitResponse =
   | LikeCoinWalletConnectorInitResult
   | undefined;
+
+export interface WalletConnectAccountResponse {
+  address: Uint8Array;
+  algo: string;
+  bech32Address: string;
+  isNanoLedger: boolean;
+  name: string;
+  pubKey: string; // In hex
+}
