@@ -247,7 +247,7 @@ export default {
         }
       } catch (error) {
         this.error = `${error}`;
-        console.error();
+        console.error(error);
       } finally {
         this.isSending = false;
       }
