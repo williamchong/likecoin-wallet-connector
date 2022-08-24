@@ -6,11 +6,11 @@ import {
   LikeCoinWalletConnectorMethodType,
 } from '../types';
 
-import { AlertIcon } from './icons/alert';
 import { SignInIcon } from './icons/sign-in';
 
 import { ConnectionMethodList } from './connection-method-list';
 import { Dialog } from './dialog';
+import { Alert } from './alert';
 
 const connectionMethodMap = [
   {
@@ -109,13 +109,12 @@ export const ConnectionMethodDialog: FC<ConnectionMethodDialogProps> = ({
         <span>Connect a wallet</span>
       </h1>
       {isMobile && (
-        <div className="lk-mt-[24px] lk-items-start lk-flex lk-rounded-[24px] lk-bg-gray-lightest lk-p-[16px] lk-text-gray-dark">
-          <AlertIcon className="lk-shrink-0 lk-w-[16px] lk-h-[24px] lk-w-[16px] lk-mr-[8px]" />
+        <Alert className="lk-mt-[24px]">
           <p>
             WalletConnect in mobile is an experimental feature, please visit
             this site on desktop for a better experience.
           </p>
-        </div>
+        </Alert>
       )}
       {tieredConnectionMethods.map((methods, index) => (
         <ConnectionMethodList

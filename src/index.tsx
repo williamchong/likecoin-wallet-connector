@@ -3,15 +3,15 @@ import { createRoot, Root } from 'react-dom/client';
 import { OfflineAminoSigner } from '@cosmjs/amino';
 import { AccountData, OfflineDirectSigner } from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
-import QRCodeModal from '@walletconnect/qrcode-modal';
 import { payloadId } from '@walletconnect/utils';
 import { IWalletConnectOptions } from '@walletconnect/types';
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
-import { KeplrQRCodeModalV1 } from '@keplr-wallet/wc-qrcode-modal';
 
 import { getCosmostationExtensionOfflineSigner } from './utils/cosmostation';
 
 import { ConnectionMethodDialog } from './components/connection-method-dialog';
+import { WalletConnectQRCodeDialog } from './components/walletconnect-dialog';
+
 import {
   LikeCoinWalletConnectorConnectionResponse,
   LikeCoinWalletConnectorConnectionResult,
@@ -75,6 +75,7 @@ export class LikeCoinWalletConnector {
   private _renderingRoot: Root;
 
   private _isConnectionMethodSelectDialogOpen = false;
+  private _isWalletConnectQRCodeDialogOpen = false;
 
   constructor(options: LikeCoinWalletConnectorOptions) {
     this.chainId = options.chainId;
@@ -117,7 +118,7 @@ export class LikeCoinWalletConnector {
         <ConnectionMethodDialog
           methods={this.availableMethods}
           onClose={() => {
-            this.closeConnectWalletModal();
+            this.closeModal();
             resolve(undefined);
           }}
           onConnect={async method => {
@@ -131,17 +132,14 @@ export class LikeCoinWalletConnector {
     });
   }
 
-  closeConnectWalletModal = () => {
+  closeModal = () => {
     this._renderingRoot.render(null);
-    const modalWrappers = document.getElementsByClassName('ReactModalPortal');
-    if (modalWrappers && modalWrappers.length > 0) {
-      document.body.removeChild(modalWrappers[0]);
-    }
     this._isConnectionMethodSelectDialogOpen = false;
+    this._isWalletConnectQRCodeDialogOpen = false;
   };
 
   private selectMethod = async (method: LikeCoinWalletConnectorMethodType) => {
-    this.closeConnectWalletModal();
+    this.closeModal();
 
     return this.init(method);
   };
@@ -387,12 +385,45 @@ export class LikeCoinWalletConnector {
     };
   };
 
+  private openWalletConnectQRCodeDialog = (
+    type: LikeCoinWalletConnectorMethodType,
+    uri: string
+  ) => {
+    if (this._isWalletConnectQRCodeDialogOpen)
+      return Promise.resolve(undefined);
+
+    return new Promise<LikeCoinWalletConnectorConnectionResponse>(resolve => {
+      this._renderingRoot.render(
+        <WalletConnectQRCodeDialog
+          type={type}
+          uri={uri}
+          onClose={() => {
+            this.closeModal();
+            resolve(undefined);
+          }}
+        />
+      );
+
+      this._isWalletConnectQRCodeDialogOpen = true;
+    });
+  };
+
   private initKeplrMobile: () => Promise<
     LikeCoinWalletConnectorInitResponse
   > = async () => {
     const wcConnectOptions: IWalletConnectOptions = {
       bridge: 'https://bridge.walletconnect.org',
-      qrcodeModal: new KeplrQRCodeModalV1(),
+      qrcodeModal: {
+        open: uri => {
+          this.openWalletConnectQRCodeDialog(
+            LikeCoinWalletConnectorMethodType.Keplr,
+            uri
+          );
+        },
+        close: () => {
+          this.closeModal();
+        },
+      },
       qrcodeModalOptions: {
         desktopLinks: [],
         mobileLinks: [],
@@ -404,11 +435,6 @@ export class LikeCoinWalletConnector {
       ],
     };
     let wcConnector = new WalletConnect(wcConnectOptions);
-    if (wcConnector?.connected) {
-      await wcConnector.killSession();
-      wcConnector = new WalletConnect(wcConnectOptions);
-    }
-
     if (!wcConnector.connected) {
       await wcConnector.connect();
     }
@@ -467,7 +493,17 @@ export class LikeCoinWalletConnector {
   > = async () => {
     const wcConnectOptions: IWalletConnectOptions = {
       bridge: 'https://bridge.walletconnect.org',
-      qrcodeModal: QRCodeModal,
+      qrcodeModal: {
+        open: uri => {
+          this.openWalletConnectQRCodeDialog(
+            LikeCoinWalletConnectorMethodType.LikerId,
+            uri
+          );
+        },
+        close: () => {
+          this.closeModal();
+        },
+      },
       qrcodeModalOptions: {
         desktopLinks: [],
         mobileLinks: [],

@@ -3,9 +3,9 @@ import React, { FC } from 'react';
 
 import { LikeCoinWalletConnectorMethodType } from '../types';
 
-import { AlertIcon } from './icons/alert';
 import { OpenInNewIcon } from './icons/open-in-new';
 
+import { Alert } from './alert';
 import { ConnectionMethodIcon } from './connection-method-icon';
 
 export interface Props {
@@ -81,15 +81,14 @@ export const ConnectionMethodButton: FC<Props> = ({
             'lk-mt-[16px] lk-text-[14px] sm:lk-text-[16px] lk-text-left lk-shrink-1',
             { 'lk-text-red': isUninstalled }
           )}
-        >{description}</div>
+        >
+          {description}
+        </div>
       </Tag>
       {type === LikeCoinWalletConnectorMethodType.Keplr && (
-        <div className="lk-flex lk-items-center lk-gap-x-[16px] lk-mt-[12px] lk-text-gray lk-px-[16px">
-          <AlertIcon className="lk-w-[16px]" />
-          <span className="lk-grow lk-text-[14px] lk-leading-[1.25]">
-            Ledger is not yet supported.
-          </span>
-        </div>
+        <Alert className="lk-mt-[12px]" isPlain={true}>
+          <p>Ledger is not yet supported.</p>
+        </Alert>
       )}
     </>
   );
