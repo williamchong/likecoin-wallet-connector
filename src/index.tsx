@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { AminoSignResponse, OfflineAminoSigner } from '@cosmjs/amino';
-import { AccountData } from '@cosmjs/proto-signing';
+import { AccountData, DirectSignResponse, OfflineSigner } from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
 import { payloadId } from '@walletconnect/utils';
 import { IWalletConnectOptions } from '@walletconnect/types';
+import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 
 import { getCosmostationExtensionOfflineSigner } from './utils/cosmostation';
 import {
@@ -580,7 +581,7 @@ export class LikeCoinWalletConnector {
       throw new Error('WALLETCONNECT_ACCOUNT_NOT_FOUND');
     }
 
-    const offlineSigner: OfflineAminoSigner = {
+    const offlineSigner: OfflineSigner = {
       getAccounts: () => Promise.resolve(accounts),
       signAmino: async (signerBech32Address, signDoc) => {
         const signedTx: AminoSignResponse[] = await wcConnector.sendCustomRequest(
@@ -592,6 +593,21 @@ export class LikeCoinWalletConnector {
           }
         );
         return signedTx[0];
+      },
+      signDirect: async (signerBech32Address, signDoc) => {
+        const {
+          signed: signedInJSON,
+          signature,
+        } = await wcConnector.sendCustomRequest({
+          id: payloadId(),
+          jsonrpc: '2.0',
+          method: 'cosmos_signDirect',
+          params: [signerBech32Address, SignDoc.toJSON(signDoc)],
+        });
+        return {
+          signed: SignDoc.fromJSON(signedInJSON),
+          signature, 
+        } as DirectSignResponse;
       },
     };
 

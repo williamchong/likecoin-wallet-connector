@@ -82,6 +82,7 @@
     "@walletconnect/types": "^1.8.0",
     "@walletconnect/utils": "^1.8.0",
     "classnames": "^2.3.1",
+    "cosmjs-types": "^0.5.1",
     "qrcode.react": "^3.1.0"
   }
 }
