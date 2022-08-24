@@ -68,7 +68,7 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
       default:
         return '';
     }
-  }, [isAndroid, isMobile, uri]);
+  }, [type, isAndroid, isMobile, uri]);
 
   useEffect(() => {
     if (navigateToAppURL) {
