@@ -73,7 +73,7 @@
               prominent
               dismissible
             >
-              <pre v-if="error">{{ error }}</pre>
+              <div v-if="error">{{ error }}</div>
               <v-row
                 v-else
                 align="center"
@@ -96,7 +96,7 @@
       </v-container>
     </v-main>
     <v-footer app>
-      <v-container>An example app</v-container>
+      <v-container>Demo of @likecoin/wallet-connector</v-container>
     </v-footer>
   </v-app>
 </template>
