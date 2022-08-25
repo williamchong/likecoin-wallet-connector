@@ -1,4 +1,5 @@
 import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
+import { KeplrSignOptions } from '@keplr-wallet/types';
 
 export enum LikeCoinWalletConnectorMethodType {
   Keplr = 'keplr',
@@ -6,6 +7,39 @@ export enum LikeCoinWalletConnectorMethodType {
   Cosmostation = 'cosmostation',
   LikerId = 'liker-id',
 }
+
+export interface LikeCoinWalletConnectorConfig {
+  chainId: string;
+  chainName: string;
+  rpcURL: string;
+  restURL: string;
+  coinType: number;
+  coinDenom: string;
+  coinMinimalDenom: string;
+  coinDecimals: number;
+  bech32PrefixAccAddr: string;
+  bech32PrefixAccPub: string;
+  bech32PrefixValAddr: string;
+  bech32PrefixValPub: string;
+  bech32PrefixConsAddr: string;
+  bech32PrefixConsPub: string;
+  gasPriceStepLow?: number;
+  gasPriceStepAverage?: number;
+  gasPriceStepHigh?: number;
+
+  initAttemptCount?: number;
+
+  /**
+   * Usage: https://docs.keplr.app/api/#interaction-options
+   */
+  keplrSignOptions?: KeplrSignOptions;
+
+  availableMethods?: LikeCoinWalletConnectorMethodType[];
+}
+
+export type LikeCoinWalletConnectorOptions = Required<
+  LikeCoinWalletConnectorConfig
+>;
 
 export interface LikeCoinWalletConnectorMethod {
   name: string;

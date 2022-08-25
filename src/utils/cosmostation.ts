@@ -1,4 +1,9 @@
-import { OfflineSigner } from '@cosmjs/proto-signing';
+import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
+
+import {
+  LikeCoinWalletConnectorInitResponse,
+  LikeCoinWalletConnectorOptions,
+} from '../types';
 
 export const getCosmostationExtensionOfflineSigner = (
   chainName: string
@@ -62,3 +67,85 @@ export const getCosmostationExtensionOfflineSigner = (
     };
   },
 });
+
+export async function addChainToCosmostation(
+  options: LikeCoinWalletConnectorOptions
+) {
+  await window.cosmostation.cosmos.request({
+    method: 'cos_addChain',
+    params: {
+      chainId: options.chainId,
+      chainName: options.chainName,
+      addressPrefix: options.bech32PrefixAccAddr,
+      baseDenom: options.coinMinimalDenom,
+      displayDenom: options.coinDenom,
+      restURL: options.restURL,
+      coinType: options.coinType.toString(),
+      decimals: options.coinDecimals,
+      gasRate: {
+        tiny: `${options.gasPriceStepLow}`,
+        low: `${options.gasPriceStepAverage}`,
+        average: `${options.gasPriceStepHigh}`,
+      },
+      sendGas: '350000',
+    },
+  });
+}
+
+export async function initCosmostation(
+  options: LikeCoinWalletConnectorOptions,
+  trys = 0
+): Promise<LikeCoinWalletConnectorInitResponse> {
+  if (!window.cosmostation) {
+    if (trys < options.initAttemptCount) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return initCosmostation(options, trys + 1);
+    }
+    throw new Error('COSMOSTATION_NOT_INSTALLED');
+  }
+
+  const supportedChains: {
+    official: string[];
+    unofficial: string[];
+  } = await window.cosmostation.cosmos.request({
+    method: 'cos_supportedChainNames',
+  });
+  if (
+    !Object.values(supportedChains).find(list =>
+      list.find(
+        chainName => chainName.toLowerCase() === options.chainName.toLowerCase()
+      )
+    )
+  ) {
+    await addChainToCosmostation(options);
+  }
+
+  const offlineSigner = getCosmostationExtensionOfflineSigner(
+    options.chainName
+  );
+  let accounts: AccountData[] = [];
+  try {
+    accounts = [...(await offlineSigner.getAccounts())];
+  } catch (error) {
+    switch ((error as any).code) {
+      case 4001:
+        return undefined;
+
+      case 4100:
+        await addChainToCosmostation(options);
+        accounts = [...(await offlineSigner.getAccounts())];
+        break;
+
+      default:
+        throw error;
+    }
+  }
+  if (!accounts.length) {
+    throw new Error('COSMOSTATION_ACCOUNT_NOT_FOUND');
+  }
+
+  return {
+    accounts,
+    offlineSigner,
+  };
+}

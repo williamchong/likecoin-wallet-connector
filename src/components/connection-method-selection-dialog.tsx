@@ -8,9 +8,9 @@ import {
 
 import { SignInIcon } from './icons/sign-in';
 
+import { Alert } from './alert';
 import { ConnectionMethodList } from './connection-method-list';
 import { Dialog } from './dialog';
-import { Alert } from './alert';
 
 const connectionMethodMap = [
   {
@@ -57,7 +57,7 @@ const connectionMethodMap = [
   }
 );
 
-export interface ConnectionMethodDialogProps
+export interface ConnectionMethodSelectionDialogProps
   extends HTMLAttributes<HTMLDivElement> {
   methods: LikeCoinWalletConnectorMethodType[];
   onClose?: () => void;
@@ -65,9 +65,9 @@ export interface ConnectionMethodDialogProps
 }
 
 /**
- * Connect wallet dialog
+ * Connection Method Selection Dialog
  */
-export const ConnectionMethodDialog: FC<ConnectionMethodDialogProps> = ({
+export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialogProps> = ({
   methods,
   onClose,
   onConnect,

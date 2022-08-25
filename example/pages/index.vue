@@ -35,7 +35,10 @@
               max-width="480"
               outlined
             >
-              <v-form class="pa-4">
+              <v-form
+                class="pa-4"
+                @submit.prevent="send"
+              >
                 <v-text-field
                   :value="walletAddress"
                   label="From address"
@@ -50,6 +53,7 @@
                 <v-text-field
                   v-model="amount"
                   label="Amount"
+                  type="number"
                   :disabled="isSending"
                   suffix="LIKE"
                   required
@@ -57,16 +61,17 @@
                 <v-text-field
                   v-model="fee"
                   label="Fee"
+                  type="number"
                   :disabled="isSending"
                   suffix="nanolike"
                   required
                 />
                 <div class="d-flex justify-end">
                   <v-btn
+                    type="submit"
                     :elevation="isSending ? 0 : 2"
                     :disabled="isSending"
                     :loading="isSending"
-                    @click="send"
                   >Send</v-btn>
                 </div>
               </v-form>
@@ -120,16 +125,19 @@ export default {
   data() {
     return {
       isLoading: true,
+
       method: undefined,
       offlineSigner: undefined,
       walletAddress: '',
+
       toAddress: 'like145at6ratky0leykf43zqx8q33ramxhjclh0t9u',
       amount: 1,
-      fee: '5000',
-      isSending: false,
-      isShowAlert: false,
+      fee: 5000,
+
       txHash: '',
       error: '',
+      isSending: false,
+      isShowAlert: false,
     };
   },
   computed: {
@@ -140,7 +148,7 @@ export default {
     },
     txURL() {
       return this.connector
-        ? `${this.connector.restURL}/cosmos/tx/v1beta1/txs/${this.txHash}`
+        ? `${this.connector.options.restURL}/cosmos/tx/v1beta1/txs/${this.txHash}`
         : '';
     },
   },
@@ -181,18 +189,24 @@ export default {
     this.isLoading = false;
   },
   watch: {
-    error(error) {
-      if (error) {
+    txHash(value) {
+      if (value) {
+        this.isShowAlert = true;
+      }
+    },
+    error(value) {
+      if (value) {
         this.isShowAlert = true;
       }
     },
   },
   methods: {
     reset() {
-      this.txHash = '';
-      this.error = '';
       this.offlineSigner = undefined;
       this.walletAddress = '';
+
+      this.txHash = '';
+      this.error = '';
       this.isSending = false;
       this.isShowAlert = false;
     },
@@ -211,8 +225,8 @@ export default {
 
     async send() {
       try {
-        this.error = '';
         this.txHash = '';
+        this.error = '';
         this.isShowAlert = false;
 
         const connection = await this.connector.initIfNecessary();
@@ -224,21 +238,21 @@ export default {
 
         this.isSending = true;
         const client = await SigningStargateClient.connectWithSigner(
-          this.connector.rpcURL,
+          this.connector.options.rpcURL,
           this.offlineSigner
         );
 
-        const denom = this.connector.coinMinimalDenom;
+        const denom = this.connector.options.coinMinimalDenom;
         const amount = [
           {
-            amount: `${this.amount * Math.pow(10, this.connector.coinDecimals)}`,
+            amount: `${this.amount * Math.pow(10, this.connector.options.coinDecimals)}`,
             denom,
           },
         ];
         const fee = {
           amount: [
             {
-              amount: this.fee,
+              amount: `${this.fee}`,
               denom,
             },
           ],
@@ -255,12 +269,11 @@ export default {
 
         if (result.code === 0) {
           this.txHash = result.transactionHash;
-          this.isShowAlert = true;
         } else {
           this.error = result.rawLog;
         }
       } catch (error) {
-        this.error = `${error}`;
+        this.error = `${error.message || error.name || error}`;
         console.error(error);
       } finally {
         this.isSending = false;
