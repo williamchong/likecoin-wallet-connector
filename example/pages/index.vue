@@ -54,6 +54,13 @@
                   suffix="LIKE"
                   required
                 />
+                <v-text-field
+                  v-model="fee"
+                  label="Fee"
+                  :disabled="isSending"
+                  suffix="nanolike"
+                  required
+                />
                 <div class="d-flex justify-end">
                   <v-btn
                     :elevation="isSending ? 0 : 2"
@@ -118,6 +125,7 @@ export default {
       walletAddress: '',
       toAddress: 'like145at6ratky0leykf43zqx8q33ramxhjclh0t9u',
       amount: 1,
+      fee: '5000',
       isSending: false,
       isShowAlert: false,
       txHash: '',
@@ -229,7 +237,7 @@ export default {
         const fee = {
           amount: [
             {
-              amount: '5000',
+              amount: this.fee,
               denom,
             },
           ],
