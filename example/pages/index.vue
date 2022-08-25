@@ -213,6 +213,7 @@ export default {
       try {
         this.error = '';
         this.txHash = '';
+        this.isShowAlert = false;
 
         const connection = await this.connector.initIfNecessary();
         if (!connection) return;
