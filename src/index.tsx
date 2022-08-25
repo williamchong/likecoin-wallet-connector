@@ -492,7 +492,7 @@ export class LikeCoinWalletConnector {
     let accounts: AccountData[] = [];
     if (
       wcConnector.connected &&
-      this.sessionMethod === LikeCoinWalletConnectorMethodType.LikerId &&
+      this.sessionMethod === LikeCoinWalletConnectorMethodType.KeplrMobile &&
       this.sessionAccounts.length > 0
     ) {
       accounts = this.sessionAccounts;
