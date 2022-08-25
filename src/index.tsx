@@ -9,6 +9,7 @@ import {
 import WalletConnect from '@walletconnect/client';
 import { payloadId } from '@walletconnect/utils';
 import { IWalletConnectOptions } from '@walletconnect/types';
+import { KeplrSignOptions } from '@keplr-wallet/types';
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 
 import { getCosmostationExtensionOfflineSigner } from './utils/cosmostation';
@@ -56,6 +57,12 @@ export interface LikeCoinWalletConnectorOptions {
   gasPriceStepHigh: number;
 
   initAttemptCount: number;
+
+  /**
+   * Usage: https://docs.keplr.app/api/#interaction-options
+   */
+  keplrSignOptions?: KeplrSignOptions;
+
   availableMethods?: LikeCoinWalletConnectorMethodType[];
 }
 
@@ -80,6 +87,8 @@ export class LikeCoinWalletConnector {
 
   public initAttemptCount: number;
   public availableMethods: LikeCoinWalletConnectorMethodType[];
+
+  public keplrSignOptions: KeplrSignOptions;
 
   public sessionAccounts: AccountData[];
   public sessionMethod?: LikeCoinWalletConnectorMethodType;
@@ -115,6 +124,8 @@ export class LikeCoinWalletConnector {
       LikeCoinWalletConnectorMethodType.Cosmostation,
     ];
     this.sessionAccounts = [];
+
+    this.keplrSignOptions = options.keplrSignOptions || {};
 
     const container = document.createElement('div');
     container.setAttribute('id', CONTAINER_ID);
@@ -521,12 +532,21 @@ export class LikeCoinWalletConnector {
 
     const offlineSigner: OfflineAminoSigner = {
       getAccounts: () => Promise.resolve(accounts),
-      signAmino: async (signerBech32Address, signDoc) => {
+      signAmino: async (
+        signerBech32Address,
+        signDoc,
+        signOptions: KeplrSignOptions = {}
+      ) => {
         const [result] = await wcConnector.sendCustomRequest({
           id: payloadId(),
           jsonrpc: '2.0',
           method: 'keplr_sign_amino_wallet_connect_v1',
-          params: [this.chainId, signerBech32Address, signDoc],
+          params: [
+            this.chainId,
+            signerBech32Address,
+            signDoc,
+            { ...this.keplrSignOptions, ...signOptions },
+          ],
         });
         return result;
       },

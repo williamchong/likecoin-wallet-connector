@@ -158,6 +158,9 @@ export default {
         LikeCoinWalletConnectorMethodType.LikerId,
         LikeCoinWalletConnectorMethodType.Cosmostation,
       ],
+      keplrSignOptions: {
+        disableBalanceCheck: true,
+      },
     });
     const session = this.connector.restoreSession();
     if (session) {
