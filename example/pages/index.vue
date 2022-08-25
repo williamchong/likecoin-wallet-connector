@@ -160,6 +160,8 @@ export default {
       ],
       keplrSignOptions: {
         disableBalanceCheck: true,
+        preferNoSetFee: true,
+        preferNoSetMemo: true,
       },
     });
     const session = this.connector.restoreSession();
