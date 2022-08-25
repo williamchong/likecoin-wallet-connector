@@ -1,11 +1,15 @@
 import * as React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { AminoSignResponse, OfflineAminoSigner } from '@cosmjs/amino';
-import { AccountData, DirectSignResponse, OfflineSigner } from '@cosmjs/proto-signing';
+import {
+  AccountData,
+  DirectSignResponse,
+  OfflineSigner,
+} from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
 import { payloadId } from '@walletconnect/utils';
 import { IWalletConnectOptions } from '@walletconnect/types';
-import { SignDoc } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 
 import { getCosmostationExtensionOfflineSigner } from './utils/cosmostation';
 import {
@@ -606,7 +610,7 @@ export class LikeCoinWalletConnector {
         });
         return {
           signed: SignDoc.fromJSON(signedInJSON),
-          signature, 
+          signature,
         } as DirectSignResponse;
       },
     };

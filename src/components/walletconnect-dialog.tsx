@@ -117,7 +117,12 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
                 <p>Please scan the QR code with Keplr Mobile app</p>
               )}
             </Alert>
-            <QRCodeSVG className="lk-w-full lk-mt-[16px]" value={uri} width="100%" height="100%" />
+            <QRCodeSVG
+              className="lk-w-full lk-mt-[16px]"
+              value={uri}
+              width="100%"
+              height="100%"
+            />
           </>
         )}
       </div>
