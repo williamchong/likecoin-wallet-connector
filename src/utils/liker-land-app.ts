@@ -21,7 +21,6 @@ export function getLikerLandAppWCConnector(
   options: Partial<IWalletConnectOptions> = {}
 ) {
   return new WalletConnect({
-    bridge: 'https://bridge.walletconnect.org',
     signingMethods: ['cosmos_getAccounts', 'cosmos_signAmino'],
     ...options,
   });
@@ -33,7 +32,10 @@ export async function initLikerLandApp(
   sessionMethod?: LikeCoinWalletConnectorMethodType,
   sessionAccounts: AccountData[] = []
 ): Promise<LikeCoinWalletConnectorInitResponse> {
-  const wcConnector = getLikerLandAppWCConnector({ qrcodeModal });
+  const wcConnector = getLikerLandAppWCConnector({
+    bridge: options.likerLandAppWCBridge,
+    qrcodeModal,
+  });
   let accounts: AccountData[] = [];
   if (
     wcConnector.connected &&

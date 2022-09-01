@@ -17,7 +17,6 @@ export function getKeplrMobileWCConnector(
   options: Partial<IWalletConnectOptions> = {}
 ) {
   return new WalletConnect({
-    bridge: 'https://bridge.walletconnect.org',
     signingMethods: [
       'keplr_enable_wallet_connect_v1',
       'keplr_get_key_wallet_connect_v1',
@@ -33,7 +32,10 @@ export async function initKeplrMobile(
   sessionMethod?: LikeCoinWalletConnectorMethodType,
   sessionAccounts: AccountData[] = []
 ): Promise<LikeCoinWalletConnectorInitResponse> {
-  const wcConnector = getKeplrMobileWCConnector({ qrcodeModal });
+  const wcConnector = getKeplrMobileWCConnector({
+    bridge: options.keplrMobileWCBridge,
+    qrcodeModal,
+  });
   let accounts: AccountData[] = [];
   if (
     wcConnector.connected &&

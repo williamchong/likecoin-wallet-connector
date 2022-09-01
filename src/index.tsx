@@ -36,6 +36,8 @@ export * from './types';
 const CONTAINER_ID = 'likecoin-wallet-connector';
 const SESSION_KEY = 'likecoin_wallet_connector_session';
 
+const WC_BRIGDE = 'https://bridge.walletconnect.org';
+
 export class LikeCoinWalletConnector {
   public options: LikeCoinWalletConnectorOptions;
 
@@ -74,6 +76,8 @@ export class LikeCoinWalletConnector {
         LikeCoinWalletConnectorMethodType.Cosmostation,
       ],
       keplrSignOptions: options.keplrSignOptions || {},
+      keplrMobileWCBridge: options.keplrMobileWCBridge || WC_BRIGDE,
+      likerLandAppWCBridge: options.likerLandAppWCBridge || WC_BRIGDE,
     };
 
     this.sessionAccounts = [];
@@ -153,11 +157,15 @@ export class LikeCoinWalletConnector {
       let wcConnector: WalletConnect | undefined;
       switch (session.method) {
         case LikeCoinWalletConnectorMethodType.KeplrMobile:
-          wcConnector = getKeplrMobileWCConnector();
+          wcConnector = getKeplrMobileWCConnector({
+            bridge: this.options.keplrMobileWCBridge,
+          });
           break;
 
         case LikeCoinWalletConnectorMethodType.LikerId:
-          wcConnector = getLikerLandAppWCConnector();
+          wcConnector = getLikerLandAppWCConnector({
+            bridge: this.options.likerLandAppWCBridge,
+          });
           break;
 
         default:
