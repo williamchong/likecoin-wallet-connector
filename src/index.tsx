@@ -249,16 +249,20 @@ export class LikeCoinWalletConnector {
   }: LikeCoinWalletConnectorSession) => {
     this.sessionAccounts = accounts;
     this.sessionMethod = method;
-    window.localStorage.setItem(
-      SESSION_KEY,
-      JSON.stringify({
-        method,
-        accounts: accounts.map(account => ({
-          ...account,
-          pubkey: serializePublicKey(account.pubkey),
-        })),
-      })
-    );
+    try {
+      window.localStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify({
+          method,
+          accounts: accounts.map(account => ({
+            ...account,
+            pubkey: serializePublicKey(account.pubkey),
+          })),
+        })
+      );
+    } catch (error) {
+      console.warn(error);
+    }
   };
 
   private loadSession = () => {
@@ -279,8 +283,9 @@ export class LikeCoinWalletConnector {
           } as LikeCoinWalletConnectorSession;
         }
       }
-    } catch {
-      // Unable to decode session
+    } catch (error) {
+      // Not allow to access local storage/unable to decode session
+      console.warn(error);
     }
     return undefined;
   };
@@ -297,6 +302,10 @@ export class LikeCoinWalletConnector {
   private deleteSession = () => {
     this.sessionAccounts = [];
     this.sessionMethod = undefined;
-    window.localStorage.removeItem(SESSION_KEY);
+    try {
+      window.localStorage.removeItem(SESSION_KEY);
+    } catch (error) {
+      console.warn(error);
+    }
   };
 }
