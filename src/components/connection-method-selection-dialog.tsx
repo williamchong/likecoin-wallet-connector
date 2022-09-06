@@ -91,10 +91,9 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         }
         tieredMethods[method.tier].push(method);
         return tieredMethods;
-      }, {} as { [tier: string]: LikeCoinWalletConnectorMethod[] });
-    return Object.keys(tieredMethods)
-      .sort()
-      .map(key => tieredMethods[key]);
+      }, {} as { [tier: number]: LikeCoinWalletConnectorMethod[] });
+    // The returned array will be sorted by key i.e. `method.tier`
+    return Object.values(tieredMethods);
   }, [methods, isMobile]);
 
   function closeDialog() {
