@@ -37,6 +37,8 @@ export interface LikeCoinWalletConnectorConfig {
 
   likerLandAppWCBridge?: string;
 
+  isShowMobileWarning?: boolean;
+
   availableMethods?: LikeCoinWalletConnectorMethodType[];
 }
 

@@ -60,6 +60,7 @@ const connectionMethodMap = [
 export interface ConnectionMethodSelectionDialogProps
   extends HTMLAttributes<HTMLDivElement> {
   methods: LikeCoinWalletConnectorMethodType[];
+  isShowMobileWarning?: boolean;
   onClose?: () => void;
   onConnect?: (method: LikeCoinWalletConnectorMethodType) => void;
 }
@@ -69,6 +70,7 @@ export interface ConnectionMethodSelectionDialogProps
  */
 export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialogProps> = ({
   methods,
+  isShowMobileWarning = true,
   onClose,
   onConnect,
 }) => {
@@ -107,7 +109,7 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         <SignInIcon className="lk-w-[20px] lk-h-[20px] lk-shrink-0" />
         <span>Connect a wallet</span>
       </h1>
-      {isMobile && (
+      {isMobile && isShowMobileWarning && (
         <Alert className="lk-mt-[24px]">
           <p>
             WalletConnect in mobile is an experimental feature, please visit

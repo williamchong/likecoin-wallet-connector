@@ -78,6 +78,10 @@ export class LikeCoinWalletConnector {
       keplrSignOptions: options.keplrSignOptions || {},
       keplrMobileWCBridge: options.keplrMobileWCBridge || WC_BRIGDE,
       likerLandAppWCBridge: options.likerLandAppWCBridge || WC_BRIGDE,
+      isShowMobileWarning:
+        options.isShowMobileWarning !== undefined
+          ? !!options.isShowMobileWarning
+          : true,
     };
 
     this.sessionAccounts = [];
@@ -101,6 +105,7 @@ export class LikeCoinWalletConnector {
       this._renderingRoot.render(
         <ConnectionMethodSelectionDialog
           methods={this.options.availableMethods}
+          isShowMobileWarning={this.options.isShowMobileWarning}
           onClose={() => {
             this.closeDialog();
             resolve(undefined);
