@@ -181,11 +181,8 @@ export default {
       },
     });
     const session = this.connector.restoreSession();
-    if (session) {
-      const { method, accounts: [account] } = session;
-      this.method = method;
-      this.walletAddress = account.address;
-    }
+    this.handleConnection(session);
+    this.connector.on('account_change', this.handleAccountChange);
     this.isLoading = false;
   },
   watch: {
@@ -210,17 +207,24 @@ export default {
       this.isSending = false;
       this.isShowAlert = false;
     },
-    async connect() {
-      const connection = await this.connector.openConnectWalletModal();
+    handleConnection(connection) {
       if (!connection) return;
       const { method, accounts: [account], offlineSigner } = connection;
       this.method = method;
       this.walletAddress = account.address;
       this.offlineSigner = offlineSigner;
     },
+    async connect() {
+      const connection = await this.connector.openConnectWalletModal();
+      this.handleConnection(connection);
+    },
     logout() {
       this.connector.disconnect();
       this.reset();
+    },
+    async handleAccountChange(method) {
+      const connection = await this.connector.init(method);
+      this.handleConnection(connection);
     },
 
     async send() {

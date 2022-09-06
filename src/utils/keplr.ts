@@ -76,3 +76,17 @@ export async function initKeplr(
     offlineSigner,
   };
 }
+
+export function listenKeplrKeyStoreChange(
+  handler?: EventListenerOrEventListenerObject
+) {
+  if (!handler) return;
+  window.addEventListener('keplr_keystorechange', handler);
+}
+
+export function removeKeplrKeyStoreChangeListener(
+  handler?: EventListenerOrEventListenerObject
+) {
+  if (!handler) return;
+  window.removeEventListener('keplr_keystorechange', handler);
+}

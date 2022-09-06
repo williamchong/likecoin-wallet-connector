@@ -3,12 +3,17 @@ import { createRoot, Root } from 'react-dom/client';
 import { AccountData } from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
 import { IQRCodeModal } from '@walletconnect/types';
+import EventEmitter from 'events';
 
 import { ConnectionMethodSelectionDialog } from './components/connection-method-selection-dialog';
 import { WalletConnectQRCodeDialog } from './components/walletconnect-dialog';
 
 import { initCosmostation } from './utils/cosmostation';
-import { initKeplr } from './utils/keplr';
+import {
+  initKeplr,
+  listenKeplrKeyStoreChange,
+  removeKeplrKeyStoreChangeListener,
+} from './utils/keplr';
 import {
   getKeplrMobileWCConnector,
   initKeplrMobile,
@@ -44,10 +49,14 @@ export class LikeCoinWalletConnector {
   public sessionAccounts: AccountData[];
   public sessionMethod?: LikeCoinWalletConnectorMethodType;
 
+  private _events: EventEmitter;
+
   private _renderingRoot: Root;
 
   private _isConnectionMethodSelectDialogOpen = false;
   private _isWalletConnectQRCodeDialogOpen = false;
+
+  private _accountChangeListener?: () => void;
 
   constructor(options: LikeCoinWalletConnectorConfig) {
     this.options = {
@@ -85,6 +94,8 @@ export class LikeCoinWalletConnector {
     };
 
     this.sessionAccounts = [];
+
+    this._events = new EventEmitter();
 
     const container = document.createElement('div');
     container.setAttribute('id', CONTAINER_ID);
@@ -161,6 +172,9 @@ export class LikeCoinWalletConnector {
     if (session) {
       let wcConnector: WalletConnect | undefined;
       switch (session.method) {
+        case LikeCoinWalletConnectorMethodType.Keplr:
+          removeKeplrKeyStoreChangeListener(this._accountChangeListener);
+          break;
         case LikeCoinWalletConnectorMethodType.KeplrMobile:
           wcConnector = getKeplrMobileWCConnector({
             bridge: this.options.keplrMobileWCBridge,
@@ -196,9 +210,15 @@ export class LikeCoinWalletConnector {
 
   init = async (methodType: LikeCoinWalletConnectorMethodType) => {
     let initiator: Promise<LikeCoinWalletConnectorInitResponse>;
+    this._accountChangeListener = () => {
+      this.handleAccountChange(methodType);
+    };
     switch (methodType) {
       case LikeCoinWalletConnectorMethodType.Keplr:
-        initiator = initKeplr(this.options);
+        initiator = initKeplr(this.options).then(result => {
+          listenKeplrKeyStoreChange(this._accountChangeListener);
+          return result;
+        });
         break;
 
       case LikeCoinWalletConnectorMethodType.KeplrMobile:
@@ -224,6 +244,7 @@ export class LikeCoinWalletConnector {
         break;
 
       default:
+        this._accountChangeListener = undefined;
         throw new Error('METHOD_NOT_SUPPORTED');
     }
 
@@ -248,6 +269,9 @@ export class LikeCoinWalletConnector {
     return session?.method ? this.init(session.method) : undefined;
   };
 
+  /**
+   * Session
+   */
   private saveSession = ({
     method,
     accounts,
@@ -300,6 +324,17 @@ export class LikeCoinWalletConnector {
     if (session) {
       this.sessionAccounts = session.accounts;
       this.sessionMethod = session.method;
+      this._accountChangeListener = () => {
+        this.handleAccountChange(session.method);
+      };
+      switch (session.method) {
+        case LikeCoinWalletConnectorMethodType.Keplr:
+          listenKeplrKeyStoreChange(this._accountChangeListener);
+          break;
+
+        default:
+          break;
+      }
     }
     return session;
   };
@@ -312,5 +347,28 @@ export class LikeCoinWalletConnector {
     } catch (error) {
       console.warn(error);
     }
+  };
+
+  /**
+   * Event
+   */
+  on = (name: string, listener: (...args: any[]) => void) => {
+    return this._events.on(name, listener);
+  };
+
+  once = (name: string, listener: (...args: any[]) => void) => {
+    return this._events.once(name, listener);
+  };
+
+  off = (name: string, listener: (...args: any[]) => void) => {
+    return this._events.off(name, listener);
+  };
+
+  removeListener = (name: string, listener: (...args: any[]) => void) => {
+    return this._events.removeListener(name, listener);
+  };
+
+  handleAccountChange = (methodType: LikeCoinWalletConnectorMethodType) => {
+    this._events.emit('account_change', methodType);
   };
 }
