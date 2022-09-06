@@ -8,7 +8,11 @@ import EventEmitter from 'events';
 import { ConnectionMethodSelectionDialog } from './components/connection-method-selection-dialog';
 import { WalletConnectQRCodeDialog } from './components/walletconnect-dialog';
 
-import { initCosmostation } from './utils/cosmostation';
+import {
+  initCosmostation,
+  listenCosmostationAccountChange,
+  removeCosmostationAccountChangeListener,
+} from './utils/cosmostation';
 import {
   initKeplr,
   listenKeplrKeyStoreChange,
@@ -175,10 +179,15 @@ export class LikeCoinWalletConnector {
         case LikeCoinWalletConnectorMethodType.Keplr:
           removeKeplrKeyStoreChangeListener(this._accountChangeListener);
           break;
+
         case LikeCoinWalletConnectorMethodType.KeplrMobile:
           wcConnector = getKeplrMobileWCConnector({
             bridge: this.options.keplrMobileWCBridge,
           });
+          break;
+
+        case LikeCoinWalletConnectorMethodType.Cosmostation:
+          removeCosmostationAccountChangeListener();
           break;
 
         case LikeCoinWalletConnectorMethodType.LikerId:
@@ -210,15 +219,10 @@ export class LikeCoinWalletConnector {
 
   init = async (methodType: LikeCoinWalletConnectorMethodType) => {
     let initiator: Promise<LikeCoinWalletConnectorInitResponse>;
-    this._accountChangeListener = () => {
-      this.handleAccountChange(methodType);
-    };
+
     switch (methodType) {
       case LikeCoinWalletConnectorMethodType.Keplr:
-        initiator = initKeplr(this.options).then(result => {
-          listenKeplrKeyStoreChange(this._accountChangeListener);
-          return result;
-        });
+        initiator = initKeplr(this.options);
         break;
 
       case LikeCoinWalletConnectorMethodType.KeplrMobile:
@@ -250,6 +254,23 @@ export class LikeCoinWalletConnector {
 
     const result = await initiator;
     if (!result) throw new Error('ACCOUNT_INIT_FAILED');
+
+    this._accountChangeListener = () => {
+      this.handleAccountChange(methodType);
+    };
+
+    switch (methodType) {
+      case LikeCoinWalletConnectorMethodType.Keplr:
+        listenKeplrKeyStoreChange(this._accountChangeListener);
+        break;
+
+      case LikeCoinWalletConnectorMethodType.Cosmostation:
+        listenCosmostationAccountChange(this._accountChangeListener);
+        break;
+
+      default:
+        break;
+    }
 
     this.saveSession({
       method: methodType,

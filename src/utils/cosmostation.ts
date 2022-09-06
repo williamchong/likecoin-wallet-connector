@@ -5,6 +5,8 @@ import {
   LikeCoinWalletConnectorOptions,
 } from '../types';
 
+let accountChangeEvent: any;
+
 export const getCosmostationExtensionOfflineSigner = (
   chainName: string
 ): OfflineSigner => ({
@@ -148,4 +150,17 @@ export async function initCosmostation(
     accounts,
     offlineSigner,
   };
+}
+
+export function listenCosmostationAccountChange(handler?: () => void) {
+  if (!handler) return;
+  accountChangeEvent = window.cosmostation?.cosmos?.on(
+    'accountChanged',
+    handler
+  );
+}
+
+export function removeCosmostationAccountChangeListener() {
+  if (!accountChangeEvent) return;
+  window.cosmostation?.cosmos?.off(accountChangeEvent);
 }
