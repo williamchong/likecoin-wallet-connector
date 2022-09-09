@@ -182,7 +182,6 @@ export default {
     });
     const session = this.connector.restoreSession();
     this.handleConnection(session);
-    this.connector.on('account_change', this.handleAccountChange);
     this.isLoading = false;
   },
   watch: {
@@ -213,6 +212,7 @@ export default {
       this.method = method;
       this.walletAddress = account.address;
       this.offlineSigner = offlineSigner;
+      this.connector.once('account_change', this.handleAccountChange);
     },
     async connect() {
       const connection = await this.connector.openConnectWalletModal();

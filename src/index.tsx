@@ -204,6 +204,7 @@ export class LikeCoinWalletConnector {
       }
     }
     this.deleteSession();
+    this._events.removeAllListeners();
   };
 
   private getQRCodeDialog: (
@@ -389,7 +390,7 @@ export class LikeCoinWalletConnector {
     return this._events.removeListener(name, listener);
   };
 
-  handleAccountChange = (methodType: LikeCoinWalletConnectorMethodType) => {
+  private handleAccountChange = (methodType: LikeCoinWalletConnectorMethodType) => {
     this._events.emit('account_change', methodType);
   };
 }
