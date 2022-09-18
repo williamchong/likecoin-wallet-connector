@@ -34,6 +34,7 @@ export interface LikeCoinWalletConnectorConfig {
    */
   keplrSignOptions?: KeplrSignOptions;
   keplrMobileWCBridge?: string;
+  keplrInstallURLOverride?: string;
 
   likerLandAppWCBridge?: string;
 

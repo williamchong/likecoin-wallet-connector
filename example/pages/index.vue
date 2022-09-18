@@ -179,6 +179,7 @@ export default {
         preferNoSetFee: true,
         preferNoSetMemo: true,
       },
+      keplrInstallURLOverride: 'https://www.keplr.app/download',
     });
     const session = this.connector.restoreSession();
     this.handleConnection(session);

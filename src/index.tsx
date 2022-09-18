@@ -90,6 +90,7 @@ export class LikeCoinWalletConnector {
       ],
       keplrSignOptions: options.keplrSignOptions || {},
       keplrMobileWCBridge: options.keplrMobileWCBridge || WC_BRIGDE,
+      keplrInstallURLOverride: options.keplrInstallURLOverride || '',
       likerLandAppWCBridge: options.likerLandAppWCBridge || WC_BRIGDE,
       isShowMobileWarning:
         options.isShowMobileWarning !== undefined
@@ -121,6 +122,7 @@ export class LikeCoinWalletConnector {
         <ConnectionMethodSelectionDialog
           methods={this.options.availableMethods}
           isShowMobileWarning={this.options.isShowMobileWarning}
+          keplrInstallURLOverride={this.options.keplrInstallURLOverride}
           onClose={() => {
             this.closeDialog();
             resolve(undefined);
