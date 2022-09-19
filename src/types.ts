@@ -5,6 +5,7 @@ export enum LikeCoinWalletConnectorMethodType {
   Keplr = 'keplr',
   KeplrMobile = 'keplr-mobile',
   Cosmostation = 'cosmostation',
+  CosmostationMobile = 'cosmostation-mobile',
   LikerId = 'liker-id',
 }
 
@@ -37,6 +38,8 @@ export interface LikeCoinWalletConnectorConfig {
   keplrInstallURLOverride?: string;
 
   likerLandAppWCBridge?: string;
+
+  cosmostationAppWCBridge?: string;
 
   isShowMobileWarning?: boolean;
 

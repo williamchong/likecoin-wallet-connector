@@ -47,6 +47,14 @@ const connectionMethodMap = [
       'https://chrome.google.com/webstore/detail/cosmostation/fpkhgmpbidmiogeglndfbkegfdlnajnf',
     description: 'Using Cosmostation browser extension',
   },
+  {
+    type: LikeCoinWalletConnectorMethodType.CosmostationMobile,
+    name: 'Cosmostation App',
+    tier: 2,
+    isMobileOk: true,
+    url: 'https://www.cosmostation.io/wallet',
+    description: 'Using Cosmostation Mobile Wallet',
+  },
 ].reduce(
   (map, method) => {
     map[method.type] = method;
@@ -88,7 +96,10 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
       })
       .map(type => {
         const method = { ...connectionMethodMap[type] };
-        if (type === LikeCoinWalletConnectorMethodType.Keplr && keplrInstallURLOverride) {
+        if (
+          type === LikeCoinWalletConnectorMethodType.Keplr &&
+          keplrInstallURLOverride
+        ) {
           method.url = keplrInstallURLOverride;
         }
         return method;

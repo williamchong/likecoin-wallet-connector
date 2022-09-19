@@ -57,6 +57,22 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
           return `keplrwallet://wcV1?${uri}`;
         }
 
+      case LikeCoinWalletConnectorMethodType.CosmostationMobile:
+        if (isAndroid) {
+          saveMobileLinkInfo({
+            name: 'Cosmostation',
+            href:
+              'intent://wc#Intent;package=wannabit.io.cosmostaion;scheme=cosmostation;end;',
+          });
+          return `intent://wc?${uri}#Intent;package=wannabit.io.cosmostaion;scheme=cosmostation;end;`;
+        } else {
+          saveMobileLinkInfo({
+            name: 'Cosmostation',
+            href: 'cosmostation://wc',
+          });
+          return `cosmostation://wc?${uri}`;
+        }
+
       case LikeCoinWalletConnectorMethodType.LikerId:
         saveMobileLinkInfo({
           name: 'Liker Land App',

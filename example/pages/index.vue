@@ -173,6 +173,7 @@ export default {
         LikeCoinWalletConnectorMethodType.KeplrMobile,
         LikeCoinWalletConnectorMethodType.LikerId,
         LikeCoinWalletConnectorMethodType.Cosmostation,
+        LikeCoinWalletConnectorMethodType.CosmostationMobile,
       ],
       keplrSignOptions: {
         disableBalanceCheck: true,

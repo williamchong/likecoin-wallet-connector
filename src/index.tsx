@@ -14,6 +14,10 @@ import {
   removeCosmostationAccountChangeListener,
 } from './utils/cosmostation';
 import {
+  getCosmostationMobileWCConnector,
+  initCosmostationMobile,
+} from './utils/cosmostation-mobile';
+import {
   initKeplr,
   listenKeplrKeyStoreChange,
   removeKeplrKeyStoreChangeListener,
@@ -92,6 +96,7 @@ export class LikeCoinWalletConnector {
       keplrMobileWCBridge: options.keplrMobileWCBridge || WC_BRIGDE,
       keplrInstallURLOverride: options.keplrInstallURLOverride || '',
       likerLandAppWCBridge: options.likerLandAppWCBridge || WC_BRIGDE,
+      cosmostationAppWCBridge: options.cosmostationAppWCBridge || WC_BRIGDE,
       isShowMobileWarning:
         options.isShowMobileWarning !== undefined
           ? !!options.isShowMobileWarning
@@ -192,6 +197,12 @@ export class LikeCoinWalletConnector {
           removeCosmostationAccountChangeListener();
           break;
 
+        case LikeCoinWalletConnectorMethodType.CosmostationMobile:
+          wcConnector = getCosmostationMobileWCConnector({
+            bridge: this.options.cosmostationAppWCBridge,
+          });
+          break;
+
         case LikeCoinWalletConnectorMethodType.LikerId:
           wcConnector = getLikerLandAppWCConnector({
             bridge: this.options.likerLandAppWCBridge,
@@ -209,7 +220,7 @@ export class LikeCoinWalletConnector {
     this._events.removeAllListeners();
   };
 
-  private getQRCodeDialog: (
+  private getWCQRCodeDialog: (
     methodType: LikeCoinWalletConnectorMethodType
   ) => IQRCodeModal = (methodType: LikeCoinWalletConnectorMethodType) => ({
     open: uri => {
@@ -231,7 +242,7 @@ export class LikeCoinWalletConnector {
       case LikeCoinWalletConnectorMethodType.KeplrMobile:
         initiator = initKeplrMobile(
           this.options,
-          this.getQRCodeDialog(LikeCoinWalletConnectorMethodType.KeplrMobile),
+          this.getWCQRCodeDialog(LikeCoinWalletConnectorMethodType.KeplrMobile),
           this.sessionMethod,
           this.sessionAccounts
         );
@@ -241,10 +252,21 @@ export class LikeCoinWalletConnector {
         initiator = initCosmostation(this.options);
         break;
 
+      case LikeCoinWalletConnectorMethodType.CosmostationMobile:
+        initiator = initCosmostationMobile(
+          this.options,
+          this.getWCQRCodeDialog(
+            LikeCoinWalletConnectorMethodType.CosmostationMobile
+          ),
+          this.sessionMethod,
+          this.sessionAccounts
+        );
+        break;
+
       case LikeCoinWalletConnectorMethodType.LikerId:
         initiator = initLikerLandApp(
           this.options,
-          this.getQRCodeDialog(LikeCoinWalletConnectorMethodType.LikerId),
+          this.getWCQRCodeDialog(LikeCoinWalletConnectorMethodType.LikerId),
           this.sessionMethod,
           this.sessionAccounts
         );
