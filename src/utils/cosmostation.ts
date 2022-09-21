@@ -12,7 +12,7 @@ export const getCosmostationExtensionOfflineSigner = (
 ): OfflineSigner => ({
   getAccounts: async () => {
     const response = await window.cosmostation.cosmos.request({
-      method: 'cos_account',
+      method: 'cos_requestAccount',
       params: { chainName },
     });
     return [
