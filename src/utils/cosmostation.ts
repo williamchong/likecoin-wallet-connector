@@ -106,17 +106,15 @@ export async function initCosmostation(
     throw new Error('COSMOSTATION_NOT_INSTALLED');
   }
 
-  const supportedChains: {
+  const groupedSupportedChainIds: {
     official: string[];
     unofficial: string[];
   } = await window.cosmostation.cosmos.request({
-    method: 'cos_supportedChainNames',
+    method: 'cos_supportedChainIds',
   });
   if (
-    !Object.values(supportedChains).find(list =>
-      list.find(
-        chainName => chainName.toLowerCase() === options.chainName.toLowerCase()
-      )
+    !Object.values(groupedSupportedChainIds).find(group =>
+      group.includes(options.chainId)
     )
   ) {
     await addChainToCosmostation(options);
