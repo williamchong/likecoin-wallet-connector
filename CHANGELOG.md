@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.14.0] - 2022-09-23
+
+### Added
+- [Keplr] Add install CTA presets. (#5)
+
+### Changed
+- [Keplr] Move `gasPriceStep` into `feeCurrencies`. (#8)
+- [Keplr] Add `coinGeckoId` config. (#8)
+
 ## [0.13.1-beta.0] - 2022-09-21
 ### Changed
 - [Cosmostation] Changed to use `cos_supportedChainIds` instead of `cos_supportedChainNames` for checking supported chain. (#6)
@@ -9,5 +18,5 @@
 
 ## [0.13.0-beta.0] - 2022-09-20
 ### Added
-- Support for Cosmostation Mobile Wallet (#4)
-- Config for Keplr Browser Extension installation URL (#3)
+- Support for Cosmostation Mobile Wallet. (#4)
+- Config for Keplr Browser Extension installation URL. (#3)
