@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.14.1] - 2022-09-23
+
+### Fixed
+- Fix missing header in method selection dialog. (#9)
+
 ## [0.14.0] - 2022-09-23
 
 ### Added
