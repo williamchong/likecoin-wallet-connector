@@ -162,6 +162,7 @@ export default {
       coinDenom: 'LIKE',
       coinMinimalDenom: 'nanolike',
       coinDecimals: 9,
+      coinGeckoId: 'likecoin',
       bech32PrefixAccAddr: 'like',
       bech32PrefixAccPub: 'likepub',
       bech32PrefixValAddr: 'likevaloper',

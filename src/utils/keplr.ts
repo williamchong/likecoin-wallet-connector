@@ -29,6 +29,7 @@ export async function initKeplr(
         coinDenom: options.coinDenom,
         coinMinimalDenom: options.coinMinimalDenom,
         coinDecimals: options.coinDecimals,
+        coinGeckoId: options.coinGeckoId,
       },
       bip44: {
         coinType: options.coinType,
@@ -46,6 +47,7 @@ export async function initKeplr(
           coinDenom: options.coinDenom,
           coinMinimalDenom: options.coinMinimalDenom,
           coinDecimals: options.coinDecimals,
+          coinGeckoId: options.coinGeckoId,
         },
       ],
       feeCurrencies: [
@@ -53,6 +55,7 @@ export async function initKeplr(
           coinDenom: options.coinDenom,
           coinMinimalDenom: options.coinMinimalDenom,
           coinDecimals: options.coinDecimals,
+          coinGeckoId: options.coinGeckoId,
         },
       ],
       coinType: options.coinType,

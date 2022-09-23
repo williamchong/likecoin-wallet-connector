@@ -18,6 +18,7 @@ export interface LikeCoinWalletConnectorConfig {
   coinDenom: string;
   coinMinimalDenom: string;
   coinDecimals: number;
+  coinGeckoId?: string;
   bech32PrefixAccAddr: string;
   bech32PrefixAccPub: string;
   bech32PrefixValAddr: string;

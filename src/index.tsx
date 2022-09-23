@@ -76,6 +76,7 @@ export class LikeCoinWalletConnector {
       coinDenom: options.coinDenom,
       coinMinimalDenom: options.coinMinimalDenom,
       coinDecimals: options.coinDecimals,
+      coinGeckoId: options.coinGeckoId || '',
       bech32PrefixAccAddr: options.bech32PrefixAccAddr,
       bech32PrefixAccPub: options.bech32PrefixAccPub,
       bech32PrefixValAddr: options.bech32PrefixValAddr,
