@@ -129,7 +129,7 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
 
   return (
     <Dialog isOpen={isDialogOpen} onClose={closeDialog}>
-      {!isKeplrNotInstalled && (
+      {!(isKeplrNotInstalled && keplrInstallCTAPreset === 'fancy-banner') && (
         <h1 className="lk-flex lk-items-center lk-gap-x-[12px] lk-text-like-green lk-font-bold lk-mb-[24px]">
           <SignInIcon className="lk-w-[20px] lk-h-[20px] lk-shrink-0" />
           <span>Connect a wallet</span>
