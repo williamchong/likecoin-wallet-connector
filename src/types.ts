@@ -9,6 +9,8 @@ export enum LikeCoinWalletConnectorMethodType {
   LikerId = 'liker-id',
 }
 
+export type KeplrInstallCTAPreset = 'origin' | 'simple-banner' | 'fancy-banner';
+
 export interface LikeCoinWalletConnectorConfig {
   chainId: string;
   chainName: string;
@@ -37,6 +39,7 @@ export interface LikeCoinWalletConnectorConfig {
   keplrSignOptions?: KeplrSignOptions;
   keplrMobileWCBridge?: string;
   keplrInstallURLOverride?: string;
+  keplrInstallCTAPreset?: KeplrInstallCTAPreset;
 
   likerLandAppWCBridge?: string;
 

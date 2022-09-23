@@ -96,6 +96,7 @@ export class LikeCoinWalletConnector {
       keplrSignOptions: options.keplrSignOptions || {},
       keplrMobileWCBridge: options.keplrMobileWCBridge || WC_BRIGDE,
       keplrInstallURLOverride: options.keplrInstallURLOverride || '',
+      keplrInstallCTAPreset: options.keplrInstallCTAPreset || 'origin',
       likerLandAppWCBridge: options.likerLandAppWCBridge || WC_BRIGDE,
       cosmostationAppWCBridge: options.cosmostationAppWCBridge || WC_BRIGDE,
       isShowMobileWarning:
@@ -129,6 +130,7 @@ export class LikeCoinWalletConnector {
           methods={this.options.availableMethods}
           isShowMobileWarning={this.options.isShowMobileWarning}
           keplrInstallURLOverride={this.options.keplrInstallURLOverride}
+          keplrInstallCTAPreset={this.options.keplrInstallCTAPreset}
           onClose={() => {
             this.closeDialog();
             resolve(undefined);
@@ -415,7 +417,9 @@ export class LikeCoinWalletConnector {
     return this._events.removeListener(name, listener);
   };
 
-  private handleAccountChange = (methodType: LikeCoinWalletConnectorMethodType) => {
+  private handleAccountChange = (
+    methodType: LikeCoinWalletConnectorMethodType
+  ) => {
     this._events.emit('account_change', methodType);
   };
 }

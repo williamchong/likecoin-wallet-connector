@@ -2,6 +2,7 @@ import * as React from 'react';
 import classNames from 'classnames';
 
 import {
+  KeplrInstallCTAPreset,
   LikeCoinWalletConnectorMethod,
   LikeCoinWalletConnectorMethodType,
 } from '../types';
@@ -12,6 +13,7 @@ export interface ConnectionMethodListBaseProps
   extends React.HTMLAttributes<HTMLUListElement> {
   methods: LikeCoinWalletConnectorMethod[];
   isMobile: boolean;
+  keplrInstallCTAPreset?: KeplrInstallCTAPreset;
   onSelectMethod?: (method: LikeCoinWalletConnectorMethodType) => void;
 }
 
@@ -19,6 +21,7 @@ export const ConnectionMethodListBase: React.FC<ConnectionMethodListBaseProps> =
   className,
   methods,
   isMobile,
+  keplrInstallCTAPreset,
   onSelectMethod,
   ...props
 }) => {
@@ -41,6 +44,7 @@ export const ConnectionMethodListBase: React.FC<ConnectionMethodListBaseProps> =
             name={method.name}
             description={method.description}
             url={method.url}
+            keplrInstallCTAPreset={keplrInstallCTAPreset}
             isMobile={isMobile}
             onPress={() => handleMethodSelection(method.type)}
           />
