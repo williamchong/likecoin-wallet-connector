@@ -172,9 +172,11 @@ export const ConnectionMethodButton: FC<Props> = ({
                 </Button>
               </div>
             )}
-          <Alert className="lk-mt-[12px] lk-text-gray" isPlain={true}>
-            <p>Ledger is not yet supported.</p>
-          </Alert>
+          {!isNotInstalled && (
+            <Alert className="lk-mt-[12px] lk-text-gray" isPlain={true}>
+              <p>Ledger is not yet supported.</p>
+            </Alert>
+          )}
         </>
       )}
     </>
