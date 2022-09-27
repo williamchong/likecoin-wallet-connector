@@ -1,5 +1,5 @@
 import classNames from 'classnames';
-import React, { FC } from 'react';
+import React, { FC, MouseEventHandler } from 'react';
 
 import {
   KeplrInstallCTAPreset,
@@ -69,6 +69,10 @@ export const ConnectionMethodButton: FC<Props> = ({
     : {
         onClick: onPress,
       };
+
+  const handleClickInstallLikerLandAppButton: MouseEventHandler = e => {
+    e.stopPropagation();
+  };
 
   const buttonEl =
     type === LikeCoinWalletConnectorMethodType.Keplr &&
@@ -151,6 +155,19 @@ export const ConnectionMethodButton: FC<Props> = ({
             >
               {description}
             </div>
+            {type === LikeCoinWalletConnectorMethodType.LikerId && (
+              <div className="lk-flex lk-justify-center lk-mt-[12px]">
+                <Button
+                  tag="a"
+                  href={url}
+                  target="_blank"
+                  onClick={handleClickInstallLikerLandAppButton}
+                >
+                  <DownloadIcon />
+                  <span>Install Liker Land App</span>
+                </Button>
+              </div>
+            )}
           </>
         )}
       </ButtonTag>
