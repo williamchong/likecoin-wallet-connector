@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.15.0] - 2022-09-28
+
+### Added
+
+- [Liker ID] Add Liker Land App install button. (#10)
+
+### Changed
+- [Keplr] Hide Ledger not supported hint if Keplr browser extension is not installed. (#10)
+
+### Fixed
+- [Cosmostation] Fix missing hint for Wallet Connect dialog.
+
 ## [0.14.1] - 2022-09-23
 
 ### Fixed
