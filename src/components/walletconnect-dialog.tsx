@@ -86,6 +86,22 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
     }
   }, [type, isAndroid, isMobile, uri]);
 
+  const hintLabelText = React.useMemo(() => {
+    switch (type) {
+      case LikeCoinWalletConnectorMethodType.KeplrMobile:
+        return 'Please scan the QR code with Cosmostation Mobile Wallet app';
+
+      case LikeCoinWalletConnectorMethodType.CosmostationMobile:
+        return 'Please scan the QR code with Keplr Mobile app';
+
+      case LikeCoinWalletConnectorMethodType.LikerId:
+        return 'Please scan the QR code with Liker Land app';
+
+      default:
+        return '';
+    }
+  }, [type]);
+
   useEffect(() => {
     if (navigateToAppURL) {
       window.location.href = navigateToAppURL;
@@ -125,14 +141,11 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
           </>
         ) : (
           <>
-            <Alert>
-              {type === LikeCoinWalletConnectorMethodType.LikerId && (
-                <p>Please scan the QR code with Liker Land app</p>
-              )}
-              {type === LikeCoinWalletConnectorMethodType.KeplrMobile && (
-                <p>Please scan the QR code with Keplr Mobile app</p>
-              )}
-            </Alert>
+            {!!hintLabelText && (
+              <Alert>
+                <p>{hintLabelText}</p>
+              </Alert>
+            )}
             <QRCodeSVG
               className="lk-w-full lk-mt-[16px]"
               value={uri}
