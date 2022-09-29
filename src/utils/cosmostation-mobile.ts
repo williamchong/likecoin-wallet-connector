@@ -1,3 +1,4 @@
+import { AminoSignResponse } from '@cosmjs/amino';
 import {
   AccountData,
   DirectSignResponse,
@@ -12,6 +13,7 @@ import {
   LikeCoinWalletConnectorInitResponse,
   LikeCoinWalletConnectorMethodType,
   LikeCoinWalletConnectorOptions,
+  WalletConnectAccountResponse,
 } from '../types';
 
 import { convertWalletConnectAccountResponse } from './wallet';
@@ -50,45 +52,55 @@ export async function initCosmostationMobile(
       await wcConnector.killSession();
     }
     await wcConnector.connect();
-    const [account] = await wcConnector.sendCustomRequest({
-      id: payloadId(),
-      jsonrpc: '2.0',
-      method: 'cosmostation_wc_accounts_v1',
-      params: [options.chainId],
-    });
-    accounts = [convertWalletConnectAccountResponse(account)];
+    const results: WalletConnectAccountResponse[] = await wcConnector.sendCustomRequest(
+      {
+        id: payloadId(),
+        jsonrpc: '2.0',
+        method: 'cosmostation_wc_accounts_v1',
+        params: [options.chainId],
+      }
+    );
+    accounts = results.map(convertWalletConnectAccountResponse);
   }
   if (!accounts.length) {
     throw new Error('WALLETCONNECT_ACCOUNT_NOT_FOUND');
   }
 
-  const offlineSigner: OfflineSigner = {
+  let offlineSigner: OfflineSigner = {
     getAccounts: () => Promise.resolve(accounts),
     signAmino: async (signerBech32Address, signDoc) => {
-      const [result] = await wcConnector.sendCustomRequest({
-        id: payloadId(),
-        jsonrpc: '2.0',
-        method: 'cosmostation_wc_sign_tx_v1',
-        params: [options.chainId, signerBech32Address, signDoc],
-      });
+      const [result]: AminoSignResponse[] = await wcConnector.sendCustomRequest(
+        {
+          id: payloadId(),
+          jsonrpc: '2.0',
+          method: 'cosmostation_wc_sign_tx_v1',
+          params: [options.chainId, signerBech32Address, signDoc],
+        }
+      );
       return result;
     },
-    signDirect: async (signerBech32Address, signDoc) => {
-      const {
-        signed: signedInJSON,
-        signature,
-      } = await wcConnector.sendCustomRequest({
-        id: payloadId(),
-        jsonrpc: '2.0',
-        method: 'cosmos_signDirect',
-        params: [signerBech32Address, SignDoc.toJSON(signDoc)],
-      });
-      return {
-        signed: SignDoc.fromJSON(signedInJSON),
-        signature,
-      } as DirectSignResponse;
-    },
   };
+
+  if (options.cosmostationDirectSignEnabled) {
+    offlineSigner = {
+      ...offlineSigner,
+      signDirect: async (signerBech32Address, signDoc) => {
+        const {
+          signed: signedInJSON,
+          signature,
+        } = await wcConnector.sendCustomRequest({
+          id: payloadId(),
+          jsonrpc: '2.0',
+          method: 'cosmostation_wc_sign_direct_tx_v1',
+          params: [signerBech32Address, SignDoc.toJSON(signDoc)],
+        });
+        return {
+          signed: SignDoc.fromJSON(signedInJSON),
+          signature,
+        } as DirectSignResponse;
+      },
+    };
+  }
 
   return {
     accounts,

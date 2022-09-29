@@ -44,6 +44,7 @@ export interface LikeCoinWalletConnectorConfig {
   likerLandAppWCBridge?: string;
 
   cosmostationAppWCBridge?: string;
+  cosmostationDirectSignEnabled?: boolean;
 
   isShowMobileWarning?: boolean;
 
