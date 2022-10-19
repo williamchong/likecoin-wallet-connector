@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.16.0] - 2022-10-19
+
+### Added
+
+- [Cosmostation] Support Direct Sign using WalletConnect. (#11)
+
 ## [0.15.0] - 2022-09-28
 
 ### Added
