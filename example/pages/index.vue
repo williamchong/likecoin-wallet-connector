@@ -171,10 +171,10 @@ export default {
       bech32PrefixConsPub: 'likevalconspub',
       availableMethods: [
         LikeCoinWalletConnectorMethodType.Keplr,
-        LikeCoinWalletConnectorMethodType.KeplrMobile,
-        LikeCoinWalletConnectorMethodType.LikerId,
         LikeCoinWalletConnectorMethodType.Cosmostation,
+        LikeCoinWalletConnectorMethodType.LikerId,
         LikeCoinWalletConnectorMethodType.CosmostationMobile,
+        LikeCoinWalletConnectorMethodType.KeplrMobile,
       ],
       keplrSignOptions: {
         disableBalanceCheck: true,
