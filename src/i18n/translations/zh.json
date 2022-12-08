@@ -1,4 +1,5 @@
 {
+  "connect_wallet_method_button_cosmostation_mobile_launch_in_dapp_browser": "在內置瀏覽器內啟動",
   "connect_wallet_method_button_hint_click_to_open_app": "按此開始連接",
   "connect_wallet_method_button_hint_not_installed": "尚未安裝。",
   "connect_wallet_method_button_keplr_install": "安裝 Keplr",

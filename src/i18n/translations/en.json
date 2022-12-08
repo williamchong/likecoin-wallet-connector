@@ -1,4 +1,5 @@
 {
+  "connect_wallet_method_button_cosmostation_mobile_launch_in_dapp_browser": "Launch in in-app browser",
   "connect_wallet_method_button_hint_click_to_open_app": "Click to connect",
   "connect_wallet_method_button_hint_not_installed": "You haven't installed.",
   "connect_wallet_method_button_keplr_install": "Install Keplr",

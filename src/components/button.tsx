@@ -3,7 +3,7 @@ import React, { FC, HTMLAttributes } from 'react';
 
 export interface ButtonProps
   extends HTMLAttributes<HTMLAnchorElement | HTMLButtonElement> {
-  tag: 'button' | 'a';
+  tag?: 'button' | 'a';
   href?: string;
   target?: string;
 }

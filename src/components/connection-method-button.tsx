@@ -1,6 +1,7 @@
 import React, { FC, MouseEventHandler } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import classNames from 'classnames';
+import { isIOS } from '@walletconnect/browser-utils';
 
 import {
   KeplrInstallCTAPreset,
@@ -79,6 +80,22 @@ export const ConnectionMethodButton: FC<Props> = ({
   const handleClickInstallLikerLandAppButton: MouseEventHandler = e => {
     e.stopPropagation();
   };
+
+  const handleClickOpenInDAppBrowserButton: MouseEventHandler = e => {
+    e.stopPropagation();
+    const url = window.location.href;
+    const appURL = isIOS()
+      ? 'cosmostation://dapp?'.concat(url)
+      : 'intent://dapp?'.concat(
+          url,
+          '#Intent;package=wannabit.io.cosmostaion;scheme=cosmostation;end;'
+        );
+    window.location.href = appURL;
+  };
+
+  const isShowLaunchInCosmostationMobileInAppBroswerButton =
+    type === LikeCoinWalletConnectorMethodType.CosmostationMobile &&
+    !navigator.userAgent.includes('Cosmostation/APP');
 
   const buttonEl =
     type === LikeCoinWalletConnectorMethodType.Keplr &&
@@ -161,10 +178,21 @@ export const ConnectionMethodButton: FC<Props> = ({
             >
               {description}
             </div>
-            {type === LikeCoinWalletConnectorMethodType.LikerId && (
+            {isShowLaunchInCosmostationMobileInAppBroswerButton && (
               <div className="lk-flex lk-justify-center lk-mt-[12px]">
                 <Button
                   tag="a"
+                  href={url}
+                  target="_blank"
+                  onClick={handleClickOpenInDAppBrowserButton}
+                >
+                  <FormattedMessage id="connect_wallet_method_button_cosmostation_mobile_launch_in_dapp_browser" />
+                </Button>
+              </div>
+            )}
+            {type === LikeCoinWalletConnectorMethodType.LikerId && (
+              <div className="lk-flex lk-justify-center lk-mt-[12px]">
+                <Button
                   href={url}
                   target="_blank"
                   onClick={handleClickInstallLikerLandAppButton}
