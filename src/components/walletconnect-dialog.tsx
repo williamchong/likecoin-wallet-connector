@@ -1,4 +1,5 @@
 import React, { FC, HTMLAttributes, useEffect, useMemo, useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { QRCodeSVG } from 'qrcode.react';
 import {
   isMobile as isMobileDevice,
@@ -28,6 +29,7 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
   uri,
   onClose,
 }) => {
+  const intl = useIntl();
   const [isDialogOpen, setDialogOpen] = useState(true);
 
   const isMobile = useMemo(isMobileDevice, []);
@@ -89,18 +91,24 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
   const hintLabelText = React.useMemo(() => {
     switch (type) {
       case LikeCoinWalletConnectorMethodType.KeplrMobile:
-        return 'Please scan the QR code with Cosmostation Mobile Wallet app';
+        return intl.formatMessage({
+          id: 'wallet_connect_hint_scan_qrcode_keplr_mobile',
+        });
 
       case LikeCoinWalletConnectorMethodType.CosmostationMobile:
-        return 'Please scan the QR code with Keplr Mobile app';
+        return intl.formatMessage({
+          id: 'wallet_connect_hint_scan_qrcode_cosmostation_mobile',
+        });
 
       case LikeCoinWalletConnectorMethodType.LikerId:
-        return 'Please scan the QR code with Liker Land app';
+        return intl.formatMessage({
+          id: 'wallet_connect_hint_scan_qrcode_liker_land_app',
+        });
 
       default:
         return '';
     }
-  }, [type]);
+  }, [type, intl]);
 
   useEffect(() => {
     if (navigateToAppURL) {
@@ -117,15 +125,22 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
     <Dialog isOpen={isDialogOpen} onClose={closeDialog}>
       <h1 className="lk-flex lk-items-center lk-gap-x-[12px] lk-text-[#28646e] lk-font-bold">
         <SignInIcon className="lk-w-[20px] lk-h-[20px] lk-shrink-0" />
-        <span>{isMobile ? 'Open App' : 'Scan QR Code'}</span>
+        <span>
+          <FormattedMessage
+            id={
+              isMobile
+                ? 'wallet_connect_header_title_open_app'
+                : 'wallet_connect_header_title_scan_qrcode'
+            }
+          />
+        </span>
       </h1>
       <div className="lk-flex lk-flex-col lk-justify-center lk-items-center lk-mt-[24px]">
         {isMobile ? (
           <>
             <Alert>
               <p>
-                Please approve the connection request in the app by clicking the
-                button below.
+                <FormattedMessage id="wallet_connect_hint_approve" />
               </p>
             </Alert>
             <button
@@ -136,7 +151,7 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
                 }
               }}
             >
-              Open App
+              <FormattedMessage id="wallet_connect_button_open_app" />
             </button>
           </>
         ) : (

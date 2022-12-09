@@ -1,4 +1,5 @@
 import React, { FC, HTMLAttributes } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { isMobile as isMobileDevice } from '@walletconnect/browser-utils';
 
 import {
@@ -21,7 +22,7 @@ const connectionMethodMap = [
     isMobileOk: false,
     url:
       'https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap',
-    description: 'Using Keplr browser extension',
+    description: 'connect_wallet_method_description_keplr',
   },
   {
     type: LikeCoinWalletConnectorMethodType.KeplrMobile,
@@ -29,7 +30,7 @@ const connectionMethodMap = [
     tier: 2,
     isMobileOk: true,
     url: 'https://keplr.app/app',
-    description: 'Scan QR code with Keplr Mobile app',
+    description: 'connect_wallet_method_description_keplr_mobile',
   },
   {
     type: LikeCoinWalletConnectorMethodType.LikerId,
@@ -37,7 +38,7 @@ const connectionMethodMap = [
     tier: 2,
     isMobileOk: true,
     url: 'https://liker.land/getapp',
-    description: 'Scan QR code with Liker Land app',
+    description: 'connect_wallet_method_description_liker_land_app',
   },
   {
     type: LikeCoinWalletConnectorMethodType.Cosmostation,
@@ -46,7 +47,7 @@ const connectionMethodMap = [
     isMobileOk: false,
     url:
       'https://chrome.google.com/webstore/detail/cosmostation/fpkhgmpbidmiogeglndfbkegfdlnajnf',
-    description: 'Using Cosmostation browser extension',
+    description: 'connect_wallet_method_description_cosmostation',
   },
   {
     type: LikeCoinWalletConnectorMethodType.CosmostationMobile,
@@ -54,7 +55,7 @@ const connectionMethodMap = [
     tier: 2,
     isMobileOk: true,
     url: 'https://www.cosmostation.io/wallet',
-    description: 'Using Cosmostation Mobile Wallet',
+    description: 'connect_wallet_method_description_cosmostation_mobile',
   },
 ].reduce(
   (map, method) => {
@@ -87,6 +88,7 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
   onClose,
   onConnect,
 }) => {
+  const intl = useIntl();
   const [isDialogOpen, setDialogOpen] = React.useState(true);
 
   const isMobile = React.useMemo(isMobileDevice, []);
@@ -107,6 +109,7 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         ) {
           method.url = keplrInstallURLOverride;
         }
+        method.description = intl.formatMessage({ id: method.description });
         return method;
       })
       .reduce((tieredMethods, method) => {
@@ -120,7 +123,7 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
       }, {} as { [tier: number]: LikeCoinWalletConnectorMethod[] });
     // The returned array will be sorted by key i.e. `method.tier`
     return Object.values(tieredMethods);
-  }, [methods, isMobile, keplrInstallURLOverride]);
+  }, [methods, isMobile, keplrInstallURLOverride, intl]);
 
   function closeDialog() {
     setDialogOpen(false);
@@ -132,14 +135,15 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
       {!(isKeplrNotInstalled && keplrInstallCTAPreset === 'fancy-banner') && (
         <h1 className="lk-flex lk-items-center lk-gap-x-[12px] lk-text-like-green lk-font-bold lk-mb-[24px]">
           <SignInIcon className="lk-w-[20px] lk-h-[20px] lk-shrink-0" />
-          <span>Connect a wallet</span>
+          <span>
+            <FormattedMessage id="connect_wallet_title" />
+          </span>
         </h1>
       )}
       {isMobile && isShowMobileWarning && (
         <Alert className="lk-mb-[24px]">
           <p>
-            WalletConnect in mobile is an experimental feature, please visit
-            this site on desktop for a better experience.
+            <FormattedMessage id="warning_wallet_connect_mobile" />
           </p>
         </Alert>
       )}
@@ -150,7 +154,9 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
           isMobile={isMobile}
           keplrInstallCTAPreset={keplrInstallCTAPreset}
           isCollapsible={index !== 0}
-          collapsibleToggleButtonTitle="Other connection methods"
+          collapsibleToggleButtonTitle={intl.formatMessage({
+            id: 'connect_wallet_other_methods',
+          })}
           onSelectMethod={onConnect}
         />
       ))}

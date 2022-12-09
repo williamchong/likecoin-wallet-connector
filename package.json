@@ -41,11 +41,11 @@
   "size-limit": [
     {
       "path": "dist/wallet-connector.cjs.production.min.js",
-      "limit": "150 KB"
+      "limit": "200 KB"
     },
     {
       "path": "dist/wallet-connector.esm.js",
-      "limit": "150 KB"
+      "limit": "180 KB"
     }
   ],
   "devDependencies": {
@@ -83,6 +83,7 @@
     "@walletconnect/utils": "^1.8.0",
     "classnames": "^2.3.1",
     "cosmjs-types": "^0.5.1",
-    "qrcode.react": "^3.1.0"
+    "qrcode.react": "^3.1.0",
+    "react-intl": "^6.2.5"
   }
 }

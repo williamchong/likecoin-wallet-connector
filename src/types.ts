@@ -49,6 +49,8 @@ export interface LikeCoinWalletConnectorConfig {
   isShowMobileWarning?: boolean;
 
   availableMethods?: LikeCoinWalletConnectorMethodType[];
+
+  language?: string;
 }
 
 export type LikeCoinWalletConnectorOptions = Required<

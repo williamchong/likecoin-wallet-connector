@@ -43,6 +43,7 @@ import {
 } from './types';
 
 import './style.css';
+import { IntlProvider } from './i18n';
 
 export * from './types';
 
@@ -105,6 +106,8 @@ export class LikeCoinWalletConnector {
         options.isShowMobileWarning !== undefined
           ? !!options.isShowMobileWarning
           : true,
+
+      language: options.language || 'en',
     };
 
     this.sessionAccounts = [];
@@ -122,26 +125,34 @@ export class LikeCoinWalletConnector {
    */
   openConnectWalletModal = () => this.openConnectionMethodSelectionDialog();
 
-  openConnectionMethodSelectionDialog = () => {
+  openConnectionMethodSelectionDialog = ({
+    language = this.options.language,
+  } = {}) => {
     if (this._isConnectionMethodSelectDialogOpen)
       return Promise.resolve(undefined);
 
+    if (this.options.language !== language) {
+      this.options.language = language;
+    }
+
     return new Promise<LikeCoinWalletConnectorConnectionResponse>(resolve => {
       this._renderingRoot.render(
-        <ConnectionMethodSelectionDialog
-          methods={this.options.availableMethods}
-          isShowMobileWarning={this.options.isShowMobileWarning}
-          keplrInstallURLOverride={this.options.keplrInstallURLOverride}
-          keplrInstallCTAPreset={this.options.keplrInstallCTAPreset}
-          onClose={() => {
-            this.closeDialog();
-            resolve(undefined);
-          }}
-          onConnect={async method => {
-            const result = await this.selectMethod(method);
-            resolve(result);
-          }}
-        />
+        <IntlProvider language={language}>
+          <ConnectionMethodSelectionDialog
+            methods={this.options.availableMethods}
+            isShowMobileWarning={this.options.isShowMobileWarning}
+            keplrInstallURLOverride={this.options.keplrInstallURLOverride}
+            keplrInstallCTAPreset={this.options.keplrInstallCTAPreset}
+            onClose={() => {
+              this.closeDialog();
+              resolve(undefined);
+            }}
+            onConnect={async method => {
+              const result = await this.selectMethod(method);
+              resolve(result);
+            }}
+          />
+        </IntlProvider>
       );
 
       this._isConnectionMethodSelectDialogOpen = true;
@@ -150,21 +161,28 @@ export class LikeCoinWalletConnector {
 
   private openWalletConnectQRCodeDialog = (
     type: LikeCoinWalletConnectorMethodType,
-    uri: string
+    uri: string,
+    { language = this.options.language } = {}
   ) => {
     if (this._isWalletConnectQRCodeDialogOpen)
       return Promise.resolve(undefined);
 
+    if (this.options.language !== language) {
+      this.options.language = language;
+    }
+
     return new Promise<LikeCoinWalletConnectorConnectionResponse>(resolve => {
       this._renderingRoot.render(
-        <WalletConnectQRCodeDialog
-          type={type}
-          uri={uri}
-          onClose={() => {
-            this.closeDialog();
-            resolve(undefined);
-          }}
-        />
+        <IntlProvider language={language}>
+          <WalletConnectQRCodeDialog
+            type={type}
+            uri={uri}
+            onClose={() => {
+              this.closeDialog();
+              resolve(undefined);
+            }}
+          />
+        </IntlProvider>
       );
 
       this._isWalletConnectQRCodeDialogOpen = true;
