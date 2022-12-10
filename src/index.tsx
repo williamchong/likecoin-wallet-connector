@@ -14,6 +14,7 @@ import {
   removeCosmostationAccountChangeListener,
 } from './utils/cosmostation';
 import {
+  checkIsInCosmostationMobileInAppBrowser,
   getCosmostationMobileWCConnector,
   initCosmostationMobile,
 } from './utils/cosmostation-mobile';
@@ -128,35 +129,44 @@ export class LikeCoinWalletConnector {
   openConnectionMethodSelectionDialog = ({
     language = this.options.language,
   } = {}) => {
-    if (this._isConnectionMethodSelectDialogOpen)
-      return Promise.resolve(undefined);
-
     if (this.options.language !== language) {
       this.options.language = language;
     }
 
-    return new Promise<LikeCoinWalletConnectorConnectionResponse>(resolve => {
-      this._renderingRoot.render(
-        <IntlProvider language={language}>
-          <ConnectionMethodSelectionDialog
-            methods={this.options.availableMethods}
-            isShowMobileWarning={this.options.isShowMobileWarning}
-            keplrInstallURLOverride={this.options.keplrInstallURLOverride}
-            keplrInstallCTAPreset={this.options.keplrInstallCTAPreset}
-            onClose={() => {
-              this.closeDialog();
-              resolve(undefined);
-            }}
-            onConnect={async method => {
-              const result = await this.selectMethod(method);
-              resolve(result);
-            }}
-          />
-        </IntlProvider>
-      );
-
-      this._isConnectionMethodSelectDialogOpen = true;
-    });
+    return new Promise<LikeCoinWalletConnectorConnectionResponse>(
+      async resolve => {
+        const connectWithMethod = async (
+          method: LikeCoinWalletConnectorMethodType
+        ) => {
+          const result = await this.selectMethod(method);
+          resolve(result);
+        };
+        if (checkIsInCosmostationMobileInAppBrowser()) {
+          connectWithMethod(
+            LikeCoinWalletConnectorMethodType.CosmostationMobile
+          );
+        } else if (this._isConnectionMethodSelectDialogOpen) {
+          resolve(undefined);
+        } else {
+          this._renderingRoot.render(
+            <IntlProvider language={language}>
+              <ConnectionMethodSelectionDialog
+                methods={this.options.availableMethods}
+                isShowMobileWarning={this.options.isShowMobileWarning}
+                keplrInstallURLOverride={this.options.keplrInstallURLOverride}
+                keplrInstallCTAPreset={this.options.keplrInstallCTAPreset}
+                onClose={() => {
+                  this.closeDialog();
+                  resolve(undefined);
+                }}
+                onConnect={connectWithMethod}
+              />
+            </IntlProvider>
+          );
+          this._isConnectionMethodSelectDialogOpen = true;
+        }
+      }
+    );
   };
 
   private openWalletConnectQRCodeDialog = (

@@ -107,3 +107,6 @@ export async function initCosmostationMobile(
     offlineSigner,
   };
 }
+
+export const checkIsInCosmostationMobileInAppBrowser = () =>
+  navigator.userAgent.includes('Cosmostation/APP');

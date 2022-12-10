@@ -8,6 +8,8 @@ import {
   LikeCoinWalletConnectorMethodType,
 } from '../types';
 
+import { checkIsInCosmostationMobileInAppBrowser } from '../utils/cosmostation-mobile';
+
 import { DownloadIcon } from './icons/download';
 import { KeplrColorIcon } from './icons/keplr-color';
 import { OpenInNewIcon } from './icons/open-in-new';
@@ -95,7 +97,7 @@ export const ConnectionMethodButton: FC<Props> = ({
 
   const isShowLaunchInCosmostationMobileInAppBroswerButton =
     type === LikeCoinWalletConnectorMethodType.CosmostationMobile &&
-    !navigator.userAgent.includes('Cosmostation/APP');
+    !checkIsInCosmostationMobileInAppBrowser();
 
   const buttonEl =
     type === LikeCoinWalletConnectorMethodType.Keplr &&
