@@ -20,6 +20,10 @@ export async function initKeplr(
   }
 
   try {
+    // Some Keplr configs not support empty string
+    const coinGeckoId = options.coinGeckoId || undefined;
+    const walletUrlForStaking = options.walletURLForStaking || undefined;
+
     await window.keplr.experimentalSuggestChain({
       chainId: options.chainId,
       chainName: options.chainName,
@@ -29,9 +33,9 @@ export async function initKeplr(
         coinDenom: options.coinDenom,
         coinMinimalDenom: options.coinMinimalDenom,
         coinDecimals: options.coinDecimals,
-        coinGeckoId: options.coinGeckoId,
+        coinGeckoId,
       },
-      walletUrlForStaking: options.walletURLForStaking,
+      walletUrlForStaking,
       bip44: {
         coinType: options.coinType,
       },
@@ -48,7 +52,7 @@ export async function initKeplr(
           coinDenom: options.coinDenom,
           coinMinimalDenom: options.coinMinimalDenom,
           coinDecimals: options.coinDecimals,
-          coinGeckoId: options.coinGeckoId,
+          coinGeckoId,
         },
       ],
       feeCurrencies: [
@@ -56,7 +60,7 @@ export async function initKeplr(
           coinDenom: options.coinDenom,
           coinMinimalDenom: options.coinMinimalDenom,
           coinDecimals: options.coinDecimals,
-          coinGeckoId: options.coinGeckoId,
+          coinGeckoId,
           gasPriceStep: {
             low: options.gasPriceStepLow,
             average: options.gasPriceStepAverage,
