@@ -88,6 +88,7 @@ export class LikeCoinWalletConnector {
       gasPriceStepLow: options.gasPriceStepLow || 1,
       gasPriceStepAverage: options.gasPriceStepAverage || 10,
       gasPriceStepHigh: options.gasPriceStepHigh || 1000,
+      walletURLForStaking: options.walletURLForStaking || '',
       initAttemptCount: options.initAttemptCount || 3,
       availableMethods: options.availableMethods || [
         LikeCoinWalletConnectorMethodType.Keplr,

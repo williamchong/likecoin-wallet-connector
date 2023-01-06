@@ -31,6 +31,7 @@ export async function initKeplr(
         coinDecimals: options.coinDecimals,
         coinGeckoId: options.coinGeckoId,
       },
+      walletUrlForStaking: options.walletURLForStaking,
       bip44: {
         coinType: options.coinType,
       },

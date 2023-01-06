@@ -31,6 +31,8 @@ export interface LikeCoinWalletConnectorConfig {
   gasPriceStepAverage?: number;
   gasPriceStepHigh?: number;
 
+  walletURLForStaking?: string;
+
   initAttemptCount?: number;
 
   /**
