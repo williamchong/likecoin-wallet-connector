@@ -66,7 +66,8 @@ export async function initKeplr(
       coinType: options.coinType,
       features: ['ibc-go', 'ibc-transfer', 'no-legacy-stdTx', 'stargate'],
     });
-  } catch {
+  } catch (error) {
+    console.error(error);
     throw new Error('KEPLR_INIT_FAILED');
   }
 
