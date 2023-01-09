@@ -195,6 +195,7 @@ export const ConnectionMethodButton: FC<Props> = ({
             {type === LikeCoinWalletConnectorMethodType.LikerId && (
               <div className="lk-flex lk-justify-center lk-mt-[12px]">
                 <Button
+                  tag="a"
                   href={url}
                   target="_blank"
                   onClick={handleClickInstallLikerLandAppButton}
