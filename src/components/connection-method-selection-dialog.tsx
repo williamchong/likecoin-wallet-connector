@@ -18,7 +18,8 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.Keplr,
     name: 'Keplr',
-    tier: 1,
+    defaultTier: 1,
+    isInstalled: false,
     isMobileOk: false,
     url:
       'https://chrome.google.com/webstore/detail/keplr/dmkamcknogkgcdfhhbddcghachkejeap',
@@ -27,7 +28,8 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.KeplrMobile,
     name: 'Keplr Mobile',
-    tier: 2,
+    defaultTier: 2,
+    isInstalled: false,
     isMobileOk: true,
     url: 'https://keplr.app/app',
     description: 'connect_wallet_method_description_keplr_mobile',
@@ -35,7 +37,8 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.LikerId,
     name: 'Liker ID',
-    tier: 2,
+    defaultTier: 2,
+    isInstalled: false,
     isMobileOk: true,
     url: 'https://liker.land/getapp',
     description: 'connect_wallet_method_description_liker_land_app',
@@ -43,7 +46,8 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.Cosmostation,
     name: 'Cosmostation',
-    tier: 1,
+    defaultTier: 1,
+    isInstalled: false,
     isMobileOk: false,
     url:
       'https://chrome.google.com/webstore/detail/cosmostation/fpkhgmpbidmiogeglndfbkegfdlnajnf',
@@ -52,7 +56,8 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.CosmostationMobile,
     name: 'Cosmostation App',
-    tier: 2,
+    defaultTier: 2,
+    isInstalled: false,
     isMobileOk: true,
     url: 'https://www.cosmostation.io/wallet',
     description: 'connect_wallet_method_description_cosmostation_mobile',
@@ -96,7 +101,7 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
   const isKeplrNotInstalled = !isMobile && !window.keplr;
 
   const tieredConnectionMethods = React.useMemo(() => {
-    const tieredMethods = methods
+    const filteredMethods = methods
       .filter(type => {
         const method = connectionMethodMap[type];
         return !!method && (!isMobile || (isMobile && method.isMobileOk));
@@ -110,18 +115,40 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
           method.url = keplrInstallURLOverride;
         }
         method.description = intl.formatMessage({ id: method.description });
+
+        switch (type) {
+          case LikeCoinWalletConnectorMethodType.Keplr:
+            method.isInstalled = !!window.keplr;
+            break;
+          case LikeCoinWalletConnectorMethodType.Cosmostation:
+            method.isInstalled = !!window.cosmostation;
+            break;
+          default:
+            method.isInstalled = false;
+            break;
+        }
         return method;
-      })
+      });
+    const hasInstalledWallet = filteredMethods.some(method => method.isInstalled);
+    const getTier = (method: LikeCoinWalletConnectorMethod) => {
+      if (hasInstalledWallet) {
+        return method.isInstalled ? 1 : 2;
+      }
+      // if none of wallet is detected, fallback to default tier
+      return method.defaultTier;
+    };
+    const tieredMethods = filteredMethods
       .reduce((tieredMethods, method) => {
-        if (!tieredMethods[method.tier]) {
-          tieredMethods[method.tier] = new Array<
+        const tier = getTier(method);
+        if (!tieredMethods[tier]) {
+          tieredMethods[tier] = new Array<
             LikeCoinWalletConnectorMethod
           >();
         }
-        tieredMethods[method.tier].push(method);
+        tieredMethods[tier].push(method);
         return tieredMethods;
       }, {} as { [tier: number]: LikeCoinWalletConnectorMethod[] });
-    // The returned array will be sorted by key i.e. `method.tier`
+    // The returned array will be sorted by tier
     return Object.values(tieredMethods);
   }, [methods, isMobile, keplrInstallURLOverride, intl]);
 
