@@ -129,7 +129,9 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         }
         return method;
       });
-    const hasInstalledWallet = filteredMethods.some(method => method.isInstalled);
+    const hasInstalledWallet = filteredMethods.some(
+      method => method.isInstalled
+    );
     const getTier = (method: LikeCoinWalletConnectorMethod) => {
       if (hasInstalledWallet) {
         return method.isInstalled ? 1 : 2;
@@ -137,17 +139,14 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
       // if none of wallet is detected, fallback to default tier
       return method.defaultTier;
     };
-    const tieredMethods = filteredMethods
-      .reduce((tieredMethods, method) => {
-        const tier = getTier(method);
-        if (!tieredMethods[tier]) {
-          tieredMethods[tier] = new Array<
-            LikeCoinWalletConnectorMethod
-          >();
-        }
-        tieredMethods[tier].push(method);
-        return tieredMethods;
-      }, {} as { [tier: number]: LikeCoinWalletConnectorMethod[] });
+    const tieredMethods = filteredMethods.reduce((tieredMethods, method) => {
+      const tier = getTier(method);
+      if (!tieredMethods[tier]) {
+        tieredMethods[tier] = new Array<LikeCoinWalletConnectorMethod>();
+      }
+      tieredMethods[tier].push(method);
+      return tieredMethods;
+    }, {} as { [tier: number]: LikeCoinWalletConnectorMethod[] });
     // The returned array will be sorted by tier
     return Object.values(tieredMethods);
   }, [methods, isMobile, keplrInstallURLOverride, intl]);
