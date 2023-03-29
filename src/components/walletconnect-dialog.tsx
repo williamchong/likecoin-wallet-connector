@@ -8,6 +8,7 @@ import {
 } from '@walletconnect/browser-utils';
 
 import { LikeCoinWalletConnectorMethodType } from '../types';
+import { checkIsInLikerLandAppInAppBrowser } from '../utils/liker-land-app';
 
 import { SignInIcon } from './icons/sign-in';
 
@@ -30,7 +31,10 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
   onClose,
 }) => {
   const intl = useIntl();
-  const [isDialogOpen, setDialogOpen] = useState(true);
+
+  const isInLikerLandApp = useMemo(checkIsInLikerLandAppInAppBrowser, []);
+  // Do not show WC dialog for app open if in Liker Land App
+  const [isDialogOpen, setDialogOpen] = useState(!isInLikerLandApp);
 
   const isMobile = useMemo(isMobileDevice, []);
   const isAndroid = useMemo(isAndroidDevice, []);

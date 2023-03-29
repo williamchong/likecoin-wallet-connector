@@ -28,6 +28,7 @@ import {
   initKeplrMobile,
 } from './utils/keplr-mobile';
 import {
+  checkIsInLikerLandAppInAppBrowser,
   getLikerLandAppWCConnector,
   initLikerLandApp,
 } from './utils/liker-land-app';
@@ -142,7 +143,9 @@ export class LikeCoinWalletConnector {
           const result = await this.selectMethod(method);
           resolve(result);
         };
-        if (checkIsInCosmostationMobileInAppBrowser()) {
+        if (checkIsInLikerLandAppInAppBrowser()) {
+          connectWithMethod(LikeCoinWalletConnectorMethodType.LikerId);
+        } else if (checkIsInCosmostationMobileInAppBrowser()) {
           connectWithMethod(
             LikeCoinWalletConnectorMethodType.CosmostationMobile
           );
