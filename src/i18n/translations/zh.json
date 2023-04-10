@@ -15,6 +15,7 @@
   "connect_wallet_method_description_metamask": "使用 MetaMask 瀏覽器外掛 Snap",
   "connect_wallet_method_description_liker_land_app": "使用 Liker Land app 掃描二維碼",
   "connect_wallet_method_description_wallet_connect_v2": "使用支援 Wallet Connect V2 的錢包掃描二維碼",
+  "connect_wallet_method_description_web3auth": "使用 Web3Auth",
   "connect_wallet_other_methods": "其他連接方法",
   "connect_wallet_title": "連接錢包",
   "wallet_connect_button_download_app": "安裝 App",

@@ -15,6 +15,7 @@
   "connect_wallet_method_description_liker_land_app": "Scan QR code with Liker Land app",
   "connect_wallet_method_description_metamask": "Use MetaMask browser extension with Leap Wallet Snap",
   "connect_wallet_method_description_wallet_connect_v2": "Scan QR code with WalletConnect V2 wallets",
+  "connect_wallet_method_description_web3auth": "Using Web3Auth",
   "connect_wallet_other_methods": "Other connection methods",
   "connect_wallet_title": "Connect a wallet",
   "wallet_connect_button_download_app": "Get App",
