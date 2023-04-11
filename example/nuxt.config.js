@@ -1,7 +1,7 @@
-export default {
+export default defineNuxtConfig({
   target: 'static',
   // Global page headers: https://go.nuxtjs.dev/config-head
-  head: {
+  meta: {
     title: 'LikeCoin Wallet Connector Example',
     htmlAttrs: {
       lang: 'en'
@@ -16,34 +16,20 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
+  babel: {
+    plugins: [
+      '@babel/plugin-proposal-optional-chaining',
+      '@babel/plugin-proposal-nullish-coalescing-operator',
+    ],
+  },
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     '../dist/style.css',
   ],
 
-  // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [
-    { src: '~/plugins/textEncoder' },
-  ],
-
-  // Auto import components: https://go.nuxtjs.dev/config-components
-  components: true,
-
-  // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
-  buildModules: [
-  ],
-
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    '@nuxtjs/vuetify',
+    '@invictus.codes/nuxt-vuetify',
   ],
-
-  // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {
-    transpile: [
-      '@walletconnect',
-      '@web3modal',
-    ],
-  }
-}
+});
