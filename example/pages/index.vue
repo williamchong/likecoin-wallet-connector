@@ -12,6 +12,15 @@
           @click="logout"
         >Logout</v-btn>
       </template>
+      <template v-if="walletAddress" v-slot:extension>
+        <v-tabs
+          v-model="tab"
+          grow
+        >
+          <v-tab key="send">Send</v-tab>
+          <v-tab key="sign-arbitrary">Sign Arbitrary</v-tab>
+        </v-tabs>
+      </template>
     </v-app-bar>
 
     <v-main>
@@ -30,51 +39,90 @@
         <v-row>
           <v-col>
             <v-card
-              :loading="isSending"
+              :loading="isSending || isSigningArbitrary"
               class="mx-auto my-12"
               max-width="480"
               outlined
             >
-              <v-form
-                class="pa-4"
-                @submit.prevent="send"
-              >
-                <v-text-field
-                  :value="walletAddress"
-                  label="From address"
-                  readonly
-                />
-                <v-text-field
-                  v-model="toAddress"
-                  label="To address"
-                  :disabled="isSending"
-                  required
-                />
-                <v-text-field
-                  v-model="amount"
-                  label="Amount"
-                  type="number"
-                  :disabled="isSending"
-                  suffix="LIKE"
-                  required
-                />
-                <v-text-field
-                  v-model="fee"
-                  label="Fee"
-                  type="number"
-                  :disabled="isSending"
-                  suffix="nanolike"
-                  required
-                />
-                <div class="d-flex justify-end">
-                  <v-btn
-                    type="submit"
-                    :elevation="isSending ? 0 : 2"
-                    :disabled="isSending"
-                    :loading="isSending"
-                  >Send</v-btn>
-                </div>
-              </v-form>
+              <v-tabs-items v-model="tab">
+
+                <v-tab-item key="send">
+                  <v-form
+                    class="pa-4"
+                    @submit.prevent="send"
+                  >
+                    <v-text-field
+                      :value="walletAddress"
+                      label="From address"
+                      readonly
+                    />
+                    <v-text-field
+                      v-model="toAddress"
+                      label="To address"
+                      :disabled="isSending"
+                      required
+                    />
+                    <v-text-field
+                      v-model="amount"
+                      label="Amount"
+                      type="number"
+                      :disabled="isSending"
+                      suffix="LIKE"
+                      required
+                    />
+                    <v-text-field
+                      v-model="fee"
+                      label="Fee"
+                      type="number"
+                      :disabled="isSending"
+                      suffix="nanolike"
+                      required
+                    />
+                    <div class="d-flex justify-end">
+                      <v-btn
+                        type="submit"
+                        :elevation="isSending ? 0 : 2"
+                        :disabled="isSending"
+                        :loading="isSending"
+                      >Send</v-btn>
+                    </div>
+                  </v-form>
+                </v-tab-item>
+
+                <v-tab-item key="sign-arbitrary">
+                  <v-form
+                    class="pa-4"
+                    @submit.prevent="signArbitrary"
+                  >
+                    <v-text-field
+                      :value="signArbitraryMessage"
+                      label="Message to sign"
+                      required
+                    />
+                    <div class="d-flex justify-end">
+                      <v-btn
+                        type="submit"
+                        :elevation="isSigningArbitrary ? 0 : 2"
+                        :disabled="isSigningArbitrary"
+                        :loading="isSigningArbitrary"
+                      >Sign</v-btn>
+                    </div>
+                  </v-form>
+                  <v-divider />
+                  <v-textarea
+                    class="mt-4 mx-4"
+                    :value="signArbitraryResult"
+                    label="Signature"
+                    background-color="grey lighten-4"
+                    placeholder="Result"
+                    persistent-placeholder
+                    outlined
+                    readonly
+                    auto-grow
+                  />
+                </v-tab-item>
+
+              </v-tabs-items>
             </v-card>
             <v-alert
               v-model="isShowAlert"
@@ -124,6 +172,7 @@ import { LikeCoinWalletConnector, LikeCoinWalletConnectorMethodType } from '../.
 export default {
   data() {
     return {
+      tab: 'send',
       isLoading: true,
 
       method: undefined,
@@ -134,9 +183,13 @@ export default {
       amount: 1,
       fee: 5000,
 
+      signArbitraryMessage: 'Hello, @likecoin/wallet-connector!',
+      signArbitraryResult: '',
+
       txHash: '',
       error: '',
       isSending: false,
+      isSigningArbitrary: false,
       isShowAlert: false,
     };
   },
@@ -207,6 +260,7 @@ export default {
     reset() {
       this.offlineSigner = undefined;
       this.walletAddress = '';
+      this.signArbitraryResult = '';
 
       this.txHash = '';
       this.error = '';
@@ -288,6 +342,37 @@ export default {
         console.error(error);
       } finally {
         this.isSending = false;
+      }
+    },
+    async signArbitrary() {
+      try {
+        this.error = '';
+        this.isShowAlert = false;
+        this.signArbitraryResult = '';
+
+        const connection = await this.connector.initIfNecessary();
+        if (!connection) return;
+        const { method, accounts: [account], offlineSigner, signArbitrary } = connection;
+        this.method = method;
+        this.walletAddress = account.address;
+        this.offlineSigner = offlineSigner;
+        if (!offlineSigner.signArbitrary) {
+          throw new Error('signArbitrary not supported');
+        }
+
+        this.isSigningArbitrary = true;
+
+        const result = await offlineSigner.signArbitrary(
+          this.connector.options.chainId,
+          account.address,
+          this.signArbitraryMessage,
+        );
+        this.signArbitraryResult = JSON.stringify(result);
+      } catch (error) {
+        this.error = `${error.message || error.name || error}`;
+        console.error(error);
+      } finally {
+        this.isSigningArbitrary = false;
       }
     },
   },

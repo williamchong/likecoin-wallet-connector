@@ -1,4 +1,5 @@
 import {
+  OfflineSigner,
   LikeCoinWalletConnectorInitResponse,
   LikeCoinWalletConnectorOptions,
 } from '../types';
@@ -80,9 +81,14 @@ export async function initKeplr(
 
   const offlineSigner = await window.getOfflineSignerAuto(options.chainId);
   const accounts = await offlineSigner.getAccounts();
+
+  let signer: OfflineSigner = offlineSigner;
+  if (window.keplr.signArbitrary) {
+    signer.signArbitrary = window.keplr.signArbitrary.bind(window.keplr);
+  }
   return {
     accounts: [...accounts],
-    offlineSigner,
+    offlineSigner: signer,
   };
 }
 

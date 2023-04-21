@@ -1,4 +1,8 @@
-import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
+import {
+  AccountData,
+  OfflineSigner as CosmJSOfflineSigner,
+} from '@cosmjs/proto-signing';
+import { StdSignature } from '@cosmjs/amino';
 import { KeplrSignOptions } from '@keplr-wallet/types';
 
 export enum LikeCoinWalletConnectorMethodType {
@@ -68,6 +72,16 @@ export interface LikeCoinWalletConnectorMethod {
   url: string;
   description: string;
 }
+
+export interface ArbitrarySigner {
+  signArbitrary?: (
+    chainId: string,
+    signer: string,
+    data: string | Uint8Array
+  ) => Promise<StdSignature>;
+}
+
+export type OfflineSigner = CosmJSOfflineSigner & ArbitrarySigner;
 
 export interface LikeCoinWalletConnectorSession {
   method: LikeCoinWalletConnectorMethodType;

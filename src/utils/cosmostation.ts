@@ -1,4 +1,5 @@
-import { AccountData, OfflineSigner } from '@cosmjs/proto-signing';
+import { AccountData } from '@cosmjs/proto-signing';
+import { OfflineSigner } from '../types';
 
 import {
   LikeCoinWalletConnectorInitResponse,
@@ -67,6 +68,17 @@ export const getCosmostationExtensionOfflineSigner = (
         signature: response.signature,
       },
     };
+  },
+  signArbitrary: async (_, signer, message) => {
+    const { pub_key, signature } = await window.cosmostation.cosmos.request({
+      method: 'cos_signMessage',
+      params: {
+        chainName,
+        signer,
+        message,
+      },
+    });
+    return { pub_key, signature };
   },
 });
 
