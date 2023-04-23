@@ -48,6 +48,8 @@ export const ConnectionMethodButton: FC<Props> = ({
         return !isMobile && !window.keplr;
       case LikeCoinWalletConnectorMethodType.Cosmostation:
         return !isMobile && !window.cosmostation;
+      case LikeCoinWalletConnectorMethodType.Leap:
+        return !isMobile && !window.leap;
       default:
         return false;
     }

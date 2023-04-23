@@ -32,6 +32,11 @@ import {
   getLikerLandAppWCConnector,
   initLikerLandApp,
 } from './utils/liker-land-app';
+import {
+  initLeap,
+  listenLeapKeyStoreChange,
+  removeLeapKeyStoreChangeListener,
+} from './utils/leap';
 import { deserializePublicKey, serializePublicKey } from './utils/wallet';
 
 import {
@@ -246,6 +251,10 @@ export class LikeCoinWalletConnector {
           });
           break;
 
+        case LikeCoinWalletConnectorMethodType.Leap:
+          removeLeapKeyStoreChangeListener(this._accountChangeListener);
+          break;
+
         default:
           break;
       }
@@ -309,6 +318,10 @@ export class LikeCoinWalletConnector {
         );
         break;
 
+      case LikeCoinWalletConnectorMethodType.Leap:
+        initiator = initLeap(this.options);
+        break;
+
       default:
         this._accountChangeListener = undefined;
         throw new Error('METHOD_NOT_SUPPORTED');
@@ -328,6 +341,10 @@ export class LikeCoinWalletConnector {
 
       case LikeCoinWalletConnectorMethodType.Cosmostation:
         listenCosmostationAccountChange(this._accountChangeListener);
+        break;
+
+      case LikeCoinWalletConnectorMethodType.Leap:
+        listenLeapKeyStoreChange(this._accountChangeListener);
         break;
 
       default:

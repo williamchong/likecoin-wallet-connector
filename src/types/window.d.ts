@@ -1,7 +1,11 @@
 import { Window as KeplrWindow } from '@keplr-wallet/types';
 
+interface LeapWindow {
+  leap: any;
+}
+
 declare global {
-  interface Window extends KeplrWindow {
+  interface Window extends KeplrWindow, LeapWindow {
     cosmostation: {
       cosmos: {
         request: (message: { method: string; params?: unknown }) => Promise<T>;

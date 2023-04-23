@@ -11,6 +11,7 @@ export enum LikeCoinWalletConnectorMethodType {
   Cosmostation = 'cosmostation',
   CosmostationMobile = 'cosmostation-mobile',
   LikerId = 'liker-id',
+  Leap = 'leap',
 }
 
 export type KeplrInstallCTAPreset = 'origin' | 'simple-banner' | 'fancy-banner';

@@ -62,6 +62,16 @@ const connectionMethodMap = [
     url: 'https://www.cosmostation.io/wallet',
     description: 'connect_wallet_method_description_cosmostation_mobile',
   },
+  {
+    type: LikeCoinWalletConnectorMethodType.Leap,
+    name: 'Leap Wallet',
+    defaultTier: 1,
+    isInstalled: false,
+    isMobileOk: false,
+    url:
+      'https://chrome.google.com/webstore/detail/leap-cosmos-wallet/fcfcfllfndlomdhbehjjcoimbgofdncg',
+    description: 'connect_wallet_method_description_leap',
+  },
 ].reduce(
   (map, method) => {
     map[method.type] = method;
@@ -122,6 +132,9 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
             break;
           case LikeCoinWalletConnectorMethodType.Cosmostation:
             method.isInstalled = !!window.cosmostation;
+            break;
+          case LikeCoinWalletConnectorMethodType.Leap:
+            method.isInstalled = !!window.leap;
             break;
           default:
             method.isInstalled = false;
