@@ -46,7 +46,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.Cosmostation,
     name: 'Cosmostation',
-    defaultTier: 1,
+    defaultTier: 2,
     isInstalled: false,
     isMobileOk: false,
     url:
@@ -65,7 +65,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.Leap,
     name: 'Leap Wallet',
-    defaultTier: 1,
+    defaultTier: 2,
     isInstalled: false,
     isMobileOk: false,
     url:
