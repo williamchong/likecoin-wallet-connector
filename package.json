@@ -76,7 +76,7 @@
   },
   "dependencies": {
     "@cosmjs/proto-signing": "^0.28.13",
-    "@headlessui/react": "^1.7.15",
+    "@headlessui/react": "1.7.11",
     "@walletconnect/browser-utils": "^1.8.0",
     "@walletconnect/client": "^1.8.0",
     "@walletconnect/types": "^1.8.0",
