@@ -181,7 +181,7 @@ export default {
 
       toAddress: 'like145at6ratky0leykf43zqx8q33ramxhjclh0t9u',
       amount: 1,
-      fee: 5000,
+      fee: 2000000,
 
       signArbitraryMessage: 'Hello, @likecoin/wallet-connector!',
       signArbitraryResult: '',
