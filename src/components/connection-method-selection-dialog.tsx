@@ -89,7 +89,7 @@ export interface ConnectionMethodSelectionDialogProps
   keplrInstallURLOverride?: string;
   keplrInstallCTAPreset?: KeplrInstallCTAPreset;
   onClose?: () => void;
-  onConnect?: (method: LikeCoinWalletConnectorMethodType) => void;
+  onConnect?: (method: LikeCoinWalletConnectorMethodType, params?: any) => void;
 }
 
 /**

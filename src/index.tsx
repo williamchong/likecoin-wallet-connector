@@ -143,9 +143,10 @@ export class LikeCoinWalletConnector {
     return new Promise<LikeCoinWalletConnectorConnectionResponse>(
       async resolve => {
         const connectWithMethod = async (
-          method: LikeCoinWalletConnectorMethodType
+          method: LikeCoinWalletConnectorMethodType,
+          params?: any,
         ) => {
-          const result = await this.selectMethod(method);
+          const result = await this.selectMethod(method, params);
           resolve(result);
         };
         if (checkIsInLikerLandAppInAppBrowser()) {
@@ -214,10 +215,10 @@ export class LikeCoinWalletConnector {
     this._isWalletConnectQRCodeDialogOpen = false;
   };
 
-  private selectMethod = async (method: LikeCoinWalletConnectorMethodType) => {
+  private selectMethod = async (method: LikeCoinWalletConnectorMethodType, params?: any) => {
     this.closeDialog();
 
-    return this.init(method);
+    return this.init(method, params);
   };
 
   disconnect = async () => {
@@ -267,9 +268,14 @@ export class LikeCoinWalletConnector {
   };
 
   private getWCQRCodeDialog: (
-    methodType: LikeCoinWalletConnectorMethodType
-  ) => IQRCodeModal = (methodType: LikeCoinWalletConnectorMethodType) => ({
+    methodType: LikeCoinWalletConnectorMethodType,
+    params?: any,
+  ) => IQRCodeModal = (methodType: LikeCoinWalletConnectorMethodType, params?: any) => ({
     open: uri => {
+      if (methodType === LikeCoinWalletConnectorMethodType.LikerId && params?.goToGetApp) {
+        window.location.href = `https://liker.land/getapp?action=wc&uri=${encodeURIComponent(uri)}`;
+        return;
+      }
       this.openWalletConnectQRCodeDialog(methodType, uri);
     },
     close: () => {
@@ -277,7 +283,7 @@ export class LikeCoinWalletConnector {
     },
   });
 
-  init = async (methodType: LikeCoinWalletConnectorMethodType) => {
+  init = async (methodType: LikeCoinWalletConnectorMethodType, params?: any) => {
     let initiator: Promise<LikeCoinWalletConnectorInitResponse>;
 
     switch (methodType) {
@@ -310,9 +316,10 @@ export class LikeCoinWalletConnector {
         break;
 
       case LikeCoinWalletConnectorMethodType.LikerId:
+        const { goToGetApp } = params || {};
         initiator = initLikerLandApp(
           this.options,
-          this.getWCQRCodeDialog(LikeCoinWalletConnectorMethodType.LikerId),
+          this.getWCQRCodeDialog(LikeCoinWalletConnectorMethodType.LikerId, { goToGetApp }),
           this.sessionMethod,
           this.sessionAccounts
         );

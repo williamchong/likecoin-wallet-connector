@@ -14,7 +14,7 @@ export interface ConnectionMethodListBaseProps
   methods: LikeCoinWalletConnectorMethod[];
   isMobile: boolean;
   keplrInstallCTAPreset?: KeplrInstallCTAPreset;
-  onSelectMethod?: (method: LikeCoinWalletConnectorMethodType) => void;
+  onSelectMethod?: (method: LikeCoinWalletConnectorMethodType, params?: any) => void;
 }
 
 export const ConnectionMethodListBase: React.FC<ConnectionMethodListBaseProps> = ({
@@ -25,8 +25,8 @@ export const ConnectionMethodListBase: React.FC<ConnectionMethodListBaseProps> =
   onSelectMethod,
   ...props
 }) => {
-  function handleMethodSelection(method: LikeCoinWalletConnectorMethodType) {
-    if (onSelectMethod) onSelectMethod(method);
+  function handleMethodSelection(method: LikeCoinWalletConnectorMethodType, params?: any) {
+    if (onSelectMethod) onSelectMethod(method, params);
   }
 
   return (
@@ -46,7 +46,7 @@ export const ConnectionMethodListBase: React.FC<ConnectionMethodListBaseProps> =
             url={method.url}
             keplrInstallCTAPreset={keplrInstallCTAPreset}
             isMobile={isMobile}
-            onPress={() => handleMethodSelection(method.type)}
+            onPress={(params?: any) => handleMethodSelection(method.type, params)}
           />
         </li>
       ))}
