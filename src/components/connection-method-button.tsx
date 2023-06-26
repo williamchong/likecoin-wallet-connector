@@ -26,7 +26,7 @@ export interface Props {
   url?: string;
   isMobile?: boolean;
   keplrInstallCTAPreset?: KeplrInstallCTAPreset;
-  onPress?: () => void;
+  onPress?: (params?: any) => void;
 }
 
 /**
@@ -83,6 +83,7 @@ export const ConnectionMethodButton: FC<Props> = ({
 
   const handleClickInstallLikerLandAppButton: MouseEventHandler = e => {
     e.stopPropagation();
+    if (onPress) onPress({ goToGetApp: true });
   };
 
   const handleClickOpenInDAppBrowserButton: MouseEventHandler = e => {
@@ -197,9 +198,6 @@ export const ConnectionMethodButton: FC<Props> = ({
             {type === LikeCoinWalletConnectorMethodType.LikerId && (
               <div className="lk-flex lk-justify-center lk-mt-[12px]">
                 <Button
-                  tag="a"
-                  href={url}
-                  target="_blank"
                   onClick={handleClickInstallLikerLandAppButton}
                 >
                   <DownloadIcon />
