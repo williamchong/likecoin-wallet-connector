@@ -144,7 +144,7 @@ export class LikeCoinWalletConnector {
       async resolve => {
         const connectWithMethod = async (
           method: LikeCoinWalletConnectorMethodType,
-          params?: any,
+          params?: any
         ) => {
           const result = await this.selectMethod(method, params);
           resolve(result);
@@ -215,7 +215,10 @@ export class LikeCoinWalletConnector {
     this._isWalletConnectQRCodeDialogOpen = false;
   };
 
-  private selectMethod = async (method: LikeCoinWalletConnectorMethodType, params?: any) => {
+  private selectMethod = async (
+    method: LikeCoinWalletConnectorMethodType,
+    params?: any
+  ) => {
     this.closeDialog();
 
     return this.init(method, params);
@@ -269,11 +272,19 @@ export class LikeCoinWalletConnector {
 
   private getWCQRCodeDialog: (
     methodType: LikeCoinWalletConnectorMethodType,
-    params?: any,
-  ) => IQRCodeModal = (methodType: LikeCoinWalletConnectorMethodType, params?: any) => ({
+    params?: any
+  ) => IQRCodeModal = (
+    methodType: LikeCoinWalletConnectorMethodType,
+    params?: any
+  ) => ({
     open: uri => {
-      if (methodType === LikeCoinWalletConnectorMethodType.LikerId && params?.goToGetApp) {
-        window.location.href = `https://liker.land/getapp?action=wc&uri=${encodeURIComponent(uri)}`;
+      if (
+        methodType === LikeCoinWalletConnectorMethodType.LikerId &&
+        params?.goToGetApp
+      ) {
+        window.location.href = `https://liker.land/getapp?action=wc&uri=${encodeURIComponent(
+          uri
+        )}`;
         return;
       }
       this.openWalletConnectQRCodeDialog(methodType, uri);
@@ -283,7 +294,10 @@ export class LikeCoinWalletConnector {
     },
   });
 
-  init = async (methodType: LikeCoinWalletConnectorMethodType, params?: any) => {
+  init = async (
+    methodType: LikeCoinWalletConnectorMethodType,
+    params?: any
+  ) => {
     let initiator: Promise<LikeCoinWalletConnectorInitResponse>;
 
     switch (methodType) {
@@ -319,7 +333,9 @@ export class LikeCoinWalletConnector {
         const { goToGetApp } = params || {};
         initiator = initLikerLandApp(
           this.options,
-          this.getWCQRCodeDialog(LikeCoinWalletConnectorMethodType.LikerId, { goToGetApp }),
+          this.getWCQRCodeDialog(LikeCoinWalletConnectorMethodType.LikerId, {
+            goToGetApp,
+          }),
           this.sessionMethod,
           this.sessionAccounts
         );
