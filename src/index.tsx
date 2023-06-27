@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { AccountData } from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
-import { IQRCodeModal } from '@walletconnect/types';
+import { IQRCodeModal } from '@walletconnect/legacy-types';
 import EventEmitter from 'events';
 
 import { ConnectionMethodSelectionDialog } from './components/connection-method-selection-dialog';
@@ -15,18 +15,20 @@ import {
 } from './utils/cosmostation';
 import {
   checkIsInCosmostationMobileInAppBrowser,
-  getCosmostationMobileWCConnector,
+  onCosmostationMobileDisconnect,
   initCosmostationMobile,
 } from './utils/cosmostation-mobile';
+import {
+  initWalletConnectV2Connector,
+  onWalletConnectV2Disconnect,
+  listenWalletConnectV2StoreChange,
+} from './utils/wallet-connect-v2';
 import {
   initKeplr,
   listenKeplrKeyStoreChange,
   removeKeplrKeyStoreChangeListener,
 } from './utils/keplr';
-import {
-  getKeplrMobileWCConnector,
-  initKeplrMobile,
-} from './utils/keplr-mobile';
+import { onKeplrMobileDisconnect, initKeplrMobile } from './utils/keplr-mobile';
 import {
   checkIsInLikerLandAppInAppBrowser,
   getLikerLandAppWCConnector,
@@ -101,6 +103,7 @@ export class LikeCoinWalletConnector {
         LikeCoinWalletConnectorMethodType.KeplrMobile,
         LikeCoinWalletConnectorMethodType.LikerId,
         LikeCoinWalletConnectorMethodType.Cosmostation,
+        LikeCoinWalletConnectorMethodType.WalletConnectV2,
       ],
       keplrSignOptions: options.keplrSignOptions || {},
       keplrMobileWCBridge: options.keplrMobileWCBridge || WC_BRIGDE,
@@ -110,6 +113,13 @@ export class LikeCoinWalletConnector {
       cosmostationAppWCBridge: options.cosmostationAppWCBridge || WC_BRIGDE,
       cosmostationDirectSignEnabled:
         options.cosmostationDirectSignEnabled || false,
+      walletConnectProjectId: options.walletConnectProjectId || '',
+      walletConnectMetadata: options.walletConnectMetadata || {
+        description: 'LikeCoin Wallet Connect Lib',
+        url: 'https://like.co',
+        icons: ['https://like.co/logo.png'],
+        name: 'LikeCoin Wallet Connect',
+      },
       isShowMobileWarning:
         options.isShowMobileWarning !== undefined
           ? !!options.isShowMobileWarning
@@ -234,9 +244,7 @@ export class LikeCoinWalletConnector {
           break;
 
         case LikeCoinWalletConnectorMethodType.KeplrMobile:
-          wcConnector = getKeplrMobileWCConnector({
-            bridge: this.options.keplrMobileWCBridge,
-          });
+          await onKeplrMobileDisconnect();
           break;
 
         case LikeCoinWalletConnectorMethodType.Cosmostation:
@@ -244,9 +252,7 @@ export class LikeCoinWalletConnector {
           break;
 
         case LikeCoinWalletConnectorMethodType.CosmostationMobile:
-          wcConnector = getCosmostationMobileWCConnector({
-            bridge: this.options.cosmostationAppWCBridge,
-          });
+          await onCosmostationMobileDisconnect();
           break;
 
         case LikeCoinWalletConnectorMethodType.LikerId:
@@ -257,6 +263,10 @@ export class LikeCoinWalletConnector {
 
         case LikeCoinWalletConnectorMethodType.Leap:
           removeLeapKeyStoreChangeListener(this._accountChangeListener);
+          break;
+
+        case LikeCoinWalletConnectorMethodType.WalletConnectV2:
+          await onWalletConnectV2Disconnect();
           break;
 
         default:
@@ -345,6 +355,14 @@ export class LikeCoinWalletConnector {
         initiator = initLeap(this.options);
         break;
 
+      case LikeCoinWalletConnectorMethodType.WalletConnectV2:
+        initiator = initWalletConnectV2Connector(
+          this.options,
+          this.sessionMethod,
+          this.sessionAccounts
+        );
+        break;
+
       default:
         this._accountChangeListener = undefined;
         throw new Error('METHOD_NOT_SUPPORTED');
@@ -368,6 +386,10 @@ export class LikeCoinWalletConnector {
 
       case LikeCoinWalletConnectorMethodType.Leap:
         listenLeapKeyStoreChange(this._accountChangeListener);
+        break;
+
+      case LikeCoinWalletConnectorMethodType.WalletConnectV2:
+        listenWalletConnectV2StoreChange(this._accountChangeListener);
         break;
 
       default:
@@ -454,7 +476,6 @@ export class LikeCoinWalletConnector {
         case LikeCoinWalletConnectorMethodType.Keplr:
           listenKeplrKeyStoreChange(this._accountChangeListener);
           break;
-
         default:
           break;
       }

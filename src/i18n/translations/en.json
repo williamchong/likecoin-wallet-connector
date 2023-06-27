@@ -10,6 +10,7 @@
   "connect_wallet_method_description_keplr": "Using Keplr browser extension",
   "connect_wallet_method_description_keplr_mobile": "Scan QR code with Keplr Mobile app",
   "connect_wallet_method_description_leap": "Use Leap browser extension",
+  "connect_wallet_method_description_wallet_connect_v2": "Scan QR code with WalletConnect V2 wallets",
   "connect_wallet_method_description_liker_land_app": "Scan QR code with Liker Land app",
   "connect_wallet_other_methods": "Other connection methods",
   "connect_wallet_title": "Connect a wallet",

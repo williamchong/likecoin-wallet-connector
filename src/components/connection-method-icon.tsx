@@ -6,6 +6,15 @@ export interface Props extends HTMLAttributes<HTMLOrSVGElement> {
   type?: LikeCoinWalletConnectorMethodType;
 }
 
+function getIconViewBox(type?: LikeCoinWalletConnectorMethodType) {
+  switch (type) {
+    case LikeCoinWalletConnectorMethodType.WalletConnectV2:
+      return '0 0 64 64';
+    default:
+      return '0 0 32 32';
+  }
+}
+
 function getIconPath(type?: LikeCoinWalletConnectorMethodType) {
   switch (type) {
     case LikeCoinWalletConnectorMethodType.Keplr:
@@ -18,6 +27,8 @@ function getIconPath(type?: LikeCoinWalletConnectorMethodType) {
     case LikeCoinWalletConnectorMethodType.Cosmostation:
     case LikeCoinWalletConnectorMethodType.CosmostationMobile:
       return 'M10.82,24.85,4.75,14.34a1.76,1.76,0,0,1,0-1.72l6.07-10.5a1.72,1.72,0,0,1,1.49-.87H24.44a1.7,1.7,0,0,1,1.49.87L32,12.62l-3,1.73L23.44,4.7H13.3L8.23,13.48l5.56,9.65-3,1.72Zm8.86,5.7H7.56a1.71,1.71,0,0,1-1.49-.86L0,19.19l3-1.73,5.57,9.65H18.68l5.08-8.78L18.19,8.68l3-1.72,6.07,10.5a1.78,1.78,0,0,1,0,1.73l-6.07,10.5a1.73,1.73,0,0,1-1.49.86Z';
+    case LikeCoinWalletConnectorMethodType.WalletConnectV2:
+      return 'M17.83 23a20.33 20.33 0 0128.34 0l.95.92a1 1 0 010 1.39l-3.23 3.19a.5.5 0 01-.71 0l-1.29-1.27a14.21 14.21 0 00-19.78 0l-1.39 1.36a.48.48 0 01-.7 0l-3.23-3.15a1 1 0 010-1.39zm35 6.52l2.87 2.81a1 1 0 010 1.39l-12.93 12.7a1 1 0 01-1.41 0l-9.18-9a.25.25 0 00-.36 0l-9.18 9a1 1 0 01-1.41 0L8.29 33.76a1 1 0 010-1.39l2.87-2.81a1 1 0 011.42 0l9.18 9a.24.24 0 00.35 0l9.18-9a1 1 0 011.42 0l9.18 9a.24.24 0 00.35 0l9.18-9a1 1 0 011.42 0z';
     default:
       return '';
   }
@@ -31,7 +42,7 @@ export const ConnectionMethodIcon: FC<Props> = ({ type, ...props }) => {
     <svg
       width="32"
       height="32"
-      viewBox="0 0 32 32"
+      viewBox={getIconViewBox(type)}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       {...props}

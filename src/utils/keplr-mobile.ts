@@ -1,9 +1,11 @@
-import { OfflineAminoSigner } from '@cosmjs/amino';
-import { AccountData } from '@cosmjs/proto-signing';
-import { KeplrSignOptions } from '@keplr-wallet/types';
-import WalletConnect from '@walletconnect/client';
-import { IQRCodeModal, IWalletConnectOptions } from '@walletconnect/types';
-import { payloadId } from '@walletconnect/utils';
+import { AminoSignResponse } from '@cosmjs/amino';
+import {
+  AccountData,
+  DirectSignResponse,
+  OfflineSigner,
+} from '@cosmjs/proto-signing';
+import Client from '@walletconnect/sign-client';
+import { IQRCodeModal } from '@walletconnect/legacy-types';
 
 import {
   LikeCoinWalletConnectorInitResponse,
@@ -11,20 +13,15 @@ import {
   LikeCoinWalletConnectorOptions,
 } from '../types';
 
-import { convertWalletConnectAccountResponse } from './wallet';
+import { SessionTypes } from '@walletconnect/types';
+import {
+  getWalletConnectV2Accounts,
+  getWalletConnectV2Connector,
+} from './wallet-connect-v2';
+import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 
-export function getKeplrMobileWCConnector(
-  options: Partial<IWalletConnectOptions> = {}
-) {
-  return new WalletConnect({
-    signingMethods: [
-      'keplr_enable_wallet_connect_v1',
-      'keplr_get_key_wallet_connect_v1',
-      'keplr_sign_amino_wallet_connect_v1',
-    ],
-    ...options,
-  });
-}
+let client: Client | null = null;
+let session: SessionTypes.Struct | null = null;
 
 export async function initKeplrMobile(
   options: LikeCoinWalletConnectorOptions,
@@ -32,59 +29,116 @@ export async function initKeplrMobile(
   sessionMethod?: LikeCoinWalletConnectorMethodType,
   sessionAccounts: AccountData[] = []
 ): Promise<LikeCoinWalletConnectorInitResponse> {
-  const wcConnector = getKeplrMobileWCConnector({
-    bridge: options.keplrMobileWCBridge,
-    qrcodeModal,
+  const wcConnector = await getWalletConnectV2Connector({
+    projectId: options.walletConnectProjectId,
+    metadata: options.walletConnectMetadata,
   });
+  client = wcConnector;
+  // TODO: allow selecting sessions
+  if (!session) {
+    const currentSessions = wcConnector.session.getAll();
+    const reuseSession = currentSessions
+      .reverse()
+      .find((session: SessionTypes.Struct) => {
+        return session.peer.metadata.name.includes('Keplr');
+      });
+    if (reuseSession) {
+      session = reuseSession;
+    }
+  }
   let accounts: AccountData[] = [];
+
   if (
-    wcConnector.connected &&
+    client &&
+    session &&
     sessionMethod === LikeCoinWalletConnectorMethodType.KeplrMobile &&
     sessionAccounts.length > 0
   ) {
     accounts = sessionAccounts;
   } else {
-    if (wcConnector.connected) {
-      await wcConnector.killSession();
-    }
-    await wcConnector.connect();
-    await wcConnector.sendCustomRequest({
-      id: payloadId(),
-      jsonrpc: '2.0',
-      method: 'keplr_enable_wallet_connect_v1',
-      params: [options.chainId],
-    });
-    const [account] = await wcConnector.sendCustomRequest({
-      id: payloadId(),
-      jsonrpc: '2.0',
-      method: 'keplr_get_key_wallet_connect_v1',
-      params: [options.chainId],
-    });
-    accounts = [convertWalletConnectAccountResponse(account)];
-  }
-  if (!accounts.length) {
-    throw new Error('WALLETCONNECT_ACCOUNT_NOT_FOUND');
-  }
-
-  const offlineSigner: OfflineAminoSigner = {
-    getAccounts: () => Promise.resolve(accounts),
-    signAmino: async (
-      signerBech32Address,
-      signDoc,
-      signOptions: KeplrSignOptions = {}
-    ) => {
-      const [result] = await wcConnector.sendCustomRequest({
-        id: payloadId(),
-        jsonrpc: '2.0',
-        method: 'keplr_sign_amino_wallet_connect_v1',
-        params: [
-          options.chainId,
-          signerBech32Address,
-          signDoc,
-          { ...options.keplrSignOptions, ...signOptions },
-        ],
+    let connectRes;
+    try {
+      connectRes = await wcConnector.connect({
+        pairingTopic: session?.topic,
+        requiredNamespaces: {
+          cosmos: {
+            methods: [
+              'cosmos_getAccounts',
+              'cosmos_signDirect',
+              'cosmos_signAmino',
+            ],
+            chains: [`cosmos:${options.chainId}`],
+            events: [],
+          },
+        },
       });
-      return result;
+    } catch (err) {
+      if (session) {
+        console.error(err);
+        session = null;
+        connectRes = await wcConnector.connect({
+          requiredNamespaces: {
+            cosmos: {
+              methods: [
+                'cosmos_getAccounts',
+                'cosmos_signDirect',
+                'cosmos_signAmino',
+              ],
+              chains: [`cosmos:${options.chainId}`],
+              events: [],
+            },
+          },
+        });
+      } else {
+        throw err;
+      }
+    }
+    const { uri, approval } = connectRes;
+    if (uri) {
+      qrcodeModal.open(uri, () => {});
+    }
+
+    session = await approval();
+
+    accounts = await getWalletConnectV2Accounts(
+      wcConnector,
+      options.chainId,
+      session.topic
+    );
+    qrcodeModal.close();
+  }
+  const offlineSigner: OfflineSigner = {
+    getAccounts: async () => Promise.resolve(accounts),
+    signAmino: async (signerBech32Address, signDoc) => {
+      const result = await wcConnector.request({
+        topic: session!.topic,
+        chainId: `cosmos:${options.chainId}`,
+        request: {
+          method: 'cosmos_signAmino',
+          params: {
+            signerAddress: signerBech32Address,
+            signDoc,
+          },
+        },
+      });
+      return result as AminoSignResponse;
+    },
+    signDirect: async (signerBech32Address, signDoc) => {
+      const { signed: signedInJSON, signature } = (await wcConnector.request({
+        topic: session!.topic,
+        chainId: `cosmos:${options.chainId}`,
+        request: {
+          method: 'cosmos_signDirect',
+          params: {
+            signerAddress: signerBech32Address,
+            signDoc: SignDoc.toJSON(signDoc),
+          },
+        },
+      })) as any;
+      return {
+        signed: SignDoc.fromJSON(signedInJSON),
+        signature,
+      } as DirectSignResponse;
     },
   };
 
@@ -92,4 +146,18 @@ export async function initKeplrMobile(
     accounts,
     offlineSigner,
   };
+}
+
+export async function onKeplrMobileDisconnect(topic = session?.topic) {
+  if (topic) {
+    if (!client) return;
+    await client.disconnect({
+      topic,
+      reason: {
+        code: 6000,
+        message: 'USER_DISCONNECTED',
+      },
+    });
+    session = null;
+  }
 }

@@ -24,3 +24,12 @@ export function convertWalletConnectAccountResponse(
     algo,
   } as AccountData;
 }
+
+export function convertWalletConnectV2AccountResponse(account: any) {
+  const { pubkey, ...accounts } = account;
+  const isHex = pubkey.length === 66 && pubkey.match(/[0-9A-Fa-f]{6}/g);
+  return {
+    ...accounts,
+    pubkey: Buffer.from(pubkey, isHex ? 'hex' : 'base64'),
+  } as AccountData;
+}

@@ -4,6 +4,7 @@ import {
 } from '@cosmjs/proto-signing';
 import { StdSignature } from '@cosmjs/amino';
 import { KeplrSignOptions } from '@keplr-wallet/types';
+import { SignClientTypes } from '@walletconnect/types';
 
 export enum LikeCoinWalletConnectorMethodType {
   Keplr = 'keplr',
@@ -12,6 +13,7 @@ export enum LikeCoinWalletConnectorMethodType {
   CosmostationMobile = 'cosmostation-mobile',
   LikerId = 'liker-id',
   Leap = 'leap',
+  WalletConnectV2 = 'walletconnect-v2',
 }
 
 export type KeplrInstallCTAPreset = 'origin' | 'simple-banner' | 'fancy-banner';
@@ -52,6 +54,9 @@ export interface LikeCoinWalletConnectorConfig {
 
   cosmostationAppWCBridge?: string;
   cosmostationDirectSignEnabled?: boolean;
+
+  walletConnectProjectId?: string;
+  walletConnectMetadata?: SignClientTypes.Metadata;
 
   isShowMobileWarning?: boolean;
 

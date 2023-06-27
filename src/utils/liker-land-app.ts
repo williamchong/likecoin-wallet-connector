@@ -5,7 +5,10 @@ import {
   OfflineSigner,
 } from '@cosmjs/proto-signing';
 import WalletConnect from '@walletconnect/client';
-import { IQRCodeModal, IWalletConnectOptions } from '@walletconnect/types';
+import {
+  IQRCodeModal,
+  IWalletConnectOptions,
+} from '@walletconnect/legacy-types';
 import { payloadId } from '@walletconnect/utils';
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx';
 

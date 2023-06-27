@@ -72,6 +72,15 @@ const connectionMethodMap = [
       'https://chrome.google.com/webstore/detail/leap-cosmos-wallet/fcfcfllfndlomdhbehjjcoimbgofdncg',
     description: 'connect_wallet_method_description_leap',
   },
+  {
+    type: LikeCoinWalletConnectorMethodType.WalletConnectV2,
+    name: 'WalletConnect V2',
+    defaultTier: 2,
+    isInstalled: false,
+    isMobileOk: true,
+    url: '',
+    description: 'connect_wallet_method_description_wallet_connect_v2',
+  },
 ].reduce(
   (map, method) => {
     map[method.type] = method;

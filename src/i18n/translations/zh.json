@@ -10,6 +10,7 @@
   "connect_wallet_method_description_keplr": "使用 Keplr 瀏覽器外掛",
   "connect_wallet_method_description_keplr_mobile": "使用 Keplr Mobile app 掃描二維碼",
   "connect_wallet_method_description_leap": "使用 Leap 瀏覽器外掛",
+  "connect_wallet_method_description_wallet_connect_v2": "使用支援 Wallet Connect V2 的錢包掃描二維碼",
   "connect_wallet_method_description_liker_land_app": "使用 Liker Land app 掃描二維碼",
   "connect_wallet_other_methods": "其他連接方法",
   "connect_wallet_title": "連接錢包",

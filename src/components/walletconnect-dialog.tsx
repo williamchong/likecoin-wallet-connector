@@ -50,17 +50,17 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
           saveMobileLinkInfo({
             name: 'Keplr',
             href:
-              'intent://wcV1#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;',
+              'intent://wcV2#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;',
           });
 
-          return `intent://wcV1?${uri}#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;`;
+          return `intent://wcV2?${uri}#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;`;
         } else {
           saveMobileLinkInfo({
             name: 'Keplr',
-            href: 'keplrwallet://wcV1',
+            href: 'keplrwallet://wcV2',
           });
 
-          return `keplrwallet://wcV1?${uri}`;
+          return `keplrwallet://wcV2?${uri}`;
         }
 
       case LikeCoinWalletConnectorMethodType.CosmostationMobile:
