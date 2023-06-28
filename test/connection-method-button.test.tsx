@@ -1,7 +1,7 @@
 import React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import './polyfill'
+import './polyfill';
 import { Default as ConnectionMethodButton } from '../stories/connection-method-button.stories';
 
 describe('ConnectionMethodButton', () => {

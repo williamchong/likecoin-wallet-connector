@@ -14,7 +14,6 @@ import { DownloadIcon } from './icons/download';
 import { KeplrColorIcon } from './icons/keplr-color';
 import { OpenInNewIcon } from './icons/open-in-new';
 
-import { Alert } from './alert';
 import { Button } from './button';
 import { ConnectionMethodIcon } from './connection-method-icon';
 import ConnectionMethodBgBanner from './connection-method-bg-banner';
