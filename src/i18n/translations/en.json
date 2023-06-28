@@ -21,6 +21,5 @@
   "wallet_connect_hint_scan_qrcode_cosmostation_mobile": "Please scan the QR code with Cosmostation Mobile Wallet app",
   "wallet_connect_hint_scan_qrcode_keplr_mobile": "Please scan the QR code with Keplr Mobile Wallet app",
   "wallet_connect_hint_scan_qrcode_liker_land_app": "Please scan the QR code with Liker Land app",
-  "warning_ledger_not_support": "Ledger is not yet supported.",
   "warning_wallet_connect_mobile": "WalletConnect in mobile is an experimental feature, please visit this site on desktop for a better experience."
 }

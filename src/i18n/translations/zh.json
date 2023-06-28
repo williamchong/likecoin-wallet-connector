@@ -21,6 +21,5 @@
   "wallet_connect_hint_scan_qrcode_cosmostation_mobile": "請使用 Cosmostation Mobile Wallet app 掃描二維碼",
   "wallet_connect_hint_scan_qrcode_keplr_mobile": "請使用 Keplr Mobile app 掃描二維碼",
   "wallet_connect_hint_scan_qrcode_liker_land_app": "請使用 Liker Land app 掃描二維碼",
-  "warning_ledger_not_support": "暫不支援 Ledger。",
   "warning_wallet_connect_mobile": "手機登入功能正處於試驗性階段，請瀏覽桌面電腦版本以獲最佳體驗。"
 }

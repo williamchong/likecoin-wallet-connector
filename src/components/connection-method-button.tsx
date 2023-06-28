@@ -228,13 +228,6 @@ export const ConnectionMethodButton: FC<Props> = ({
                 </Button>
               </div>
             )}
-          {!isNotInstalled && (
-            <Alert className="lk-mt-[4px] lk-text-gray" isPlain={true}>
-              <p>
-                <FormattedMessage id="warning_ledger_not_support" />
-              </p>
-            </Alert>
-          )}
         </>
       )}
     </>
