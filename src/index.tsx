@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { AccountData } from '@cosmjs/proto-signing';
-import WalletConnect from '@walletconnect/client';
 import { IQRCodeModal } from '@walletconnect/legacy-types';
 import EventEmitter from 'events';
 
@@ -31,7 +30,7 @@ import {
 import { onKeplrMobileDisconnect, initKeplrMobile } from './utils/keplr-mobile';
 import {
   checkIsInLikerLandAppInAppBrowser,
-  getLikerLandAppWCConnector,
+  onLikerLandAppDisconnect,
   initLikerLandApp,
 } from './utils/liker-land-app';
 import {
@@ -264,7 +263,6 @@ export class LikeCoinWalletConnector {
   disconnect = async () => {
     const session = this.loadSession();
     if (session) {
-      let wcConnector: WalletConnect | undefined;
       switch (session.method) {
         case LikeCoinWalletConnectorMethodType.Keplr:
           removeKeplrKeyStoreChangeListener(this._accountChangeListener);
@@ -283,9 +281,7 @@ export class LikeCoinWalletConnector {
           break;
 
         case LikeCoinWalletConnectorMethodType.LikerId:
-          wcConnector = getLikerLandAppWCConnector({
-            bridge: this.options.likerLandAppWCBridge,
-          });
+          await onLikerLandAppDisconnect();
           break;
 
         case LikeCoinWalletConnectorMethodType.Leap:
@@ -298,9 +294,6 @@ export class LikeCoinWalletConnector {
 
         default:
           break;
-      }
-      if (wcConnector) {
-        await wcConnector.killSession();
       }
     }
     this.deleteSession();
