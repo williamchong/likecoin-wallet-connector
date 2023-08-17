@@ -28,7 +28,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.KeplrMobile,
     name: 'Keplr Mobile',
-    defaultTier: 2,
+    defaultTier: 1,
     isInstalled: false,
     isMobileOk: true,
     url: 'https://keplr.app/app',
