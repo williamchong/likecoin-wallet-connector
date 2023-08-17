@@ -81,6 +81,7 @@ export const ConnectionMethodButton: FC<Props> = ({
       };
 
   const handleClickInstallLikerLandAppButton: MouseEventHandler = e => {
+    e.preventDefault();
     e.stopPropagation();
     if (onPress) onPress({ goToGetApp: true });
   };
@@ -196,7 +197,11 @@ export const ConnectionMethodButton: FC<Props> = ({
             )}
             {type === LikeCoinWalletConnectorMethodType.LikerId && (
               <div className="lk-flex lk-justify-center lk-mt-[12px]">
-                <Button onClick={handleClickInstallLikerLandAppButton}>
+                <Button
+                  tag="a"
+                  href="#"
+                  onClick={handleClickInstallLikerLandAppButton}
+                >
                   <DownloadIcon />
                   <span>
                     <FormattedMessage id="connect_wallet_method_button_liker_land_app_install_prompt" />
