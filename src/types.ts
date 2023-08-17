@@ -62,6 +62,9 @@ export interface LikeCoinWalletConnectorConfig {
 
   availableMethods?: LikeCoinWalletConnectorMethodType[];
 
+  connectWalletTitle?: string;
+  connectWalletMobileWarning?: string;
+
   language?: string;
 }
 

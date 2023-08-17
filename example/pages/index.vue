@@ -247,6 +247,8 @@ export default {
         icons: ['https://like.co/logo.png'],
         name: 'LikeCoin Wallet Connect',
       },
+      connectWalletTitle: 'Login',
+      connectWalletMobileWarning: 'Mobile Warning',
       language: 'zh',
     });
     const session = this.connector.restoreSession();

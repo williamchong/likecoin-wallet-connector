@@ -97,6 +97,8 @@ export interface ConnectionMethodSelectionDialogProps
   isShowMobileWarning?: boolean;
   keplrInstallURLOverride?: string;
   keplrInstallCTAPreset?: KeplrInstallCTAPreset;
+  title?: string;
+  mobileWarning?: string;
   onClose?: () => void;
   onConnect?: (method: LikeCoinWalletConnectorMethodType, params?: any) => void;
 }
@@ -109,6 +111,8 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
   isShowMobileWarning = true,
   keplrInstallURLOverride,
   keplrInstallCTAPreset,
+  title,
+  mobileWarning,
   onClose,
   onConnect,
 }) => {
@@ -183,15 +187,15 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
       {!(isKeplrNotInstalled && keplrInstallCTAPreset === 'fancy-banner') && (
         <h1 className="lk-flex lk-items-center lk-gap-x-[12px] lk-text-like-green lk-font-bold lk-mb-[24px]">
           <SignInIcon className="lk-w-[20px] lk-h-[20px] lk-shrink-0" />
-          <span>
-            <FormattedMessage id="connect_wallet_title" />
-          </span>
+          <span>{title || <FormattedMessage id="connect_wallet_title" />}</span>
         </h1>
       )}
       {isMobile && isShowMobileWarning && (
         <Alert className="lk-mb-[24px]">
           <p>
-            <FormattedMessage id="warning_wallet_connect_mobile" />
+            {mobileWarning || (
+              <FormattedMessage id="warning_wallet_connect_mobile" />
+            )}
           </p>
         </Alert>
       )}

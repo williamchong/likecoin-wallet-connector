@@ -120,6 +120,8 @@ export class LikeCoinWalletConnector {
         icons: ['https://like.co/logo.png'],
         name: 'LikeCoin Wallet Connect',
       },
+      connectWalletTitle: options.connectWalletTitle || '',
+      connectWalletMobileWarning: options.connectWalletMobileWarning || '',
       isShowMobileWarning:
         options.isShowMobileWarning !== undefined
           ? !!options.isShowMobileWarning
@@ -175,6 +177,8 @@ export class LikeCoinWalletConnector {
                 isShowMobileWarning={this.options.isShowMobileWarning}
                 keplrInstallURLOverride={this.options.keplrInstallURLOverride}
                 keplrInstallCTAPreset={this.options.keplrInstallCTAPreset}
+                title={this.options.connectWalletTitle}
+                mobileWarning={this.options.connectWalletMobileWarning}
                 onClose={() => {
                   this.closeDialog();
                   resolve(undefined);
