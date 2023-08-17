@@ -11,8 +11,10 @@ import { LikeCoinWalletConnectorMethodType } from '../types';
 import { checkIsInLikerLandAppInAppBrowser } from '../utils/liker-land-app';
 
 import { SignInIcon } from './icons/sign-in';
+import { DownloadIcon } from './icons/download';
 
 import { Alert } from './alert';
+import { Button } from './button';
 import { Dialog } from './dialog';
 
 export interface WalletConnectQRCodeDialogProps
@@ -92,6 +94,30 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
     }
   }, [type, isAndroid, isMobile, uri]);
 
+  const downloadAppURL = useMemo(() => {
+    switch (type) {
+      case LikeCoinWalletConnectorMethodType.KeplrMobile:
+        if (isAndroid) {
+          return 'https://play.google.com/store/apps/details?id=com.chainapsis.keplr';
+        } else {
+          return 'https://apps.apple.com/app/keplr-wallet/id1567851089';
+        }
+
+      case LikeCoinWalletConnectorMethodType.CosmostationMobile:
+        if (isAndroid) {
+          return 'https://play.google.com/store/apps/details?id=wannabit.io.cosmostaion';
+        } else {
+          return 'https://apps.apple.com/app/cosmostation/id1459830339';
+        }
+
+      case LikeCoinWalletConnectorMethodType.LikerId:
+        return 'https://likecoin.page.link/likerland?utm_campaign=&utm_source=&utm_medium=getapp_page';
+
+      default:
+        return '';
+    }
+  }, [type, isAndroid]);
+
   const hintLabelText = React.useMemo(() => {
     switch (type) {
       case LikeCoinWalletConnectorMethodType.KeplrMobile:
@@ -147,16 +173,29 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
                 <FormattedMessage id="wallet_connect_hint_approve" />
               </p>
             </Alert>
-            <button
-              className="lk-mt-[16px] lk-px-[16px] lk-py-[8px] lk-bg-like-cyan-light lk-text-like-green lk-font-bold lk-rounded-[8px]"
-              onClick={() => {
-                if (navigateToAppURL) {
-                  window.location.href = navigateToAppURL;
-                }
-              }}
-            >
-              <FormattedMessage id="wallet_connect_button_open_app" />
-            </button>
+            <nav className="lk-flex lk-flex-wrap lk-justify-center lk-items-center lk-gap-[12px] lk-mt-[16px]">
+              <Button
+                onClick={() => {
+                  if (navigateToAppURL) {
+                    window.location.href = navigateToAppURL;
+                  }
+                }}
+              >
+                <FormattedMessage id="wallet_connect_button_open_app" />
+              </Button>
+              {downloadAppURL && (
+                <Button
+                  tag="a"
+                  preset="secondary"
+                  href={downloadAppURL}
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  <DownloadIcon />
+                  <FormattedMessage id="wallet_connect_button_download_app" />
+                </Button>
+              )}
+            </nav>
           </>
         ) : (
           <>

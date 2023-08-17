@@ -80,12 +80,6 @@ export const ConnectionMethodButton: FC<Props> = ({
         onClick: onPress,
       };
 
-  const handleClickInstallLikerLandAppButton: MouseEventHandler = e => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onPress) onPress({ goToGetApp: true });
-  };
-
   const handleClickOpenInDAppBrowserButton: MouseEventHandler = e => {
     e.stopPropagation();
     const url = window.location.href;
@@ -192,20 +186,6 @@ export const ConnectionMethodButton: FC<Props> = ({
                   onClick={handleClickOpenInDAppBrowserButton}
                 >
                   <FormattedMessage id="connect_wallet_method_button_cosmostation_mobile_launch_in_dapp_browser" />
-                </Button>
-              </div>
-            )}
-            {type === LikeCoinWalletConnectorMethodType.LikerId && (
-              <div className="lk-flex lk-justify-center lk-mt-[12px]">
-                <Button
-                  tag="a"
-                  href="#"
-                  onClick={handleClickInstallLikerLandAppButton}
-                >
-                  <DownloadIcon />
-                  <span>
-                    <FormattedMessage id="connect_wallet_method_button_liker_land_app_install_prompt" />
-                  </span>
                 </Button>
               </div>
             )}
