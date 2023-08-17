@@ -147,9 +147,19 @@ export class LikeCoinWalletConnector {
 
   openConnectionMethodSelectionDialog = ({
     language = this.options.language,
+    connectWalletTitle = this.options.connectWalletTitle,
+    connectWalletMobileWarning = this.options.connectWalletMobileWarning,
   } = {}) => {
     if (this.options.language !== language) {
       this.options.language = language;
+    }
+    if (this.options.connectWalletTitle !== connectWalletTitle) {
+      this.options.connectWalletTitle = connectWalletTitle;
+    }
+    if (
+      this.options.connectWalletMobileWarning !== connectWalletMobileWarning
+    ) {
+      this.options.connectWalletMobileWarning = connectWalletMobileWarning;
     }
 
     return new Promise<LikeCoinWalletConnectorConnectionResponse>(
