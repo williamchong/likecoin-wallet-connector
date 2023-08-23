@@ -162,6 +162,10 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
       if (hasInstalledWallet) {
         return method.isInstalled ? 1 : 2;
       }
+      // Collapse tier 1 mobile connection method in desktop
+      if (!isMobile && method.isMobileOk && method.defaultTier === 1) {
+        return 2;
+      }
       // if none of wallet is detected, fallback to default tier
       return method.defaultTier;
     };
