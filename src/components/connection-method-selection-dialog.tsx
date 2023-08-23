@@ -155,12 +155,17 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         }
         return method;
       });
-    const hasInstalledWallet = filteredMethods.some(
+    let hasShownInstalledWallet = !filteredMethods.some(
       method => method.isInstalled
     );
     const getTier = (method: LikeCoinWalletConnectorMethod) => {
-      if (hasInstalledWallet) {
-        return method.isInstalled ? 1 : 2;
+      if (!hasShownInstalledWallet) {
+        if (method.isInstalled) {
+          // Show only one installed wallet method
+          hasShownInstalledWallet = true;
+          return 1;
+        }
+        return 2;
       }
       // Collapse tier 1 mobile connection method in desktop
       if (!isMobile && method.isMobileOk && method.defaultTier === 1) {
