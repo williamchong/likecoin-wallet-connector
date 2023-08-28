@@ -24,6 +24,7 @@ export interface Props {
   description?: string;
   url?: string;
   isMobile?: boolean;
+  isRecommended?: boolean;
   keplrInstallCTAPreset?: KeplrInstallCTAPreset;
   onPress?: (params?: any) => void;
 }
@@ -37,6 +38,7 @@ export const ConnectionMethodButton: FC<Props> = ({
   description: defaultDescription,
   url,
   isMobile = false,
+  isRecommended = false,
   keplrInstallCTAPreset = 'origin',
   onPress,
 }) => {
@@ -120,9 +122,32 @@ export const ConnectionMethodButton: FC<Props> = ({
       </>
     ) : (
       <ButtonTag
-        className="lk-block lk-w-full lk-border-[4px] lk-border-solid lk-border-gray-light hover:lk-border-like-cyan-light active:lk-bg-like-cyan-lightest lk-rounded-[16px] lk-p-[24px] lk-transition-colors lk-cursor-pointer lk-group"
+        className={classNames([
+          'lk-block',
+          'lk-w-full',
+          'lk-border-[4px]',
+          'lk-border-solid',
+          isRecommended ? 'lk-border-like-cyan-light' : 'lk-border-gray-light',
+          isRecommended
+            ? 'hover:lk-bg-like-cyan-lightest'
+            : 'hover:lk-border-like-cyan-light',
+          'active:lk-bg-like-cyan-lightest',
+          'lk-rounded-[16px]',
+          'lk-p-[24px]',
+          'lk-transition-colors',
+          'lk-cursor-pointer',
+          'lk-group',
+        ])}
         {...props}
       >
+        {isRecommended && (
+          <div className="lk-text-center lk-mt-[-40px] lk-mb-[40px] lk-h-0">
+            <span className="lk-bg-like-green lk-text-white lk-px-[12px] lk-py-[2px] lk-text-[10px] lk-font-bold lk-rounded-full">
+              <FormattedMessage id="connect_wallet_method_button_recommended" />
+            </span>
+          </div>
+        )}
+
         {type === LikeCoinWalletConnectorMethodType.Keplr &&
         isNotInstalled &&
         keplrInstallCTAPreset === 'simple-banner' ? (

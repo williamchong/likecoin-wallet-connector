@@ -5,6 +5,7 @@ import { isMobile as isMobileDevice } from '@walletconnect/browser-utils';
 import {
   KeplrInstallCTAPreset,
   LikeCoinWalletConnectorMethod,
+  LikeCoinWalletConnectorMethodConfig,
   LikeCoinWalletConnectorMethodType,
 } from '../types';
 
@@ -18,7 +19,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.Keplr,
     name: 'Keplr',
-    defaultTier: 1,
+    tier: 1,
     isInstalled: false,
     isMobileOk: false,
     url:
@@ -28,7 +29,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.KeplrMobile,
     name: 'Keplr Mobile',
-    defaultTier: 1,
+    tier: 1,
     isInstalled: false,
     isMobileOk: true,
     url: 'https://keplr.app/app',
@@ -37,7 +38,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.LikerId,
     name: 'Liker ID',
-    defaultTier: 2,
+    tier: 1,
     isInstalled: false,
     isMobileOk: true,
     url: 'https://liker.land/getapp',
@@ -46,7 +47,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.Cosmostation,
     name: 'Cosmostation',
-    defaultTier: 2,
+    tier: 2,
     isInstalled: false,
     isMobileOk: false,
     url:
@@ -56,7 +57,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.CosmostationMobile,
     name: 'Cosmostation App',
-    defaultTier: 2,
+    tier: 2,
     isInstalled: false,
     isMobileOk: true,
     url: 'https://www.cosmostation.io/wallet',
@@ -65,7 +66,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.Leap,
     name: 'Leap Wallet',
-    defaultTier: 2,
+    tier: 2,
     isInstalled: false,
     isMobileOk: false,
     url:
@@ -75,7 +76,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.WalletConnectV2,
     name: 'WalletConnect V2',
-    defaultTier: 2,
+    tier: 2,
     isInstalled: false,
     isMobileOk: true,
     url: '',
@@ -93,7 +94,7 @@ const connectionMethodMap = [
 
 export interface ConnectionMethodSelectionDialogProps
   extends HTMLAttributes<HTMLDivElement> {
-  methods: LikeCoinWalletConnectorMethodType[];
+  methods: LikeCoinWalletConnectorMethodConfig[];
   isShowMobileWarning?: boolean;
   keplrInstallURLOverride?: string;
   keplrInstallCTAPreset?: KeplrInstallCTAPreset;
@@ -124,37 +125,47 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
   const isKeplrNotInstalled = !isMobile && !window.keplr;
 
   const tieredConnectionMethods = React.useMemo(() => {
-    const filteredMethods = methods
-      .filter(type => {
-        const method = connectionMethodMap[type];
-        return !!method && (!isMobile || (isMobile && method.isMobileOk));
-      })
-      .map(type => {
-        const method = { ...connectionMethodMap[type] };
-        if (
-          type === LikeCoinWalletConnectorMethodType.Keplr &&
-          keplrInstallURLOverride
-        ) {
-          method.url = keplrInstallURLOverride;
-        }
-        method.description = intl.formatMessage({ id: method.description });
+    const filteredMethods: LikeCoinWalletConnectorMethod[] = [];
+    methods.forEach(config => {
+      let type: LikeCoinWalletConnectorMethodType;
+      let method: LikeCoinWalletConnectorMethod;
+      if (Array.isArray(config)) {
+        type = config[0];
+        method = { ...connectionMethodMap[type], ...config[1] };
+      } else {
+        type = config;
+        method = { ...connectionMethodMap[type] };
+      }
 
-        switch (type) {
-          case LikeCoinWalletConnectorMethodType.Keplr:
-            method.isInstalled = !!window.keplr;
-            break;
-          case LikeCoinWalletConnectorMethodType.Cosmostation:
-            method.isInstalled = !!window.cosmostation;
-            break;
-          case LikeCoinWalletConnectorMethodType.Leap:
-            method.isInstalled = !!window.leap;
-            break;
-          default:
-            method.isInstalled = false;
-            break;
-        }
-        return method;
-      });
+      // Hide desktop only method in mobile
+      if (isMobile && !method.isMobileOk) {
+        return;
+      }
+
+      if (
+        type === LikeCoinWalletConnectorMethodType.Keplr &&
+        keplrInstallURLOverride
+      ) {
+        method.url = keplrInstallURLOverride;
+      }
+      method.description = intl.formatMessage({ id: method.description });
+
+      switch (type) {
+        case LikeCoinWalletConnectorMethodType.Keplr:
+          method.isInstalled = !!window.keplr;
+          break;
+        case LikeCoinWalletConnectorMethodType.Cosmostation:
+          method.isInstalled = !!window.cosmostation;
+          break;
+        case LikeCoinWalletConnectorMethodType.Leap:
+          method.isInstalled = !!window.leap;
+          break;
+        default:
+          method.isInstalled = false;
+          break;
+      }
+      filteredMethods.push(method);
+    });
     let hasShownInstalledWallet = !filteredMethods.some(
       method => method.isInstalled
     );
@@ -168,11 +179,11 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         return 2;
       }
       // Collapse tier 1 mobile connection method in desktop
-      if (!isMobile && method.isMobileOk && method.defaultTier === 1) {
+      if (!isMobile && method.isMobileOk && method.tier === 1) {
         return 2;
       }
       // if none of wallet is detected, fallback to default tier
-      return method.defaultTier;
+      return method.tier || 2;
     };
     const tieredMethods = filteredMethods.reduce((tieredMethods, method) => {
       const tier = getTier(method);

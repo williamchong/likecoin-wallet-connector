@@ -52,6 +52,7 @@ export const ConnectionMethodListBase: React.FC<ConnectionMethodListBaseProps> =
             url={method.url}
             keplrInstallCTAPreset={keplrInstallCTAPreset}
             isMobile={isMobile}
+            isRecommended={method.isRecommended}
             onPress={(params?: any) =>
               handleMethodSelection(method.type, params)
             }

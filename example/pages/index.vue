@@ -224,11 +224,11 @@ export default {
       bech32PrefixConsPub: 'likevalconspub',
       availableMethods: [
         LikeCoinWalletConnectorMethodType.Keplr,
+        [LikeCoinWalletConnectorMethodType.KeplrMobile, { tier: 1, isRecommended: true }],
         LikeCoinWalletConnectorMethodType.Cosmostation,
         LikeCoinWalletConnectorMethodType.LikerId,
         LikeCoinWalletConnectorMethodType.Leap,
         LikeCoinWalletConnectorMethodType.CosmostationMobile,
-        LikeCoinWalletConnectorMethodType.KeplrMobile,
         LikeCoinWalletConnectorMethodType.WalletConnectV2,
       ],
       keplrSignOptions: {

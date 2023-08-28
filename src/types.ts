@@ -16,6 +16,28 @@ export enum LikeCoinWalletConnectorMethodType {
   WalletConnectV2 = 'walletconnect-v2',
 }
 
+export interface LikeCoinWalletConnectorMethodConfigurable {
+  name?: string;
+  tier?: number;
+  isRecommended?: boolean;
+  description?: string;
+}
+
+export type LikeCoinWalletConnectorMethodConfig =
+  | LikeCoinWalletConnectorMethodType
+  | [
+      LikeCoinWalletConnectorMethodType,
+      LikeCoinWalletConnectorMethodConfigurable
+    ];
+
+export interface LikeCoinWalletConnectorMethod
+  extends LikeCoinWalletConnectorMethodConfigurable {
+  type: LikeCoinWalletConnectorMethodType;
+  isInstalled: boolean;
+  isMobileOk: boolean;
+  url: string;
+}
+
 export type KeplrInstallCTAPreset = 'origin' | 'simple-banner' | 'fancy-banner';
 
 export interface LikeCoinWalletConnectorConfig {
@@ -60,7 +82,7 @@ export interface LikeCoinWalletConnectorConfig {
 
   isShowMobileWarning?: boolean;
 
-  availableMethods?: LikeCoinWalletConnectorMethodType[];
+  availableMethods?: LikeCoinWalletConnectorMethodConfig[];
 
   connectWalletTitle?: string;
   connectWalletMobileWarning?: string;
@@ -71,16 +93,6 @@ export interface LikeCoinWalletConnectorConfig {
 export type LikeCoinWalletConnectorOptions = Required<
   LikeCoinWalletConnectorConfig
 >;
-
-export interface LikeCoinWalletConnectorMethod {
-  name: string;
-  type: LikeCoinWalletConnectorMethodType;
-  defaultTier: number;
-  isInstalled: boolean;
-  isMobileOk: boolean;
-  url: string;
-  description: string;
-}
 
 export interface ArbitrarySigner {
   signArbitrary?: (
