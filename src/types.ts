@@ -40,6 +40,13 @@ export interface LikeCoinWalletConnectorMethod
 
 export type KeplrInstallCTAPreset = 'origin' | 'simple-banner' | 'fancy-banner';
 
+export type LikeCoinWalletConnectorEvent =
+  | { type: 'toggle_collapsible_connection_method_list'; isCollapsed: boolean }
+  | {
+      type: 'select_connection_method';
+      method: LikeCoinWalletConnectorMethodType;
+    };
+
 export interface LikeCoinWalletConnectorConfig {
   chainId: string;
   chainName: string;
@@ -88,6 +95,8 @@ export interface LikeCoinWalletConnectorConfig {
   connectWalletMobileWarning?: string;
 
   language?: string;
+
+  onEvent?: (event: LikeCoinWalletConnectorEvent) => void;
 }
 
 export type LikeCoinWalletConnectorOptions = Required<

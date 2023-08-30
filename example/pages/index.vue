@@ -250,6 +250,10 @@ export default {
       connectWalletTitle: 'Login',
       connectWalletMobileWarning: 'Mobile Warning',
       language: 'zh',
+
+      onEvent: ({ type, ...payload}) => {
+        console.log('onEvent', type, payload);
+      },
     });
     const session = this.connector.restoreSession();
     this.handleConnection(session);

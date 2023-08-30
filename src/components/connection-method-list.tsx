@@ -12,12 +12,14 @@ export interface ConnectionMethodListProps
   extends ConnectionMethodListBaseProps {
   isCollapsible?: boolean;
   collapsibleToggleButtonTitle?: string;
+  onToggleCollapsibleList?: (isCollapsed: boolean) => void;
 }
 
 export const ConnectionMethodList: React.FC<ConnectionMethodListProps> = ({
   className,
   isCollapsible = false,
   collapsibleToggleButtonTitle = 'Expand',
+  onToggleCollapsibleList,
   ...props
 }) => {
   if (!isCollapsible) {
@@ -32,6 +34,9 @@ export const ConnectionMethodList: React.FC<ConnectionMethodListProps> = ({
               'lk-flex lk-justify-center lk-items-center lk-gap-[8px] lk-text-center lk-mt-[12px] lk-text-[12px] lk-leading-[5/3] hover:lk-bg-[#f7f7f7] active:lk-bg-[#ebebeb] lk-transition-colors lk-rounded-[8px] lk-w-full lk-p-[4px]',
               className
             )}
+            onClick={() => {
+              if (onToggleCollapsibleList) onToggleCollapsibleList(!open);
+            }}
           >
             <span>{collapsibleToggleButtonTitle}</span>
             <ExpandMoreIcon
