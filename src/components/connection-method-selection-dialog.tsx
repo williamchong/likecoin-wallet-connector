@@ -139,11 +139,6 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         method = { ...connectionMethodMap[type] };
       }
 
-      // Hide desktop only method in mobile
-      if (isMobile && !method.isMobileOk) {
-        return;
-      }
-
       if (
         type === LikeCoinWalletConnectorMethodType.Keplr &&
         keplrInstallURLOverride
@@ -165,6 +160,11 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         default:
           method.isInstalled = false;
           break;
+      }
+
+      // Hide desktop only method in mobile
+      if (!method.isInstalled && isMobile && !method.isMobileOk) {
+        return;
       }
       filteredMethods.push(method);
     });
