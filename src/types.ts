@@ -13,6 +13,7 @@ export enum LikeCoinWalletConnectorMethodType {
   CosmostationMobile = 'cosmostation-mobile',
   LikerId = 'liker-id',
   Leap = 'leap',
+  MetaMaskLeap = 'metamask-leap',
   WalletConnectV2 = 'walletconnect-v2',
 }
 

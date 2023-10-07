@@ -228,6 +228,7 @@ export default {
         LikeCoinWalletConnectorMethodType.Cosmostation,
         LikeCoinWalletConnectorMethodType.LikerId,
         LikeCoinWalletConnectorMethodType.Leap,
+        LikeCoinWalletConnectorMethodType.MetaMaskLeap,
         LikeCoinWalletConnectorMethodType.CosmostationMobile,
         LikeCoinWalletConnectorMethodType.WalletConnectV2,
       ],

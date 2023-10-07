@@ -22,6 +22,7 @@ import {
   onWalletConnectV2Disconnect,
   listenWalletConnectV2StoreChange,
 } from './utils/wallet-connect-v2';
+import { initMetaMaskLeap } from './utils/metamask-leap';
 import {
   initKeplr,
   listenKeplrKeyStoreChange,
@@ -373,6 +374,10 @@ export class LikeCoinWalletConnector {
 
       case LikeCoinWalletConnectorMethodType.Leap:
         initiator = initLeap(this.options);
+        break;
+
+      case LikeCoinWalletConnectorMethodType.MetaMaskLeap:
+        initiator = initMetaMaskLeap(this.options);
         break;
 
       case LikeCoinWalletConnectorMethodType.WalletConnectV2:

@@ -74,6 +74,16 @@ const connectionMethodMap = [
     description: 'connect_wallet_method_description_leap',
   },
   {
+    type: LikeCoinWalletConnectorMethodType.MetaMaskLeap,
+    name: 'MetaMask Snap',
+    tier: 2,
+    isInstalled: false,
+    isMobileOk: false,
+    url:
+      'https://chrome.google.com/webstore/detail/metamask/nkbihfbeogaeaoehlefnkodbefgpgknn',
+    description: 'connect_wallet_method_description_metamask',
+  },
+  {
     type: LikeCoinWalletConnectorMethodType.WalletConnectV2,
     name: 'WalletConnect V2',
     tier: 2,
@@ -156,6 +166,9 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
           break;
         case LikeCoinWalletConnectorMethodType.Leap:
           method.isInstalled = !!window.leap;
+          break;
+        case LikeCoinWalletConnectorMethodType.MetaMaskLeap:
+          method.isInstalled = !!window.ethereum?.isMetaMask;
           break;
         default:
           method.isInstalled = false;
