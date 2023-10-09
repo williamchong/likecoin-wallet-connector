@@ -25,7 +25,7 @@ export async function initMetaMaskLeap(
 
   const snapInstalled = await getSnap();
   if (!snapInstalled) {
-    connectSnap();
+    await connectSnap();
   }
   try {
     // Some MetaMask Leap Snap configs not support empty string
