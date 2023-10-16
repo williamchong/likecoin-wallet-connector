@@ -24,6 +24,7 @@ import {
 } from './utils/wallet-connect-v2';
 import { initMetaMaskLeap } from './utils/metamask-leap';
 import {
+  checkIsInKeplrMobileInAppBrowser,
   initKeplr,
   listenKeplrKeyStoreChange,
   removeKeplrKeyStoreChangeListener,
@@ -184,6 +185,8 @@ export class LikeCoinWalletConnector {
           connectWithMethod(
             LikeCoinWalletConnectorMethodType.CosmostationMobile
           );
+        } else if (checkIsInKeplrMobileInAppBrowser()) {
+          connectWithMethod(LikeCoinWalletConnectorMethodType.Keplr);
         } else if (this._isConnectionMethodSelectDialogOpen) {
           resolve(undefined);
         } else {

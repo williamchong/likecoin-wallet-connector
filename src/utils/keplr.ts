@@ -4,6 +4,11 @@ import {
   LikeCoinWalletConnectorOptions,
 } from '../types';
 
+export function checkIsInKeplrMobileInAppBrowser() {
+  // https://github.com/chainapsis/keplr-wallet/blob/3842af168145491681a76a4ce0f57a6c684992d4/packages/types/src/wallet/keplr.ts#L60
+  return window && window?.keplr?.mode === 'mobile-web';
+}
+
 export async function initKeplr(
   options: LikeCoinWalletConnectorOptions,
   trys = 0
