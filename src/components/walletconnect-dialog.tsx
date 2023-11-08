@@ -82,12 +82,20 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
         }
 
       case LikeCoinWalletConnectorMethodType.LikerId:
-        saveMobileLinkInfo({
-          name: 'Liker Land App',
-          href: 'com.oice://wcV1',
-        });
+        if (isAndroid) {
+          saveMobileLinkInfo({
+            name: 'Liker Land App',
+            href: 'intent://wc#Intent;package=com.oice;scheme=com.oice;end;',
+          });
 
-        return `com.oice://wcV1?${uri}`;
+          return `intent://wc?${uri}#Intent;package=com.oice;scheme=com.oice;end;`;
+        } else {
+          saveMobileLinkInfo({
+            name: 'Liker Land App',
+            href: 'com.oice://wc',
+          });
+          return `com.oice://wc?${uri}`;
+        }
 
       default:
         return '';
