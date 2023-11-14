@@ -94,9 +94,9 @@ export class LikeCoinWalletConnector {
       bech32PrefixValPub: options.bech32PrefixValPub,
       bech32PrefixConsAddr: options.bech32PrefixConsAddr,
       bech32PrefixConsPub: options.bech32PrefixConsPub,
-      gasPriceStepLow: options.gasPriceStepLow || 1,
-      gasPriceStepAverage: options.gasPriceStepAverage || 10,
-      gasPriceStepHigh: options.gasPriceStepHigh || 1000,
+      gasPriceStepLow: options.gasPriceStepLow || 1000,
+      gasPriceStepAverage: options.gasPriceStepAverage || 10000,
+      gasPriceStepHigh: options.gasPriceStepHigh || 1000000,
       walletURLForStaking: options.walletURLForStaking || '',
       initAttemptCount: options.initAttemptCount || 3,
       availableMethods: options.availableMethods || [
