@@ -1,7 +1,7 @@
 import { DirectSecp256k1Wallet, OfflineSigner } from '@cosmjs/proto-signing';
 import { Secp256k1Wallet } from '@cosmjs/amino';
-import { Web3Auth, Web3AuthOptions } from "@web3auth/modal";
-import { CHAIN_NAMESPACES } from "@web3auth/base";
+import { Web3Auth, Web3AuthOptions } from '@web3auth/modal';
+import { CHAIN_NAMESPACES } from '@web3auth/base';
 
 import {
   LikeCoinWalletConnectorInitResponse,
@@ -11,7 +11,7 @@ import {
 let web3auth: Web3Auth | null = null;
 
 export async function initWeb3Auth(
-  options: LikeCoinWalletConnectorOptions,
+  options: LikeCoinWalletConnectorOptions
 ): Promise<LikeCoinWalletConnectorInitResponse> {
   const web3AuthOptions = {
     clientId: options.web3AuthClientId,
@@ -38,10 +38,18 @@ export async function initWeb3Auth(
   if (!provider) {
     throw new Error('Failed to connect to wallet');
   }
-  const privateKeyStr = await (provider as any).request({ method: 'private_key' });
+  const privateKeyStr = await (provider as any).request({
+    method: 'private_key',
+  });
   const privateKey = Buffer.from(privateKeyStr, 'hex');
-  const aminoSigner = await Secp256k1Wallet.fromKey(privateKey, options.bech32PrefixAccAddr);
-  const directSigner = await DirectSecp256k1Wallet.fromKey(privateKey, options.bech32PrefixAccAddr);
+  const aminoSigner = await Secp256k1Wallet.fromKey(
+    privateKey,
+    options.bech32PrefixAccAddr
+  );
+  const directSigner = await DirectSecp256k1Wallet.fromKey(
+    privateKey,
+    options.bech32PrefixAccAddr
+  );
   const accounts = [...(await aminoSigner.getAccounts())];
   if (!accounts.length) {
     throw new Error('WALLETCONNECT_ACCOUNT_NOT_FOUND');

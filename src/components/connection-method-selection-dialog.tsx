@@ -100,7 +100,8 @@ const connectionMethodMap = [
     isMobileOk: true,
     url: '',
     description: 'connect_wallet_method_description_wallet_connect_v2',
-  }, {
+  },
+  {
     type: LikeCoinWalletConnectorMethodType.Web3Auth,
     name: 'Web3Auth',
     defaultTier: 2,
