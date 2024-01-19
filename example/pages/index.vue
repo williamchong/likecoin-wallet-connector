@@ -223,11 +223,11 @@ export default {
       bech32PrefixConsAddr: 'likevalcons',
       bech32PrefixConsPub: 'likevalconspub',
       availableMethods: [
-        LikeCoinWalletConnectorMethodType.Authcore,
+        LikeCoinWalletConnectorMethodType.LikerId,
         LikeCoinWalletConnectorMethodType.Keplr,
         [LikeCoinWalletConnectorMethodType.KeplrMobile, { tier: 1, isRecommended: true }],
         LikeCoinWalletConnectorMethodType.Cosmostation,
-        LikeCoinWalletConnectorMethodType.LikerId,
+        LikeCoinWalletConnectorMethodType.LikerLandApp,
         LikeCoinWalletConnectorMethodType.Leap,
         LikeCoinWalletConnectorMethodType.MetaMaskLeap,
         LikeCoinWalletConnectorMethodType.CosmostationMobile,
@@ -254,7 +254,7 @@ export default {
       language: 'zh',
 
       authcoreApiHost: 'https://likecoin-integration-test.authcore.io',
-      authcoreRedirectUrl: 'http://localhost:3000/in/register?method=authcore',
+      authcoreRedirectUrl: 'http://localhost:3000/in/register?method=liker-id',
 
       onEvent: ({ type, ...payload}) => {
         console.log('onEvent', type, payload);

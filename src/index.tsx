@@ -104,6 +104,7 @@ export class LikeCoinWalletConnector {
         LikeCoinWalletConnectorMethodType.Keplr,
         LikeCoinWalletConnectorMethodType.KeplrMobile,
         LikeCoinWalletConnectorMethodType.LikerId,
+        LikeCoinWalletConnectorMethodType.LikerLandApp,
         LikeCoinWalletConnectorMethodType.Cosmostation,
         LikeCoinWalletConnectorMethodType.WalletConnectV2,
       ],
@@ -151,7 +152,7 @@ export class LikeCoinWalletConnector {
     payload: any
   ) {
     switch (method) {
-      case LikeCoinWalletConnectorMethodType.Authcore:
+      case LikeCoinWalletConnectorMethodType.LikerId:
         const { user, idToken, accessToken } = await handleAuthcoreRedirect(
           this.options,
           payload
@@ -199,7 +200,7 @@ export class LikeCoinWalletConnector {
           resolve(result);
         };
         if (checkIsInLikerLandAppInAppBrowser()) {
-          connectWithMethod(LikeCoinWalletConnectorMethodType.LikerId);
+          connectWithMethod(LikeCoinWalletConnectorMethodType.LikerLandApp);
         } else if (checkIsInCosmostationMobileInAppBrowser()) {
           connectWithMethod(
             LikeCoinWalletConnectorMethodType.CosmostationMobile
@@ -303,7 +304,7 @@ export class LikeCoinWalletConnector {
           await onCosmostationMobileDisconnect();
           break;
 
-        case LikeCoinWalletConnectorMethodType.LikerId:
+        case LikeCoinWalletConnectorMethodType.LikerLandApp:
           await onLikerLandAppDisconnect();
           break;
 
@@ -332,7 +333,7 @@ export class LikeCoinWalletConnector {
   ) => ({
     open: uri => {
       if (
-        methodType === LikeCoinWalletConnectorMethodType.LikerId &&
+        methodType === LikeCoinWalletConnectorMethodType.LikerLandApp &&
         params?.goToGetApp
       ) {
         window.location.href = `https://liker.land/getapp?action=wc&uri=${encodeURIComponent(
@@ -354,7 +355,7 @@ export class LikeCoinWalletConnector {
     let initiator: Promise<LikeCoinWalletConnectorInitResponse>;
 
     switch (methodType) {
-      case LikeCoinWalletConnectorMethodType.Authcore:
+      case LikeCoinWalletConnectorMethodType.LikerId:
         const { accessToken } = params || {};
         initiator = initAuthcore(this.options, accessToken);
         break;
@@ -387,13 +388,16 @@ export class LikeCoinWalletConnector {
         );
         break;
 
-      case LikeCoinWalletConnectorMethodType.LikerId:
+      case LikeCoinWalletConnectorMethodType.LikerLandApp:
         const { goToGetApp } = params || {};
         initiator = initLikerLandApp(
           this.options,
-          this.getWCQRCodeDialog(LikeCoinWalletConnectorMethodType.LikerId, {
-            goToGetApp,
-          }),
+          this.getWCQRCodeDialog(
+            LikeCoinWalletConnectorMethodType.LikerLandApp,
+            {
+              goToGetApp,
+            }
+          ),
           this.sessionMethod,
           this.sessionAccounts
         );

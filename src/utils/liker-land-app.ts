@@ -60,7 +60,7 @@ export async function initLikerLandApp(
   if (
     client &&
     session &&
-    sessionMethod === LikeCoinWalletConnectorMethodType.LikerId &&
+    sessionMethod === LikeCoinWalletConnectorMethodType.LikerLandApp &&
     sessionAccounts.length > 0
   ) {
     accounts = sessionAccounts;

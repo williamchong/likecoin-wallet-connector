@@ -17,12 +17,12 @@ import { Dialog } from './dialog';
 
 const connectionMethodMap = [
   {
-    type: LikeCoinWalletConnectorMethodType.Authcore,
-    name: 'Authcore',
+    type: LikeCoinWalletConnectorMethodType.LikerId,
+    name: 'Liker ID',
     tier: 1,
     isInstalled: true,
     isMobileOk: true,
-    url: 'https://niomon.io/',
+    url: 'https://like.co/in',
     description: 'connect_wallet_method_description_authcore',
   },
   {
@@ -45,8 +45,8 @@ const connectionMethodMap = [
     description: 'connect_wallet_method_description_keplr_mobile',
   },
   {
-    type: LikeCoinWalletConnectorMethodType.LikerId,
-    name: 'Liker ID',
+    type: LikeCoinWalletConnectorMethodType.LikerLandApp,
+    name: 'Liker Land App',
     tier: 1,
     isInstalled: false,
     isMobileOk: true,

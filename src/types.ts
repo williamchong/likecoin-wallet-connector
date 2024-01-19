@@ -7,15 +7,15 @@ import { KeplrSignOptions } from '@keplr-wallet/types';
 import { SignClientTypes } from '@walletconnect/types';
 
 export enum LikeCoinWalletConnectorMethodType {
+  LikerId = 'liker-id',
   Keplr = 'keplr',
   KeplrMobile = 'keplr-mobile',
   Cosmostation = 'cosmostation',
   CosmostationMobile = 'cosmostation-mobile',
-  LikerId = 'liker-id',
+  LikerLandApp = 'likerland-app',
   Leap = 'leap',
   MetaMaskLeap = 'metamask-leap',
   WalletConnectV2 = 'walletconnect-v2',
-  Authcore = 'authcore',
 }
 
 export interface LikeCoinWalletConnectorMethodConfigurable {
