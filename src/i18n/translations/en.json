@@ -6,6 +6,7 @@
   "connect_wallet_method_button_keplr_install_prompt": "Install Keplr to get started",
   "connect_wallet_method_button_liker_land_app_install_prompt": "Install Liker Land App",
   "connect_wallet_method_button_recommended": "Recommended",
+  "connect_wallet_method_description_authcore": "Use Liker ID with email or social login",
   "connect_wallet_method_description_cosmostation": "Using Cosmostation browser extension",
   "connect_wallet_method_description_cosmostation_mobile": "Using Cosmostation Mobile Wallet",
   "connect_wallet_method_description_keplr": "Using Keplr browser extension",
