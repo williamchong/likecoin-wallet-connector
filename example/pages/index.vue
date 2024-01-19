@@ -205,7 +205,7 @@ export default {
         : '';
     },
   },
-  mounted() {
+  async mounted() {
     this.connector = new LikeCoinWalletConnector({
       chainId: 'likecoin-mainnet-2',
       chainName: 'LikeCoin',
@@ -223,6 +223,7 @@ export default {
       bech32PrefixConsAddr: 'likevalcons',
       bech32PrefixConsPub: 'likevalconspub',
       availableMethods: [
+        LikeCoinWalletConnectorMethodType.Authcore,
         LikeCoinWalletConnectorMethodType.Keplr,
         [LikeCoinWalletConnectorMethodType.KeplrMobile, { tier: 1, isRecommended: true }],
         LikeCoinWalletConnectorMethodType.Cosmostation,
@@ -252,12 +253,21 @@ export default {
       connectWalletMobileWarning: 'Mobile Warning',
       language: 'zh',
 
+      authcoreApiHost: 'https://likecoin-integration-test.authcore.io',
+      authcoreRedirectUrl: 'http://localhost:3000/in/register?method=authcore',
+
       onEvent: ({ type, ...payload}) => {
         console.log('onEvent', type, payload);
       },
     });
     const session = this.connector.restoreSession();
     this.handleConnection(session);
+    const { code, method, ...query } = this.$route.query;
+    if (method && code) {
+      this.$router.replace({ query })
+      const connection = await this.connector.handleRedirect(method, code);
+      if (connection) this.handleConnection(connection);
+    }
     this.isLoading = false;
   },
   watch: {
@@ -293,7 +303,7 @@ export default {
     },
     async connect() {
       const connection = await this.connector.openConnectWalletModal();
-      this.handleConnection(connection);
+      if (connection) this.handleConnection(connection);
     },
     logout() {
       this.connector.disconnect();
