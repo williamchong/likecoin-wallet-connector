@@ -121,6 +121,7 @@ export type OfflineSigner = CosmJSOfflineSigner & ArbitrarySigner;
 export interface LikeCoinWalletConnectorSession {
   method: LikeCoinWalletConnectorMethodType;
   accounts: AccountData[];
+  params?: any;
 }
 
 export interface LikeCoinWalletConnectorConnectionResult
@@ -135,6 +136,7 @@ export type LikeCoinWalletConnectorConnectionResponse =
 export interface LikeCoinWalletConnectorInitResult {
   accounts: AccountData[];
   offlineSigner: OfflineSigner;
+  params?: any;
 }
 
 export type LikeCoinWalletConnectorInitResponse =

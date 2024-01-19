@@ -355,7 +355,8 @@ export class LikeCoinWalletConnector {
 
     switch (methodType) {
       case LikeCoinWalletConnectorMethodType.Authcore:
-        initiator = initAuthcore(this.options);
+        const { accessToken } = params || {};
+        initiator = initAuthcore(this.options, accessToken);
         break;
 
       case LikeCoinWalletConnectorMethodType.Keplr:
@@ -450,6 +451,7 @@ export class LikeCoinWalletConnector {
     this.saveSession({
       method: methodType,
       accounts: [...result.accounts],
+      params: result.params,
     });
 
     return {
@@ -462,7 +464,9 @@ export class LikeCoinWalletConnector {
     LikeCoinWalletConnectorConnectionResponse
   > = async () => {
     const session = this.restoreSession();
-    return session?.method ? this.init(session.method) : undefined;
+    return session?.method
+      ? this.init(session.method, session.params)
+      : undefined;
   };
 
   /**
@@ -471,6 +475,7 @@ export class LikeCoinWalletConnector {
   private saveSession = ({
     method,
     accounts,
+    params,
   }: LikeCoinWalletConnectorSession) => {
     this.sessionAccounts = accounts;
     this.sessionMethod = method;
@@ -483,6 +488,7 @@ export class LikeCoinWalletConnector {
             ...account,
             pubkey: serializePublicKey(account.pubkey),
           })),
+          params,
         })
       );
     } catch (error) {
@@ -494,7 +500,7 @@ export class LikeCoinWalletConnector {
     try {
       const serializedSession = window.localStorage.getItem(SESSION_KEY);
       if (serializedSession) {
-        const { method, accounts = [] } = JSON.parse(serializedSession);
+        const { method, accounts = [], params } = JSON.parse(serializedSession);
         if (
           Object.values(LikeCoinWalletConnectorMethodType).includes(method) &&
           Array.isArray(accounts)
@@ -505,6 +511,7 @@ export class LikeCoinWalletConnector {
               ...account,
               pubkey: deserializePublicKey(account.pubkey),
             })),
+            params,
           } as LikeCoinWalletConnectorSession;
         }
       }

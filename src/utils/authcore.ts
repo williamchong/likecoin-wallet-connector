@@ -99,6 +99,7 @@ export async function initAuthcore(
   return {
     accounts,
     offlineSigner,
+    params: { accessToken },
   };
 }
 
