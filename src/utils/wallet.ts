@@ -1,4 +1,5 @@
 import { AccountData } from '@cosmjs/proto-signing';
+import bech32 from 'bech32';
 
 import { WalletConnectAccountResponse } from '../types';
 
@@ -8,6 +9,11 @@ export function serializePublicKey(value: Uint8Array) {
 
 export function deserializePublicKey(value: string) {
   return new Uint8Array(Buffer.from(value, 'hex'));
+}
+
+export function convertAddressPrefix(address: string, prefix = 'like') {
+  const { words } = bech32.decode(address);
+  return bech32.encode(prefix, words);
 }
 
 export function convertWalletConnectAccountResponse(

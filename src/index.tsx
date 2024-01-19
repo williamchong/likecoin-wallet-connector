@@ -54,6 +54,7 @@ import {
 
 import './style.css';
 import { IntlProvider } from './i18n';
+import { handleAuthcoreRedirect, initAuthcore } from './utils/authcore';
 
 export * from './types';
 
@@ -129,6 +130,8 @@ export class LikeCoinWalletConnector {
           : true,
 
       language: options.language || 'en',
+      authcoreApiHost: options.authcoreApiHost || 'https://authcore.like.co',
+      authcoreRedirectUrl: options.authcoreRedirectUrl || '',
 
       onEvent: options.onEvent || (() => {}),
     };
@@ -141,6 +144,22 @@ export class LikeCoinWalletConnector {
     container.setAttribute('id', CONTAINER_ID);
     document.body.appendChild(container);
     this._renderingRoot = createRoot(container);
+  }
+
+  async handleRedirect(
+    method: LikeCoinWalletConnectorMethodType,
+    payload: any
+  ) {
+    switch (method) {
+      case LikeCoinWalletConnectorMethodType.Authcore:
+        const { user, idToken, accessToken } = await handleAuthcoreRedirect(
+          this.options,
+          payload
+        );
+        const result = await initAuthcore(this.options, accessToken);
+        return { user, idToken, ...result };
+    }
+    return null;
   }
 
   /**
@@ -335,6 +354,10 @@ export class LikeCoinWalletConnector {
     let initiator: Promise<LikeCoinWalletConnectorInitResponse>;
 
     switch (methodType) {
+      case LikeCoinWalletConnectorMethodType.Authcore:
+        initiator = initAuthcore(this.options);
+        break;
+
       case LikeCoinWalletConnectorMethodType.Keplr:
         initiator = initKeplr(this.options);
         break;

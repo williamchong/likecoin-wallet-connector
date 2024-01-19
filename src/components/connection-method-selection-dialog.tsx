@@ -17,6 +17,15 @@ import { Dialog } from './dialog';
 
 const connectionMethodMap = [
   {
+    type: LikeCoinWalletConnectorMethodType.Authcore,
+    name: 'Authcore',
+    tier: 1,
+    isInstalled: true,
+    isMobileOk: true,
+    url: 'https://niomon.io/',
+    description: 'connect_wallet_method_description_authcore',
+  },
+  {
     type: LikeCoinWalletConnectorMethodType.Keplr,
     name: 'Keplr',
     tier: 1,
@@ -194,7 +203,12 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         return 2;
       }
       // Collapse tier 1 mobile connection method in desktop
-      if (!isMobile && method.isMobileOk && method.tier === 1) {
+      if (
+        !isMobile &&
+        !method.isInstalled &&
+        method.isMobileOk &&
+        method.tier === 1
+      ) {
         return 2;
       }
       // if none of wallet is detected, fallback to default tier

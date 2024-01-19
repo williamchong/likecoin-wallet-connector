@@ -15,6 +15,7 @@ export enum LikeCoinWalletConnectorMethodType {
   Leap = 'leap',
   MetaMaskLeap = 'metamask-leap',
   WalletConnectV2 = 'walletconnect-v2',
+  Authcore = 'authcore',
 }
 
 export interface LikeCoinWalletConnectorMethodConfigurable {
@@ -94,6 +95,9 @@ export interface LikeCoinWalletConnectorConfig {
 
   connectWalletTitle?: string;
   connectWalletMobileWarning?: string;
+
+  authcoreApiHost?: string;
+  authcoreRedirectUrl?: string;
 
   language?: string;
 
