@@ -265,7 +265,7 @@ export default {
     const { code, method, ...query } = this.$route.query;
     if (method && code) {
       this.$router.replace({ query })
-      const connection = await this.connector.handleRedirect(method, code);
+      const connection = await this.connector.handleRedirect(method, { code });
       if (connection) this.handleConnection(connection);
     }
     this.isLoading = false;

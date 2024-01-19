@@ -105,7 +105,7 @@ export async function initAuthcore(
 
 export async function handleAuthcoreRedirect(
   options: LikeCoinWalletConnectorOptions,
-  code: string
+  { code }: { code: string }
 ) {
   const authClient = await new AuthCoreAuthClient({
     apiBaseURL: options.authcoreApiHost,

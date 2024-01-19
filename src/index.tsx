@@ -147,15 +147,12 @@ export class LikeCoinWalletConnector {
     this._renderingRoot = createRoot(container);
   }
 
-  async handleRedirect(
-    method: LikeCoinWalletConnectorMethodType,
-    payload: any
-  ) {
+  async handleRedirect(method: LikeCoinWalletConnectorMethodType, params: any) {
     switch (method) {
       case LikeCoinWalletConnectorMethodType.LikerId:
         const { user, idToken, accessToken } = await handleAuthcoreRedirect(
           this.options,
-          payload
+          params
         );
         const result = await initAuthcore(this.options, accessToken);
         return { user, idToken, ...result };
