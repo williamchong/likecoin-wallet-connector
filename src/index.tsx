@@ -154,7 +154,7 @@ export class LikeCoinWalletConnector {
           this.options,
           params
         );
-        const result = await initAuthcore(this.options, accessToken);
+        const result = await this.init(method, { accessToken });
         return { user, idToken, ...result };
     }
     return null;
