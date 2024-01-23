@@ -18,7 +18,7 @@ import { Dialog } from './dialog';
 const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.LikerId,
-    name: 'Liker ID',
+    name: 'Email/Social',
     tier: 1,
     isInstalled: true,
     isMobileOk: true,
