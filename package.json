@@ -1,5 +1,5 @@
 {
-  "version": "0.25.3",
+  "version": "0.26.0-beta.7",
   "license": "GPL-3.0-or-later",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -81,6 +81,8 @@
     "@cosmjs/proto-signing": "^0.28.13",
     "@headlessui/react": "1.7.11",
     "@leapwallet/cosmos-snap-provider": "^0.1.24",
+    "@likecoin/authcore-js": "0.3.0-like.0",
+    "@likecoin/secretd-js": "^0.4.4",
     "@walletconnect/browser-utils": "^1.8.0",
     "@walletconnect/modal": "^2.4.5",
     "@walletconnect/sign-client": "^2.8.0",

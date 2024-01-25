@@ -7,11 +7,12 @@ import { KeplrSignOptions } from '@keplr-wallet/types';
 import { SignClientTypes } from '@walletconnect/types';
 
 export enum LikeCoinWalletConnectorMethodType {
+  LikerId = 'liker-id',
   Keplr = 'keplr',
   KeplrMobile = 'keplr-mobile',
   Cosmostation = 'cosmostation',
   CosmostationMobile = 'cosmostation-mobile',
-  LikerId = 'liker-id',
+  LikerLandApp = 'likerland-app',
   Leap = 'leap',
   MetaMaskLeap = 'metamask-leap',
   WalletConnectV2 = 'walletconnect-v2',
@@ -95,6 +96,9 @@ export interface LikeCoinWalletConnectorConfig {
   connectWalletTitle?: string;
   connectWalletMobileWarning?: string;
 
+  authcoreApiHost?: string;
+  authcoreRedirectUrl?: string;
+
   language?: string;
 
   onEvent?: (event: LikeCoinWalletConnectorEvent) => void;
@@ -117,6 +121,7 @@ export type OfflineSigner = CosmJSOfflineSigner & ArbitrarySigner;
 export interface LikeCoinWalletConnectorSession {
   method: LikeCoinWalletConnectorMethodType;
   accounts: AccountData[];
+  params?: any;
 }
 
 export interface LikeCoinWalletConnectorConnectionResult
@@ -131,6 +136,7 @@ export type LikeCoinWalletConnectorConnectionResponse =
 export interface LikeCoinWalletConnectorInitResult {
   accounts: AccountData[];
   offlineSigner: OfflineSigner;
+  params?: any;
 }
 
 export type LikeCoinWalletConnectorInitResponse =

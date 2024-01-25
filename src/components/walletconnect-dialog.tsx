@@ -81,7 +81,7 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
           return `cosmostation://wc?${uri}`;
         }
 
-      case LikeCoinWalletConnectorMethodType.LikerId:
+      case LikeCoinWalletConnectorMethodType.LikerLandApp:
         if (isAndroid) {
           saveMobileLinkInfo({
             name: 'Liker Land App',
@@ -118,7 +118,7 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
           return 'https://apps.apple.com/app/cosmostation/id1459830339';
         }
 
-      case LikeCoinWalletConnectorMethodType.LikerId:
+      case LikeCoinWalletConnectorMethodType.LikerLandApp:
         return 'https://likecoin.page.link/likerland?utm_campaign=&utm_source=&utm_medium=getapp_page';
 
       default:
@@ -138,7 +138,7 @@ export const WalletConnectQRCodeDialog: FC<WalletConnectQRCodeDialogProps> = ({
           id: 'wallet_connect_hint_scan_qrcode_cosmostation_mobile',
         });
 
-      case LikeCoinWalletConnectorMethodType.LikerId:
+      case LikeCoinWalletConnectorMethodType.LikerLandApp:
         return intl.formatMessage({
           id: 'wallet_connect_hint_scan_qrcode_liker_land_app',
         });

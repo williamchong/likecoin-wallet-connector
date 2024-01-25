@@ -4,6 +4,7 @@ import { AccountData } from '@cosmjs/proto-signing';
 import { IQRCodeModal } from '@walletconnect/legacy-types';
 import EventEmitter from 'events';
 
+import { AuthcoreDialog } from './components/authcore-dialog';
 import { ConnectionMethodSelectionDialog } from './components/connection-method-selection-dialog';
 import { WalletConnectQRCodeDialog } from './components/walletconnect-dialog';
 
@@ -54,6 +55,7 @@ import {
 
 import './style.css';
 import { IntlProvider } from './i18n';
+import { handleAuthcoreRedirect, initAuthcore } from './utils/authcore';
 
 export * from './types';
 
@@ -103,6 +105,7 @@ export class LikeCoinWalletConnector {
         LikeCoinWalletConnectorMethodType.Keplr,
         LikeCoinWalletConnectorMethodType.KeplrMobile,
         LikeCoinWalletConnectorMethodType.LikerId,
+        LikeCoinWalletConnectorMethodType.LikerLandApp,
         LikeCoinWalletConnectorMethodType.Cosmostation,
         LikeCoinWalletConnectorMethodType.WalletConnectV2,
       ],
@@ -129,6 +132,8 @@ export class LikeCoinWalletConnector {
           : true,
 
       language: options.language || 'en',
+      authcoreApiHost: options.authcoreApiHost || 'https://authcore.like.co',
+      authcoreRedirectUrl: options.authcoreRedirectUrl || '',
 
       onEvent: options.onEvent || (() => {}),
     };
@@ -141,6 +146,19 @@ export class LikeCoinWalletConnector {
     container.setAttribute('id', CONTAINER_ID);
     document.body.appendChild(container);
     this._renderingRoot = createRoot(container);
+  }
+
+  async handleRedirect(method: LikeCoinWalletConnectorMethodType, params: any) {
+    switch (method) {
+      case LikeCoinWalletConnectorMethodType.LikerId:
+        const { user, idToken, accessToken } = await handleAuthcoreRedirect(
+          this.options,
+          params
+        );
+        const result = await this.init(method, { accessToken });
+        return { user, idToken, ...result };
+    }
+    return null;
   }
 
   /**
@@ -180,7 +198,7 @@ export class LikeCoinWalletConnector {
           resolve(result);
         };
         if (checkIsInLikerLandAppInAppBrowser()) {
-          connectWithMethod(LikeCoinWalletConnectorMethodType.LikerId);
+          connectWithMethod(LikeCoinWalletConnectorMethodType.LikerLandApp);
         } else if (checkIsInCosmostationMobileInAppBrowser()) {
           connectWithMethod(
             LikeCoinWalletConnectorMethodType.CosmostationMobile
@@ -284,7 +302,7 @@ export class LikeCoinWalletConnector {
           await onCosmostationMobileDisconnect();
           break;
 
-        case LikeCoinWalletConnectorMethodType.LikerId:
+        case LikeCoinWalletConnectorMethodType.LikerLandApp:
           await onLikerLandAppDisconnect();
           break;
 
@@ -313,7 +331,7 @@ export class LikeCoinWalletConnector {
   ) => ({
     open: uri => {
       if (
-        methodType === LikeCoinWalletConnectorMethodType.LikerId &&
+        methodType === LikeCoinWalletConnectorMethodType.LikerLandApp &&
         params?.goToGetApp
       ) {
         window.location.href = `https://liker.land/getapp?action=wc&uri=${encodeURIComponent(
@@ -335,6 +353,28 @@ export class LikeCoinWalletConnector {
     let initiator: Promise<LikeCoinWalletConnectorInitResponse>;
 
     switch (methodType) {
+      case LikeCoinWalletConnectorMethodType.LikerId:
+        const { accessToken } = params || {};
+        if (!accessToken) {
+          initiator = new Promise(resolve => {
+            this._renderingRoot.render(
+              <AuthcoreDialog
+                onMount={({ containerId }) => {
+                  initAuthcore(this.options, { containerId });
+                }}
+                onClose={() => {
+                  this.closeDialog();
+                  resolve(undefined);
+                  this._events.emit('authcore_auth_closed');
+                }}
+              />
+            );
+          });
+        } else {
+          initiator = initAuthcore(this.options, { accessToken });
+        }
+        break;
+
       case LikeCoinWalletConnectorMethodType.Keplr:
         initiator = initKeplr(this.options);
         break;
@@ -363,13 +403,16 @@ export class LikeCoinWalletConnector {
         );
         break;
 
-      case LikeCoinWalletConnectorMethodType.LikerId:
+      case LikeCoinWalletConnectorMethodType.LikerLandApp:
         const { goToGetApp } = params || {};
         initiator = initLikerLandApp(
           this.options,
-          this.getWCQRCodeDialog(LikeCoinWalletConnectorMethodType.LikerId, {
-            goToGetApp,
-          }),
+          this.getWCQRCodeDialog(
+            LikeCoinWalletConnectorMethodType.LikerLandApp,
+            {
+              goToGetApp,
+            }
+          ),
           this.sessionMethod,
           this.sessionAccounts
         );
@@ -397,7 +440,10 @@ export class LikeCoinWalletConnector {
     }
 
     const result = await initiator;
-    if (!result) throw new Error('ACCOUNT_INIT_FAILED');
+    if (!result) {
+      this._events.emit('account_init_stopped', methodType);
+      return;
+    }
 
     this._accountChangeListener = () => {
       this.handleAccountChange(methodType);
@@ -427,6 +473,7 @@ export class LikeCoinWalletConnector {
     this.saveSession({
       method: methodType,
       accounts: [...result.accounts],
+      params: result.params,
     });
 
     return {
@@ -439,7 +486,9 @@ export class LikeCoinWalletConnector {
     LikeCoinWalletConnectorConnectionResponse
   > = async () => {
     const session = this.restoreSession();
-    return session?.method ? this.init(session.method) : undefined;
+    return session?.method
+      ? this.init(session.method, session.params)
+      : undefined;
   };
 
   /**
@@ -448,6 +497,7 @@ export class LikeCoinWalletConnector {
   private saveSession = ({
     method,
     accounts,
+    params,
   }: LikeCoinWalletConnectorSession) => {
     this.sessionAccounts = accounts;
     this.sessionMethod = method;
@@ -460,6 +510,7 @@ export class LikeCoinWalletConnector {
             ...account,
             pubkey: serializePublicKey(account.pubkey),
           })),
+          params,
         })
       );
     } catch (error) {
@@ -471,7 +522,7 @@ export class LikeCoinWalletConnector {
     try {
       const serializedSession = window.localStorage.getItem(SESSION_KEY);
       if (serializedSession) {
-        const { method, accounts = [] } = JSON.parse(serializedSession);
+        const { method, accounts = [], params } = JSON.parse(serializedSession);
         if (
           Object.values(LikeCoinWalletConnectorMethodType).includes(method) &&
           Array.isArray(accounts)
@@ -482,6 +533,7 @@ export class LikeCoinWalletConnector {
               ...account,
               pubkey: deserializePublicKey(account.pubkey),
             })),
+            params,
           } as LikeCoinWalletConnectorSession;
         }
       }

@@ -17,6 +17,15 @@ import { Dialog } from './dialog';
 
 const connectionMethodMap = [
   {
+    type: LikeCoinWalletConnectorMethodType.LikerId,
+    name: 'Email/Social',
+    tier: 1,
+    isInstalled: true,
+    isMobileOk: true,
+    url: 'https://like.co/in',
+    description: 'connect_wallet_method_description_authcore',
+  },
+  {
     type: LikeCoinWalletConnectorMethodType.Keplr,
     name: 'Keplr',
     tier: 1,
@@ -36,8 +45,8 @@ const connectionMethodMap = [
     description: 'connect_wallet_method_description_keplr_mobile',
   },
   {
-    type: LikeCoinWalletConnectorMethodType.LikerId,
-    name: 'Liker ID',
+    type: LikeCoinWalletConnectorMethodType.LikerLandApp,
+    name: 'Liker Land App',
     tier: 1,
     isInstalled: false,
     isMobileOk: true,
@@ -171,7 +180,6 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
           method.isInstalled = !!window.ethereum?.isMetaMask;
           break;
         default:
-          method.isInstalled = false;
           break;
       }
 
@@ -194,7 +202,12 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         return 2;
       }
       // Collapse tier 1 mobile connection method in desktop
-      if (!isMobile && method.isMobileOk && method.tier === 1) {
+      if (
+        !isMobile &&
+        !method.isInstalled &&
+        method.isMobileOk &&
+        method.tier === 1
+      ) {
         return 2;
       }
       // if none of wallet is detected, fallback to default tier

@@ -6,6 +6,7 @@
   "connect_wallet_method_button_keplr_install_prompt": "安裝 Keplr 以開始使用",
   "connect_wallet_method_button_liker_land_app_install_prompt": "安裝 Liker Land App",
   "connect_wallet_method_button_recommended": "推薦",
+  "connect_wallet_method_description_authcore": "使用 Liker ID 以電郵/社交登入",
   "connect_wallet_method_description_cosmostation": "使用 Cosmostation 瀏覽器外掛",
   "connect_wallet_method_description_cosmostation_mobile": "使用 Cosmostation Mobile Wallet",
   "connect_wallet_method_description_keplr": "使用 Keplr 瀏覽器外掛",
