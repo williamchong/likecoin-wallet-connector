@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.26.0] - 2024-01-26
+
+### Breaking
+
+- Rename current Liker Land App login method from Liker ID to Liker Land APP
+
+### Added
+
+- Add Authcore login support as Liker ID login
+- Add redirect handler for method requiring redirection
+
+### Changed
+
+- Support storing method specific params in session
+
 ## [0.25.3] - 2023-11-14
 
 ### Changed
