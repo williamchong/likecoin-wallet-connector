@@ -356,11 +356,16 @@ export class LikeCoinWalletConnector {
       case LikeCoinWalletConnectorMethodType.LikerId:
         const { accessToken } = params || {};
         if (!accessToken) {
-          initiator = new Promise(() => {
+          initiator = new Promise(resolve => {
             this._renderingRoot.render(
               <AuthcoreDialog
                 onMount={({ containerId }) => {
                   initAuthcore(this.options, { containerId });
+                }}
+                onClose={() => {
+                  this.closeDialog();
+                  resolve(undefined);
+                  this._events.emit('authcore_auth_closed');
                 }}
               />
             );
@@ -435,7 +440,10 @@ export class LikeCoinWalletConnector {
     }
 
     const result = await initiator;
-    if (!result) throw new Error('ACCOUNT_INIT_FAILED');
+    if (!result) {
+      this._events.emit('account_init_stopped', methodType);
+      return;
+    }
 
     this._accountChangeListener = () => {
       this.handleAccountChange(methodType);
