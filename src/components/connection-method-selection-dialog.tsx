@@ -179,12 +179,7 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
         case LikeCoinWalletConnectorMethodType.MetaMaskLeap:
           method.isInstalled = !!window.ethereum?.isMetaMask;
           break;
-        case LikeCoinWalletConnectorMethodType.LikerId:
-          // NOTE: Liker ID method overrides the isInstalled flag
-          method.isInstalled = true;
-          break;
         default:
-          method.isInstalled = false;
           break;
       }
 
