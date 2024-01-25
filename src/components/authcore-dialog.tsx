@@ -17,7 +17,7 @@ export const AuthcoreDialog: FC<AuthcoreDialogProps> = ({
   const closeDialog = React.useCallback(() => {
     setDialogOpen(false);
     onClose?.();
-  }, []);
+  }, [onClose]);
   useEffect(() => {
     onMount?.({ containerId: AUTHCORE_DIALOG_ID });
   }, [onMount, onClose]);
