@@ -23,7 +23,13 @@ let keyVaultClient: any | null = null;
 
 export async function initAuthcore(
   options: LikeCoinWalletConnectorOptions,
-  accessToken?: string
+  {
+    accessToken,
+    containerId,
+  }: {
+    accessToken?: string;
+    containerId?: string;
+  } = {}
 ): Promise<LikeCoinWalletConnectorInitResponse> {
   const authcoreApiHost = options.authcoreApiHost;
 
@@ -51,17 +57,13 @@ export async function initAuthcore(
       };
     });
   } else {
-    // TODO: Better login dialog
-    const container = document.createElement('div');
-    container.setAttribute('id', 'authcore-dialog');
-    container.setAttribute(
-      'style',
-      'background-color: white; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999;'
-    );
-    document.body.appendChild(container);
+    if (!containerId) {
+      throw new Error('containerId is required for initAuthcore');
+    }
+
     new AuthCoreWidgets.Login({
       primaryColour: '#28646e',
-      container: 'authcore-dialog',
+      container: containerId,
       root: `${authcoreApiHost}/widgets`,
       initialScreen: 'signin',
       socialLoginPaneStyle: 'top',

@@ -1,15 +1,18 @@
 import React, { FC, HTMLAttributes } from 'react';
 
 import { Dialog as DialogBase } from '@headlessui/react';
+import classNames from 'classnames';
 
 export interface DialogProps extends HTMLAttributes<HTMLDivElement> {
   isOpen?: boolean;
+  isNoHorizontalPadding?: boolean;
   onClose?: () => void;
 }
 
 export const Dialog: FC<DialogProps> = ({
   isOpen = false,
   children,
+  isNoHorizontalPadding = false,
   onClose = () => {},
 }) => {
   return (
@@ -43,7 +46,12 @@ export const Dialog: FC<DialogProps> = ({
                 </svg>
               </button>
             </div>
-            <div className="lk-py-[24px] sm:lk-py-[32px] lk-px-[16px] sm:lk-px-[24px] lk-rounded-[16px] sm:lk-rounded-[24px] lk-bg-[#fff] lk-mt-[8px]">
+            <div
+              className={classNames(
+                'lk-py-[24px] sm:lk-py-[32px] lk-rounded-[16px] sm:lk-rounded-[24px] lk-bg-[#fff] lk-mt-[8px]',
+                { 'lk-px-[16px] sm:lk-px-[24px]': !isNoHorizontalPadding }
+              )}
+            >
               {children}
             </div>
           </DialogBase.Panel>

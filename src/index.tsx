@@ -4,6 +4,7 @@ import { AccountData } from '@cosmjs/proto-signing';
 import { IQRCodeModal } from '@walletconnect/legacy-types';
 import EventEmitter from 'events';
 
+import { AuthcoreDialog } from './components/authcore-dialog';
 import { ConnectionMethodSelectionDialog } from './components/connection-method-selection-dialog';
 import { WalletConnectQRCodeDialog } from './components/walletconnect-dialog';
 
@@ -354,7 +355,19 @@ export class LikeCoinWalletConnector {
     switch (methodType) {
       case LikeCoinWalletConnectorMethodType.LikerId:
         const { accessToken } = params || {};
-        initiator = initAuthcore(this.options, accessToken);
+        if (!accessToken) {
+          initiator = new Promise(() => {
+            this._renderingRoot.render(
+              <AuthcoreDialog
+                onMount={({ containerId }) => {
+                  initAuthcore(this.options, { containerId });
+                }}
+              />
+            );
+          });
+        } else {
+          initiator = initAuthcore(this.options, { accessToken });
+        }
         break;
 
       case LikeCoinWalletConnectorMethodType.Keplr:
