@@ -132,6 +132,7 @@ export class LikeCoinWalletConnector {
           : true,
 
       language: options.language || 'en',
+      authcoreClientId: options.authcoreClientId || 'likecoin-app',
       authcoreApiHost: options.authcoreApiHost || 'https://authcore.like.co',
       authcoreRedirectUrl: options.authcoreRedirectUrl || '',
 

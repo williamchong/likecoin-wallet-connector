@@ -62,6 +62,7 @@ export async function initAuthcore(
     }
 
     new AuthCoreWidgets.Login({
+      clientId: options.authcoreClientId,
       primaryColour: '#28646e',
       container: containerId,
       root: `${authcoreApiHost}/widgets`,

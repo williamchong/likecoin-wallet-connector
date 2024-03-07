@@ -96,6 +96,7 @@ export interface LikeCoinWalletConnectorConfig {
   connectWalletTitle?: string;
   connectWalletMobileWarning?: string;
 
+  authcoreClientId?: string;
   authcoreApiHost?: string;
   authcoreRedirectUrl?: string;
 

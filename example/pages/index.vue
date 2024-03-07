@@ -253,6 +253,7 @@ export default {
       connectWalletMobileWarning: 'Mobile Warning',
       language: 'zh',
 
+      authcoreClientId: 'likecoin-app-hidesocial',
       authcoreApiHost: 'https://likecoin-integration-test.authcore.io',
       authcoreRedirectUrl: 'http://localhost:3000/in/register?method=liker-id',
 
