@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.26.2] - 2024-03-08
+
+### Added
+
+- Add Authcore clientId in setting
+
 ## [0.26.1] - 2024-03-07
 
 ### Changed
