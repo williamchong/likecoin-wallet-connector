@@ -22,6 +22,7 @@
   "wallet_connect_header_title_open_app": "啟動 App",
   "wallet_connect_header_title_scan_qrcode": "掃描二維碼",
   "wallet_connect_hint_approve": "請點擊以下按鈕打開 App 並批准連接請求。",
+  "wallet_connect_hint_reset_password": "若找不到您原先的登入方式，請<span>重設密碼</span>。",
   "wallet_connect_hint_scan_qrcode_cosmostation_mobile": "請使用 Cosmostation Mobile Wallet app 掃描二維碼",
   "wallet_connect_hint_scan_qrcode_keplr_mobile": "請使用 Keplr Mobile app 掃描二維碼",
   "wallet_connect_hint_scan_qrcode_liker_land_app": "請使用 Liker Land app 掃描二維碼",

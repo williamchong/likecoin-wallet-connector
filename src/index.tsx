@@ -64,6 +64,11 @@ const SESSION_KEY = 'likecoin_wallet_connector_session';
 
 const WC_BRIGDE = 'https://bridge.walletconnect.org';
 
+const SOCIAL_LOGIN_OPTIONS = {
+  HIDE_SOCIAL: 'likecoin-app-hidesocial',
+  DEFAULT: 'likecoin-app',
+};
+
 export class LikeCoinWalletConnector {
   public options: LikeCoinWalletConnectorOptions;
 
@@ -132,7 +137,7 @@ export class LikeCoinWalletConnector {
           : true,
 
       language: options.language || 'en',
-      authcoreClientId: options.authcoreClientId || 'likecoin-app',
+      authcoreClientId: options.authcoreClientId || SOCIAL_LOGIN_OPTIONS.DEFAULT,
       authcoreApiHost: options.authcoreApiHost || 'https://authcore.like.co',
       authcoreRedirectUrl: options.authcoreRedirectUrl || '',
 
@@ -349,7 +354,8 @@ export class LikeCoinWalletConnector {
 
   init = async (
     methodType: LikeCoinWalletConnectorMethodType,
-    params?: any
+    params?: any,
+    language = this.options.language
   ) => {
     let initiator: Promise<LikeCoinWalletConnectorInitResponse>;
 
@@ -359,16 +365,24 @@ export class LikeCoinWalletConnector {
         if (!accessToken) {
           initiator = new Promise(resolve => {
             this._renderingRoot.render(
-              <AuthcoreDialog
-                onMount={({ containerId }) => {
-                  initAuthcore(this.options, { containerId });
-                }}
-                onClose={() => {
-                  this.closeDialog();
-                  resolve(undefined);
-                  this._events.emit('authcore_auth_closed');
-                }}
-              />
+              <IntlProvider language={language}>
+                <AuthcoreDialog
+                  onMount={({ containerId }) => {
+                    initAuthcore(this.options, { containerId });
+                  }}
+                  onClose={() => {
+                    this.closeDialog();
+                    resolve(undefined);
+                    this._events.emit('authcore_auth_closed');
+                  }}
+                  isHideSocialLogin={
+                    !!(
+                      this.options.authcoreClientId ===
+                      SOCIAL_LOGIN_OPTIONS.HIDE_SOCIAL
+                    )
+                  }
+                />
+              </IntlProvider>
             );
           });
         } else {
