@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.26.3] - 2024-07-16
+
+### Added
+
+- Display reset password hint when hiding social login options
+
 ## [0.26.2] - 2024-03-08
 
 ### Added
