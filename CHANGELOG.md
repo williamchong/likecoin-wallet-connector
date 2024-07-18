@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.26.4] - 2024-07-18
+
+### Added
+
+- Enable opening of register screen for AuthCore users
+
 ## [0.26.3] - 2024-07-16
 
 ### Added
