@@ -138,7 +138,8 @@ export class LikeCoinWalletConnector {
           : true,
 
       language: options.language || 'en',
-      authcoreClientId: options.authcoreClientId || SOCIAL_LOGIN_OPTIONS.DEFAULT,
+      authcoreClientId:
+        options.authcoreClientId || SOCIAL_LOGIN_OPTIONS.DEFAULT,
       authcoreApiHost: options.authcoreApiHost || 'https://authcore.like.co',
       authcoreRedirectUrl: options.authcoreRedirectUrl || '',
 
@@ -371,9 +372,14 @@ export class LikeCoinWalletConnector {
                 <AuthcoreDialog
                   onMount={({ containerId }) => {
                     const intervalId = setInterval(() => {
-                      const containerElement = document.getElementById(containerId);
+                      const containerElement = document.getElementById(
+                        containerId
+                      );
                       if (containerElement) {
-                        initAuthcore(this.options, { containerId, initialScreen });
+                        initAuthcore(this.options, {
+                          containerId,
+                          initialScreen,
+                        });
                         clearInterval(intervalId);
                       }
                     }, 200);
@@ -394,7 +400,10 @@ export class LikeCoinWalletConnector {
             );
           });
         } else {
-          initiator = initAuthcore(this.options, { accessToken, initialScreen });
+          initiator = initAuthcore(this.options, {
+            accessToken,
+            initialScreen,
+          });
         }
         break;
 

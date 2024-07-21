@@ -22,7 +22,10 @@
   "wallet_connect_header_title_open_app": "Launch App",
   "wallet_connect_header_title_scan_qrcode": "Scan QR Code",
   "wallet_connect_hint_approve": "Please approve the connection request in the app by clicking the button below.",
-  "wallet_connect_hint_reset_password": "If you can't find your login method,<span>reset your password</span>.",
+  "wallet_connect_hint_browser_warning": "Third-party browsers, VPN, or private browsing may cause issue.",
+
+  "wallet_connect_hint_reset_password": "If your login method is not available here, please reset your password.",
+
   "wallet_connect_hint_scan_qrcode_cosmostation_mobile": "Please scan the QR code with Cosmostation Mobile Wallet app",
   "wallet_connect_hint_scan_qrcode_keplr_mobile": "Please scan the QR code with Keplr Mobile Wallet app",
   "wallet_connect_hint_scan_qrcode_liker_land_app": "Please scan the QR code with Liker Land app",

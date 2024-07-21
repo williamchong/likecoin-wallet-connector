@@ -15,7 +15,7 @@ import { AuthCoreAuthClient, AuthCoreWidgets } from '@likecoin/authcore-js';
 import {
   LikeCoinWalletConnectorInitResponse,
   LikeCoinWalletConnectorOptions,
-  AuthCoreInitialScreen
+  AuthCoreInitialScreen,
 } from '../types';
 import { convertAddressPrefix } from './wallet';
 
@@ -32,7 +32,7 @@ export async function initAuthcore(
     accessToken?: string;
     containerId?: string;
     initialScreen?: AuthCoreInitialScreen;
-  } = {},
+  } = {}
 ): Promise<LikeCoinWalletConnectorInitResponse> {
   const authcoreApiHost = options.authcoreApiHost;
 

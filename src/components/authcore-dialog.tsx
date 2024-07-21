@@ -31,18 +31,34 @@ export const AuthcoreDialog: FC<AuthcoreDialogProps> = ({
       onClose={closeDialog}
     >
       <div id={AUTHCORE_DIALOG_ID} />
-      {isHideSocialLogin && (
-        <div className="lk-flex lk-flex-col lk-flex-col lk-w-full lk-items-center lk-gap-y-2 lk-mt-[12px]">
-          <p className="lk-text-like-gray lk-text-center lk-w-full lk-text-[12px]">
-            <FormattedMessage
-              id="wallet_connect_hint_reset_password"
-              values={{
-                span: chunks => <span className="lk-text-like-green">{chunks}</span>,
-              }}
+
+      <aside className="lk-mt-[12px] lk-px-[35px]">
+        <div className="lk-flex lk-flex-col lk-items-center lk-gap-y-1 lk-w-full lk-p-[8px] lk-text-[#F6A721] lk-text-center lk-text-[12px] lk-bg-[#FFFBEB] lk-border lk-border-[#FEF0CF] lk-rounded-[3px]">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="lk-w-[20px]"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
             />
+          </svg>
+
+          <p>
+            <FormattedMessage id="wallet_connect_hint_browser_warning" />
           </p>
+          {isHideSocialLogin && (
+            <p>
+              <FormattedMessage id="wallet_connect_hint_reset_password" />
+            </p>
+          )}
         </div>
-      )}
+      </aside>
     </Dialog>
   );
 };

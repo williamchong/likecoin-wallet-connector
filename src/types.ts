@@ -49,7 +49,7 @@ export type LikeCoinWalletConnectorEvent =
       method: LikeCoinWalletConnectorMethodType;
     };
 
-export type AuthCoreInitialScreen = 'signin' | 'register'
+export type AuthCoreInitialScreen = 'signin' | 'register';
 
 export interface LikeCoinWalletConnectorConfig {
   chainId: string;
