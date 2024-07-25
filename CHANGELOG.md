@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.26.5] - 2024-07-20
+
+### Added
+
+- Show hint for browser issues
+
 ## [0.26.4] - 2024-07-18
 
 ### Added
