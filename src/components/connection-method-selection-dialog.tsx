@@ -28,7 +28,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.Keplr,
     name: 'Keplr',
-    tier: 1,
+    tier: 2,
     isInstalled: false,
     isMobileOk: false,
     url:
@@ -38,7 +38,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.KeplrMobile,
     name: 'Keplr Mobile',
-    tier: 1,
+    tier: 2,
     isInstalled: false,
     isMobileOk: true,
     url: 'https://keplr.app/app',
@@ -47,7 +47,7 @@ const connectionMethodMap = [
   {
     type: LikeCoinWalletConnectorMethodType.LikerLandApp,
     name: 'Liker Land App',
-    tier: 1,
+    tier: 2,
     isInstalled: false,
     isMobileOk: true,
     url: 'https://liker.land/getapp',
