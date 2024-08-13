@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.26.6] - 2024-08-13
+
+### Added
+
+- Update connection method list
+
 ## [0.26.5] - 2024-07-20
 
 ### Added
