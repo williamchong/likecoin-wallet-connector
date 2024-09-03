@@ -20,7 +20,7 @@ const connectionMethodMap = [
     type: LikeCoinWalletConnectorMethodType.LikerId,
     name: 'Email/Social',
     tier: 1,
-    isInstalled: true,
+    isInstalled: false,
     isMobileOk: true,
     url: 'https://like.co/in',
     description: 'connect_wallet_method_description_authcore',
@@ -189,9 +189,7 @@ export const ConnectionMethodSelectionDialog: FC<ConnectionMethodSelectionDialog
       }
       filteredMethods.push(method);
     });
-    let hasShownInstalledWallet = !filteredMethods.some(
-      method => method.isInstalled
-    );
+    let hasShownInstalledWallet = false;
     const getTier = (method: LikeCoinWalletConnectorMethod) => {
       if (!hasShownInstalledWallet) {
         if (method.isInstalled) {
