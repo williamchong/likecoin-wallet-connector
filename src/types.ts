@@ -101,6 +101,7 @@ export interface LikeCoinWalletConnectorConfig {
   authcoreClientId?: string;
   authcoreApiHost?: string;
   authcoreRedirectUrl?: string;
+  authcoreSocialLoginPanePosition?: 'top' | 'bottom';
 
   language?: string;
 

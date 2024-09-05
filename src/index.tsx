@@ -142,6 +142,8 @@ export class LikeCoinWalletConnector {
         options.authcoreClientId || SOCIAL_LOGIN_OPTIONS.DEFAULT,
       authcoreApiHost: options.authcoreApiHost || 'https://authcore.like.co',
       authcoreRedirectUrl: options.authcoreRedirectUrl || '',
+      authcoreSocialLoginPanePosition:
+        options.authcoreSocialLoginPanePosition || 'top',
 
       onEvent: options.onEvent || (() => {}),
     };

@@ -70,7 +70,7 @@ export async function initAuthcore(
       container: containerId,
       root: `${authcoreApiHost}/widgets`,
       initialScreen: initialScreen,
-      socialLoginPaneStyle: 'top',
+      socialLoginPaneStyle: options.authcoreSocialLoginPanePosition,
       socialLoginPaneOption: 'grid',
       internal: true,
       language: options.language?.toLowerCase().includes('zh') ? 'zh-hk' : 'en',
