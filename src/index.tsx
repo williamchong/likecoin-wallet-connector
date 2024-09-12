@@ -3,6 +3,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { AccountData } from '@cosmjs/proto-signing';
 import { IQRCodeModal } from '@walletconnect/legacy-types';
 import EventEmitter from 'events';
+import { jwtDecode } from "jwt-decode";
 
 import { AuthcoreDialog } from './components/authcore-dialog';
 import { ConnectionMethodSelectionDialog } from './components/connection-method-selection-dialog';
@@ -362,12 +363,26 @@ export class LikeCoinWalletConnector {
     language = this.options.language,
     initialScreen?: AuthCoreInitialScreen
   ) => {
-    let initiator: Promise<LikeCoinWalletConnectorInitResponse>;
+    let initiator: Promise<LikeCoinWalletConnectorInitResponse> | null = null;
 
     switch (methodType) {
       case LikeCoinWalletConnectorMethodType.LikerId:
         const { accessToken } = params || {};
-        if (!accessToken) {
+        if (accessToken) {
+          try {
+            const decoded = jwtDecode(accessToken);
+            if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+              throw new Error('TOKEN_EXPIRED');
+            }
+            initiator = initAuthcore(this.options, {
+              accessToken,
+              initialScreen,
+            });
+          } catch (err) {
+            console.error(err);
+          }
+        }
+        if (!initiator) {
           initiator = new Promise(resolve => {
             this._renderingRoot.render(
               <IntlProvider language={language}>
@@ -400,11 +415,6 @@ export class LikeCoinWalletConnector {
                 />
               </IntlProvider>
             );
-          });
-        } else {
-          initiator = initAuthcore(this.options, {
-            accessToken,
-            initialScreen,
           });
         }
         break;
