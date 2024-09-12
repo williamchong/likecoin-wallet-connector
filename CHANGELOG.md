@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.26.7-beta.0] - 2024-09-12
+
+### Changed
+
+- Detect expired Authcore access token on restore session
+
+### Fixed
+
+- Show first installed wallet with email login
+
+# Changelog
+
 ## [0.26.6] - 2024-08-13
 
 ### Added
